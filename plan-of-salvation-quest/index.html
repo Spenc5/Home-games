@@ -1,0 +1,989 @@
+<title>Plan of Salvation Quest</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Andika:wght@400;700&display=swap">
+<style>
+/* Layout: a serpentine path board (the journey from premortal life home) with a player rail; cards open as modal "cards" over it. */
+:root{
+  --bg:#E8F0F6; --surface:#FFFFFF; --surface-2:#F3F7FB; --ink:#1B2740; --muted:#55647E; --line:#C9D6E3;
+  --gold:#D99A12; --gold-ink:#3A2600; --rock:#7E8794;
+  --pre:#5450C8; --earth:#2F8F57; --sw:#8A63C4; --res:#D9772B;
+  --pre-t:#E3E2FA; --earth-t:#DDF1E4; --sw-t:#ECE3F8; --res-t:#FBE7D6;
+  --t-scripture:#2C6FB7; --t-found:#7E6A55; --t-choose:#2F8F57; --t-storm:#56637A; --t-service:#C2456B; --t-song:#7A4FC0; --t-sabbath:#C98A0E;
+  --good:#2F8F57; --bad:#B8443A;
+  --display:"Baloo 2", "Trebuchet MS", system-ui, sans-serif;
+  --body:"Andika", "Verdana", system-ui, sans-serif;
+  --radius:14px; --shadow:0 6px 22px rgba(27,39,64,.16);
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#111827; --surface:#1B2436; --surface-2:#222D42; --ink:#EAF0F8; --muted:#A4B1C6; --line:#33405A;
+  --gold:#F0B83A; --gold-ink:#2A1B00; --rock:#9AA3B0;
+  --pre:#8D89F0; --earth:#5CC487; --sw:#B595E8; --res:#F09A55;
+  --pre-t:#262A55; --earth-t:#1D3A2B; --sw-t:#33284A; --res-t:#43301F;
+  --t-scripture:#5EA0E6; --t-found:#B49C84; --t-choose:#5CC487; --t-storm:#93A1B8; --t-service:#EE7A9C; --t-song:#B08AF0; --t-sabbath:#F0B83A;
+  --good:#5CC487; --bad:#F07A6E; --shadow:0 6px 22px rgba(0,0,0,.45); color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#111827; --surface:#1B2436; --surface-2:#222D42; --ink:#EAF0F8; --muted:#A4B1C6; --line:#33405A;
+  --gold:#F0B83A; --gold-ink:#2A1B00; --rock:#9AA3B0;
+  --pre:#8D89F0; --earth:#5CC487; --sw:#B595E8; --res:#F09A55;
+  --pre-t:#262A55; --earth-t:#1D3A2B; --sw-t:#33284A; --res-t:#43301F;
+  --t-scripture:#5EA0E6; --t-found:#B49C84; --t-choose:#5CC487; --t-storm:#93A1B8; --t-service:#EE7A9C; --t-song:#B08AF0; --t-sabbath:#F0B83A;
+  --good:#5CC487; --bad:#F07A6E; --shadow:0 6px 22px rgba(0,0,0,.45); color-scheme:dark }
+
+[hidden]{display:none!important}
+html,body{height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;
+  padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+h1,h2,h3{font-family:var(--display);line-height:1.1;text-wrap:balance;margin:0}
+a{color:var(--t-scripture)}
+.wrap{max-width:1200px;margin:0 auto;padding-block:12px 110px}
+
+/* header */
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:space-between;padding-block:6px 12px}
+.brand{display:flex;align-items:center;gap:10px}
+.brand h1{font-size:clamp(1.5rem,4vw,2.1rem);font-weight:800;letter-spacing:-.01em}
+.brand h1 span{color:var(--gold)}
+.top-actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:2px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 16px;font-weight:700;font-family:var(--display);font-size:1rem;line-height:1.2}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--gold);border-color:var(--gold);color:var(--gold-ink)}
+.btn.primary:hover{filter:brightness(1.05);border-color:var(--gold-ink)}
+.btn.small{padding:5px 12px;font-size:.9rem}
+.btn:disabled{opacity:.5;cursor:default}
+
+/* setup */
+.setup{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:820px){.setup{grid-template-columns:minmax(0,1fr)}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);min-width:0}
+.panel h2{font-size:1.5rem;margin-bottom:8px}
+.quote{border-left:4px solid var(--gold);padding:4px 0 4px 14px;margin:12px 0;font-size:1.02rem}
+.quote cite{display:block;font-style:normal;font-size:.85rem;color:var(--muted);margin-top:4px}
+.count-row{display:flex;gap:8px;margin:8px 0 16px}
+.count-row button{width:52px;height:52px;border-radius:50%;border:2px solid var(--line);background:var(--surface-2);font-family:var(--display);font-size:1.4rem;font-weight:800}
+.count-row button[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:var(--gold-ink)}
+.name-row{display:flex;align-items:center;gap:10px;margin:8px 0}
+.name-row input{flex:1;min-width:0;border:2px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:10px;padding:10px 12px;font:inherit;font-size:1.05rem}
+.token{width:34px;height:34px;border-radius:50%;flex:none;border:3px solid var(--surface);box-shadow:0 0 0 2px var(--ink);display:grid;place-items:center;color:#fff;font-family:var(--display);font-weight:800;font-size:.95rem}
+.how ol{padding-left:1.2em;margin:8px 0}
+.how li{margin:6px 0}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);font-size:.85rem}
+.chip svg{width:18px;height:18px}
+
+/* game layout */
+.game{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}
+@media (max-width:900px){.game{grid-template-columns:minmax(0,1fr)}}
+.stages{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.stage-chip{font-family:var(--display);font-weight:700;font-size:.85rem;padding:3px 10px;border-radius:999px;color:#fff}
+.board-wrap{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:10px;box-shadow:var(--shadow);min-width:0}
+.board{position:relative;width:100%}
+.board svg.path{position:absolute;inset:0;pointer-events:none;overflow:visible}
+.tile{position:absolute;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;text-align:center;overflow:hidden;border:2px solid transparent;padding:2px}
+.tile .ic{width:46%;height:46%;max-width:34px;max-height:34px}
+.tile .lbl{font-size:clamp(.55rem,1.5vw,.72rem);line-height:1.05;font-weight:700;color:var(--ink)}
+.tile.mile{border-color:var(--gold);background-size:cover;background-position:center}
+.tile.mile .lbl{position:absolute;left:0;right:0;bottom:0;background:rgba(15,20,35,.72);color:#fff;padding:2px 2px 3px;font-family:var(--display);font-size:clamp(.55rem,1.6vw,.78rem)}
+.tile.mile .stop{position:absolute;top:2px;right:2px;background:var(--bad);color:#fff;font-size:.5rem;font-weight:700;padding:0 4px;border-radius:4px;letter-spacing:.06em}
+.tile.here{box-shadow:0 0 0 3px var(--gold)}
+.pawn{position:absolute;width:22px;height:22px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.45);transition:left .22s ease, top .22s ease;z-index:5;display:grid;place-items:center;color:#fff;font-family:var(--display);font-weight:800;font-size:.7rem}
+.pawn.active{z-index:6;animation:bob 1s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-4px)}}
+
+/* side */
+.side{display:flex;flex-direction:column;gap:12px;min-width:0}
+.pcard{background:var(--surface);border:2px solid var(--line);border-radius:var(--radius);padding:12px;display:grid;gap:8px}
+.pcard.turn{border-color:var(--gold);box-shadow:0 0 0 3px color-mix(in srgb, var(--gold) 35%, transparent)}
+.pcard .row{display:flex;align-items:center;gap:10px}
+.pcard .nm{font-family:var(--display);font-weight:800;font-size:1.15rem;flex:1;min-width:0;overflow-wrap:anywhere}
+.stars{font-family:var(--display);font-weight:800;font-size:1.2rem;color:var(--gold);font-variant-numeric:tabular-nums;white-space:nowrap}
+.found{display:grid;grid-template-columns:repeat(13,1fr);gap:2px}
+.found i{height:12px;border-radius:2px;background:var(--surface-2);border:1px solid var(--line)}
+.found i.on{background:var(--t-found);border-color:var(--t-found)}
+.pmeta{font-size:.8rem;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap}
+.pmeta b{color:var(--ink)}
+.log{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:10px 12px;font-size:.85rem;color:var(--muted);max-height:180px;overflow:auto}
+.log p{margin:3px 0}
+
+/* turn bar */
+.turnbar{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:2px solid var(--line);
+  padding:10px max(16px, env(safe-area-inset-right, 0px)) calc(10px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px))}
+.turnbar .in{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:12px}
+.turnbar .who{flex:1;min-width:0;display:flex;align-items:center;gap:10px}
+.turnbar .who b{font-family:var(--display);font-size:1.2rem;overflow-wrap:anywhere}
+.turnbar .who small{display:block;color:var(--muted);font-size:.8rem}
+.spinner{width:64px;height:64px;flex:none;position:relative}
+.spinner svg{width:100%;height:100%;transition:transform 1.4s cubic-bezier(.15,.85,.2,1)}
+.spinner .ptr{position:absolute;top:-4px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-top:12px solid var(--ink)}
+.spin-btn{font-size:1.25rem;padding:12px 26px}
+
+/* modal card */
+.scrim{position:fixed;inset:0;background:rgba(10,15,28,.55);z-index:50;display:grid;place-items:center;
+  padding:calc(12px + env(safe-area-inset-top, 0px)) max(12px, env(safe-area-inset-right, 0px)) calc(12px + env(safe-area-inset-bottom, 0px)) max(12px, env(safe-area-inset-left, 0px))}
+.card{width:min(520px,100%);max-height:100%;overflow:auto;background:var(--surface);border-radius:20px;box-shadow:var(--shadow);border:3px solid var(--kc,var(--gold));animation:pop .25s ease-out}
+@keyframes pop{from{transform:scale(.92);opacity:.4}}
+.card .band{background:var(--kc,var(--gold));color:#fff;padding:10px 16px;display:flex;align-items:center;gap:10px}
+.card .band svg{width:26px;height:26px;flex:none}
+.card .band .kind{font-family:var(--display);font-weight:800;font-size:1.05rem;letter-spacing:.04em;text-transform:uppercase;flex:1}
+.card .band button{background:rgba(255,255,255,.2);border:0;border-radius:999px;color:#fff;padding:4px 10px;font-size:.85rem;font-weight:700}
+.card .pic{width:100%;aspect-ratio:16/8;object-fit:cover;display:block;max-width:100%;background:var(--surface-2)}
+.card .body{padding:14px 18px 18px;display:grid;gap:10px}
+.card h3{font-size:1.5rem}
+.card p{margin:0}
+.verse{background:var(--surface-2);border-radius:12px;padding:12px 14px;font-size:1.05rem}
+.verse .ref{display:block;margin-top:6px;font-size:.85rem;font-weight:700}
+.verse mark{background:color-mix(in srgb, var(--gold) 40%, transparent);color:inherit;border-radius:4px;padding:0 3px}
+.blank{display:inline-block;min-width:4.5em;border-bottom:3px solid var(--gold);text-align:center}
+.choices{display:grid;gap:8px}
+.choice{text-align:left;border:2px solid var(--line);background:var(--surface);border-radius:12px;padding:10px 14px;font-size:1.02rem}
+.choice:hover:not(:disabled){border-color:var(--ink)}
+.choice.right{border-color:var(--good);background:color-mix(in srgb, var(--good) 15%, var(--surface))}
+.choice.wrong{border-color:var(--bad);opacity:.7}
+.result{font-family:var(--display);font-weight:700;font-size:1.15rem}
+.result.good{color:var(--good)} .result.bad{color:var(--bad)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.small-note{font-size:.85rem;color:var(--muted)}
+.housebar{display:flex;align-items:center;gap:10px;font-weight:700}
+
+/* pictures */
+.pics{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:12px}
+.pic-slot{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface-2);display:flex;flex-direction:column}
+.pic-slot img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
+.pic-slot .meta{padding:8px 10px;display:grid;gap:6px;font-size:.85rem}
+.pic-slot .meta b{font-family:var(--display);font-size:1rem}
+.pic-slot .meta input[type=url]{border:1px solid var(--line);border-radius:8px;padding:6px 8px;font:inherit;background:var(--surface);color:var(--ink);min-width:0}
+.pic-slot .btns{display:flex;gap:6px;flex-wrap:wrap}
+
+/* end */
+.podium{display:grid;gap:10px;margin-top:12px}
+.place{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;background:var(--surface-2);border-radius:12px;padding:10px 14px}
+.place .rank{font-family:var(--display);font-weight:800;font-size:1.6rem;width:1.6em;text-align:center}
+.place .detail{font-size:.8rem;color:var(--muted)}
+.toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top, 0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:999px;font-weight:700;z-index:60;box-shadow:var(--shadow);max-width:90vw;text-align:center}
+@media (prefers-reduced-motion: reduce){ *{animation:none!important;transition:none!important} }
+</style>
+
+<div class="wrap" id="app">
+  <header class="top">
+    <div class="brand">
+      <svg width="44" height="44" viewBox="0 0 44 44" aria-hidden="true"><rect x="2" y="30" width="40" height="10" rx="3" fill="var(--rock)"/><path d="M8 30V18L22 7l14 11v12z" fill="var(--gold)"/><rect x="18" y="20" width="8" height="10" rx="1" fill="var(--surface)"/></svg>
+      <h1>Plan of Salvation <span>Quest</span></h1>
+    </div>
+    <div class="top-actions">
+      <button class="btn small" id="btnRules" type="button">How to play</button>
+      <button class="btn small" id="btnPics" type="button">Pictures</button>
+      <button class="btn small" id="btnNew" type="button" hidden>New game</button>
+    </div>
+  </header>
+
+  <!-- SETUP -->
+  <section id="setup" class="setup">
+    <div class="panel">
+      <h2>Who is playing?</h2>
+      <p class="small-note">Up to four players. Pass the phone or sit around the computer.</p>
+      <div class="count-row" role="group" aria-label="Number of players" id="countRow"></div>
+      <div id="nameRows"></div>
+      <div class="actions" style="margin-top:14px">
+        <button class="btn" id="btnResume" type="button" hidden>Continue saved game</button>
+        <button class="btn primary spin-btn" id="btnStart" type="button">Start the journey</button>
+      </div>
+    </div>
+    <div class="panel how" id="howPanel">
+      <h2>Overcome the world</h2>
+      <div class="quote">“My plea to you this morning is to find rest from the intensity, uncertainty, and anguish of this world by overcoming the world through your covenants with God.”
+        <cite>President Russell M. Nelson, “<a href="https://www.churchofjesuschrist.org/study/general-conference/2022/10/47nelson?lang=eng" target="_blank" rel="noopener">Overcome the World and Find Rest</a>,” October 2022 general conference</cite></div>
+      <ol>
+        <li><b>Spin</b> and move along the plan: premortal life, earth life, the spirit world, the Resurrection, and home.</li>
+        <li><b>Stop</b> at every gold milestone, like Baptism and the Temple, even if you have moves left.</li>
+        <li><b>Build your house on the rock.</b> Collect the 13 foundation stones (prayer, scriptures, tithing and more).</li>
+        <li><b>Storms</b> are the “plagues of the world” like pride, anger and fear. If your foundation is strong enough, your house stands.</li>
+        <li><b>Collect blessings ★</b> from scriptures, good choices, service, songs and the Sabbath.</li>
+        <li>Everyone makes it home. The player with the most points wins: blessings, plus 2 for each stone, plus 1 for each storm overcome.</li>
+      </ol>
+      <div class="legend" id="legend"></div>
+    </div>
+  </section>
+
+  <!-- GAME -->
+  <section id="game" class="game" hidden>
+    <div class="board-wrap">
+      <div class="stages" id="stageChips"></div>
+      <div class="board" id="board"></div>
+    </div>
+    <aside class="side">
+      <div id="players"></div>
+      <div class="log" id="log" aria-live="polite"></div>
+    </aside>
+  </section>
+
+  <!-- END -->
+  <section id="end" hidden>
+    <div class="panel" style="max-width:640px;margin:0 auto">
+      <h2>Everyone made it home!</h2>
+      <div class="quote">“For behold, this is my work and my glory—to bring to pass the immortality and eternal life of man.”
+        <cite><a href="https://www.churchofjesuschrist.org/study/scriptures/pgp/moses/1?lang=eng&id=p39#p39" target="_blank" rel="noopener">Moses 1:39</a></cite></div>
+      <div class="podium" id="podium"></div>
+      <div class="quote">“With the power of the holy apostleship vested in me, I bless you in your quest to overcome this world. … Because Jesus Christ overcame this world, you can too.”
+        <cite>President Russell M. Nelson, “<a href="https://www.churchofjesuschrist.org/study/general-conference/2022/10/47nelson?lang=eng" target="_blank" rel="noopener">Overcome the World and Find Rest</a>”</cite></div>
+      <div class="actions"><button class="btn primary" id="btnAgain" type="button">Play again</button></div>
+    </div>
+  </section>
+
+  <!-- PICTURES -->
+  <section id="pictures" hidden>
+    <div class="panel">
+      <div class="actions" style="justify-content:space-between;align-items:center">
+        <h2>Pictures</h2>
+        <button class="btn" id="btnPicsDone" type="button">Done</button>
+      </div>
+      <p>Replace any picture with art from the Church’s <a href="https://www.churchofjesuschrist.org/media/images?lang=eng" target="_blank" rel="noopener">Media Library</a> or the <a href="https://www.churchofjesuschrist.org/media/collection/gospel-art-book-images?lang=eng" target="_blank" rel="noopener">Gospel Art Book</a>. Download the picture, then tap <b>Upload</b> on its slot.</p>
+      <p class="small-note">Pasting a picture link works when you open the game from your own computer. The shared web page only shows uploaded pictures. Pictures are saved in this browser on this device.</p>
+      <div class="pics" id="picGrid"></div>
+    </div>
+  </section>
+</div>
+
+<div class="turnbar" id="turnbar" hidden>
+  <div class="in">
+    <div class="who"><span class="token" id="tbToken"></span><div><b id="tbName"></b><small id="tbStage"></small></div></div>
+    <div class="spinner" aria-hidden="true"><div class="ptr"></div><svg id="spinSvg" viewBox="-50 -50 100 100"></svg></div>
+    <button class="btn primary spin-btn" id="btnSpin" type="button">Spin</button>
+  </div>
+</div>
+
+<div class="scrim" id="scrim" hidden><div class="card" id="card" role="dialog" aria-modal="true" aria-labelledby="cardTitle"></div></div>
+<input type="file" id="fileIn" accept="image/*" hidden>
+
+<script>
+/* =====================================================================
+   PICTURES — every picture in the game has a slot name.
+   To replace one permanently, put a file in the images/ folder with the
+   slot name below (for example images/baptism.jpg), or change the path here.
+   You can also replace pictures inside the game with the “Pictures” button.
+   ===================================================================== */
+const IMAGES = {
+  premortal:    { label:"Premortal life",          file:"images/premortal.jpg",    search:"premortal life, Heavenly Father" },
+  council:      { label:"Council in heaven",       file:"images/council.jpg",      search:"plan of salvation, Jesus Christ premortal" },
+  birth:        { label:"Born on earth",           file:"images/birth.jpg",        search:"baby, family, creation" },
+  baptism:      { label:"Baptism",                 file:"images/baptism.jpg",      search:"baptism of Jesus, child baptism" },
+  savior:       { label:"Jesus Christ, our Savior",file:"images/savior.jpg",       search:"Gethsemane, Atonement, Jesus Christ" },
+  temple:       { label:"Temple",                  file:"images/temple.jpg",       search:"temple" },
+  spiritworld:  { label:"Spirit world",            file:"images/spiritworld.jpg",  search:"spirit world, paradise" },
+  resurrection: { label:"Resurrection",            file:"images/resurrection.jpg", search:"Resurrection, empty tomb, He Is Risen" },
+  home:         { label:"Eternal life (home)",     file:"images/home.jpg",         search:"Second Coming, Jesus Christ, families" },
+  rock:         { label:"House on the rock",       file:"images/rock.jpg",         search:"wise man built his house upon the rock" },
+  storm:        { label:"Storm",                   file:"images/storm.jpg",        search:"storm, Jesus calms the storm" },
+  scripture:    { label:"Scripture card",          file:"images/scripture.jpg",    search:"scriptures, family scripture study" },
+  choose:       { label:"Choose the Right card",   file:"images/choose.jpg",       search:"CTR, choose the right" },
+  service:      { label:"Service card",            file:"images/service.jpg",      search:"service, ministering, children helping" },
+  song:         { label:"Song card",               file:"images/song.jpg",         search:"Primary children singing" },
+  sabbath:      { label:"Sabbath / sacrament",     file:"images/sabbath.jpg",      search:"sacrament, Sabbath" },
+};
+
+/* ===================== CONTENT (from churchofjesuschrist.org) ===================== */
+const C = "https://www.churchofjesuschrist.org/study/";
+const sc = (path, v) => `${C}scriptures/${path}?lang=eng&id=p${v}#p${v}`;
+const GT = `${C}manual/gospel-topics/plan-of-salvation?lang=eng`;
+const NELSON = `${C}general-conference/2022/10/47nelson?lang=eng`;
+const PROC = `${C}scriptures/the-family-a-proclamation-to-the-world/the-family-a-proclamation-to-the-world?lang=eng`;
+const GT_CITE = "“Plan of Salvation,” Topics and Questions";
+
+/* The 13 foundation stones (from the family’s handout “The Quest”), each paired with a scripture. */
+const STONES = [
+  { name:"Daily scripture study", idea:"read a chapter with your family, or a verse before bed",
+    v:{ t:"feast upon the words of Christ; for behold, the words of Christ will tell you all things what ye should do.", r:"2 Nephi 32:3", u:sc("bofm/2-ne/32",3) } },
+  { name:"Daily prayer and revelation", idea:"pray morning and night, then listen",
+    v:{ t:"Counsel with the Lord in all thy doings, and he will direct thee for good;", r:"Alma 37:37", u:sc("bofm/alma/37",37) } },
+  { name:"Repent daily", idea:"say sorry and try again",
+    v:{ t:"Behold, he who has repented of his sins, the same is forgiven, and I, the Lord, remember them no more.", r:"Doctrine and Covenants 58:42", u:sc("dc-testament/dc/58",42) } },
+  { name:"Share your testimony", idea:"tell a friend what you know about Jesus",
+    v:{ t:"stand as witnesses of God at all times and in all things, and in all places that ye may be in", r:"Mosiah 18:9", u:sc("bofm/mosiah/18",9) } },
+  { name:"Take the sacrament worthily", idea:"think about Jesus during the sacrament",
+    v:{ t:"if ye do always remember me ye shall have my Spirit to be with you.", r:"3 Nephi 18:7", u:sc("bofm/3-ne/18",7) } },
+  { name:"Treat your body like a temple", idea:"eat healthy food and get good sleep",
+    v:{ t:"know ye not that your body is the temple of the Holy Ghost which is in you", r:"1 Corinthians 6:19", u:sc("nt/1-cor/6",19) } },
+  { name:"Solve problems with the Lord’s help", idea:"pray for help with something hard",
+    v:{ t:"I will go and do the things which the Lord hath commanded, for I know that the Lord giveth no commandments unto the children of men, save he shall prepare a way for them that they may accomplish the thing which he commandeth them.", r:"1 Nephi 3:7", u:sc("bofm/1-ne/3",7) } },
+  { name:"Go to the temple", idea:"visit the temple grounds or look at a picture of the temple",
+    v:{ t:"establish a house, even a house of prayer, a house of fasting, a house of faith, a house of learning, a house of glory, a house of order, a house of God;", r:"Doctrine and Covenants 88:119", u:sc("dc-testament/dc/88",119) } },
+  { name:"Manage your feelings", idea:"take three deep breaths when you feel upset",
+    v:{ t:"He that is slow to anger is better than the mighty; and he that ruleth his spirit than he that taketh a city.", r:"Proverbs 16:32", u:sc("ot/prov/16",32) } },
+  { name:"Use time wisely", idea:"finish chores and homework before screens",
+    v:{ t:"For behold, this life is the time for men to prepare to meet God;", r:"Alma 34:32", u:sc("bofm/alma/34",32) } },
+  { name:"Pay tithing", idea:"set aside one tenth of money you earn",
+    v:{ t:"prove me now herewith, saith the Lord of hosts, if I will not open you the windows of heaven, and pour you out a blessing, that there shall not be room enough to receive it.", r:"Malachi 3:10", u:sc("ot/mal/3",10) } },
+  { name:"Be grateful", idea:"say thank you to three people today",
+    v:{ t:"Thou shalt thank the Lord thy God in all things.", r:"Doctrine and Covenants 59:7", u:sc("dc-testament/dc/59",7) } },
+  { name:"Serve others", idea:"help someone without being asked",
+    v:{ t:"when ye are in the service of your fellow beings ye are only in the service of your God.", r:"Mosiah 2:17", u:sc("bofm/mosiah/2",17) } },
+];
+
+/* Scripture cards: a real verse with one missing word or phrase. */
+const SCRIPTURES = [
+  { t:"For behold, this is my work and my glory—to bring to pass the immortality and ___.", a:"eternal life of man", w:["riches of the earth","sleep of the night"], r:"Moses 1:39", u:sc("pgp/moses/1",39) },
+  { t:"Adam fell that men might be; and men are, that they might have ___.", a:"joy", w:["toys","trouble"], r:"2 Nephi 2:25", u:sc("bofm/2-ne/2",25) },
+  { t:"And the Lord said: Whom shall I send? And one answered like unto the Son of Man: Here am I, ___.", a:"send me", w:["send someone else","maybe later"], r:"Abraham 3:27", u:sc("pgp/abr/3",27) },
+  { t:"For God so ___ the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.", a:"loved", w:["watched","forgot"], r:"John 3:16", u:sc("nt/john/3",16) },
+  { t:"In the world ye shall have tribulation: but be of good cheer; I have ___ the world.", a:"overcome", w:["left","bought"], r:"John 16:33", u:sc("nt/john/16",33) },
+  { t:"Therefore whosoever heareth these sayings of mine, and doeth them, I will liken him unto a wise man, which built his house upon a ___:", a:"rock", w:["sand","cloud"], r:"Matthew 7:24", u:sc("nt/matt/7",24) },
+  { t:"remember, remember that it is upon the rock of our Redeemer, who is Christ, the Son of God, that ye must build your ___;", a:"foundation", w:["sandcastle","treehouse"], r:"Helaman 5:12", u:sc("bofm/hel/5",12) },
+  { t:"If ye love me, keep my ___.", a:"commandments", w:["secrets","toys"], r:"John 14:15", u:sc("nt/john/14",15) },
+  { t:"And by the power of the Holy Ghost ye may know the ___ of all things.", a:"truth", w:["price","size"], r:"Moroni 10:5", u:sc("bofm/moro/10",5) },
+  { t:"But the ___, which is the Holy Ghost, whom the Father will send in my name, he shall teach you all things, and bring all things to your remembrance, whatsoever I have said unto you.", a:"Comforter", w:["Stranger","Teacher’s helper"], r:"John 14:26", u:sc("nt/john/14",26) },
+  { t:"And if ye do always ___ me ye shall have my Spirit to be with you.", a:"remember", w:["forget","ignore"], r:"3 Nephi 18:7", u:sc("bofm/3-ne/18",7) },
+  { t:"feast upon the words of Christ; for behold, the words of Christ will tell you all things what ye should ___.", a:"do", w:["eat","buy"], r:"2 Nephi 32:3", u:sc("bofm/2-ne/32",3) },
+  { t:"Counsel with the Lord in all thy doings, and he will ___ thee for good;", a:"direct", w:["forget","tickle"], r:"Alma 37:37", u:sc("bofm/alma/37",37) },
+  { t:"know ye not that your body is the ___ of the Holy Ghost which is in you", a:"temple", w:["garage","playground"], r:"1 Corinthians 6:19", u:sc("nt/1-cor/6",19) },
+  { t:"prove me now herewith, saith the Lord of hosts, if I will not open you the ___, and pour you out a blessing, that there shall not be room enough to receive it.", a:"windows of heaven", w:["doors of the store","lid of the box"], r:"Malachi 3:10", u:sc("ot/mal/3",10) },
+  { t:"Thou shalt ___ the Lord thy God in all things.", a:"thank", w:["forget","rush"], r:"Doctrine and Covenants 59:7", u:sc("dc-testament/dc/59",7) },
+  { t:"He that is ___ to anger is better than the mighty; and he that ruleth his spirit than he that taketh a city.", a:"slow", w:["quick","loud"], r:"Proverbs 16:32", u:sc("ot/prov/16",32) },
+  { t:"Behold, he who has repented of his sins, the same is forgiven, and I, the Lord, remember them ___.", a:"no more", w:["every day","forever"], r:"Doctrine and Covenants 58:42", u:sc("dc-testament/dc/58",42) },
+  { t:"Jesus said unto her, I am the ___, and the life: he that believeth in me, though he were dead, yet shall he live:", a:"resurrection", w:["teacher","shepherd boy"], r:"John 11:25", u:sc("nt/john/11",25) },
+  { t:"a state of happiness, which is called paradise, a state of rest, a state of ___,", a:"peace", w:["worry","noise"], r:"Alma 40:12", u:sc("bofm/alma/40",12) },
+  { t:"The spirit and the body shall be ___ again in its perfect form;", a:"reunited", w:["lost","separated"], r:"Alma 11:43", u:sc("bofm/alma/11",43) },
+  { t:"A new commandment I give unto you, That ye love one another; as I have ___ you, that ye also love one another.", a:"loved", w:["teased","ignored"], r:"John 13:34", u:sc("nt/john/13",34) },
+  { t:"Let your ___ so shine before men, that they may see your good works, and glorify your Father which is in heaven.", a:"light", w:["shoes","money"], r:"Matthew 5:16", u:sc("nt/matt/5",16) },
+  { t:"For behold, this life is the time for men to ___ to meet God;", a:"prepare", w:["forget","wait"], r:"Alma 34:32", u:sc("bofm/alma/34",32) },
+  { t:"if they humble themselves before me, and have faith in me, then will I make weak things become ___ unto them.", a:"strong", w:["weaker","invisible"], r:"Ether 12:27", u:sc("bofm/ether/12",27) },
+  { t:"by ___ things are great things brought to pass;", a:"small and simple", w:["big and loud","fast and easy"], r:"Alma 37:6", u:sc("bofm/alma/37",6) },
+  { t:"I will ___ the things which the Lord hath commanded,", a:"go and do", w:["think about","skip"], r:"1 Nephi 3:7", u:sc("bofm/1-ne/3",7) },
+  { t:"And God saw every thing that he had made, and, behold, it was ___.", a:"very good", w:["very messy","not finished"], r:"Genesis 1:31", u:sc("ot/gen/1",31) },
+  { t:"Wherefore, ye must ___ with a steadfastness in Christ, having a perfect brightness of hope, and a love of God and of all men.", a:"press forward", w:["turn around","sit down"], r:"2 Nephi 31:20", u:sc("bofm/2-ne/31",20) },
+  { t:"Remember the worth of souls is ___ in the sight of God;", a:"great", w:["small","unknown"], r:"Doctrine and Covenants 18:10", u:sc("dc-testament/dc/18",10) },
+  { t:"Come unto me, all ye that labour and are heavy laden, and I will give you ___.", a:"rest", w:["homework","chores"], r:"Matthew 11:28", u:sc("nt/matt/11",28) },
+  { t:"___ in your families unto the Father, always in my name, that your wives and your children may be blessed.", a:"Pray", w:["Play","Wait"], r:"3 Nephi 18:21", u:sc("bofm/3-ne/18",21) },
+  { t:"Jesus said unto him, Thou shalt ___ the Lord thy God with all thy heart, and with all thy soul, and with all thy mind.", a:"love", w:["fear","forget"], r:"Matthew 22:37", u:sc("nt/matt/22",37) },
+  { t:"when ye are in the ___ of your fellow beings ye are only in the service of your God.", a:"service", w:["way","race"], r:"Mosiah 2:17", u:sc("bofm/mosiah/2",17) },
+];
+
+/* Choose the Right cards. Kid situations; each links to a foundation stone and a scripture. */
+const CHOICES = [
+  { s:"You wake up late and have one minute before you leave for school.", good:"Say a quick prayer for help today", bad:"Skip it. There’s no time.", stone:1 },
+  { s:"Your little brother knocks over the tower you built. You feel angry!", good:"Take a deep breath, then tell him how you feel", bad:"Yell and knock over his stuff", stone:8 },
+  { s:"You earned $10 helping a neighbor.", good:"Set aside $1 for tithing", bad:"Spend it all on candy", stone:10 },
+  { s:"A new kid is sitting alone at lunch.", good:"Invite them to sit with you", bad:"Pretend you don’t see them", stone:12 },
+  { s:"A friend offers you something that is bad for your body.", good:"Say “No thanks” and choose something healthy", bad:"Try it so they think you’re cool", stone:5 },
+  { s:"You broke a dish and told your mom you didn’t.", good:"Tell the truth and say sorry", bad:"Keep the secret", stone:2 },
+  { s:"It’s sacrament time at church, and you want to play a game on the tablet.", good:"Think about Jesus during the sacrament", bad:"Play the game quietly", stone:4 },
+  { s:"A friend asks why you go to church on Sunday.", good:"Share what you believe about Jesus Christ", bad:"Change the subject", stone:3 },
+  { s:"It’s bedtime. You can read scriptures or watch one more video.", good:"Read a few verses with your family", bad:"Watch one more video", stone:0 },
+  { s:"Your math homework is really hard and you want to give up.", good:"Pray for help and keep trying", bad:"Throw your pencil and quit", stone:6 },
+  { s:"Grandma gives you socks for your birthday. You wanted a toy.", good:"Smile and say “Thank you, Grandma!”", bad:"Say “Socks? Boring.”", stone:11 },
+  { s:"After school you want to play video games all afternoon.", good:"Do homework and chores first, then play", bad:"Play until bedtime", stone:9 },
+  { s:"Your family is going to walk around the temple grounds on Saturday.", good:"Go along and feel the peace there", bad:"Complain and stay in the car", stone:7 },
+  { s:"Someone at school says something mean to you.", good:"Be kind back and pray for them", bad:"Say something even meaner", stone:8 },
+  { s:"You see your dad carrying lots of groceries.", good:"Run and help him carry them", bad:"Keep playing", stone:12 },
+  { s:"Your sister is sad because her friend moved away.", good:"Give her a hug and play with her", bad:"Tell her to stop crying", stone:12 },
+];
+const CHOICE_VERSES = [
+  { t:"If ye love me, keep my commandments.", r:"John 14:15", u:sc("nt/john/14",15) },
+  { t:"Therefore all things whatsoever ye would that men should do to you, do ye even so to them:", r:"Matthew 7:12", u:sc("nt/matt/7",12) },
+  { t:"Let your light so shine before men, that they may see your good works, and glorify your Father which is in heaven.", r:"Matthew 5:16", u:sc("nt/matt/5",16) },
+  { t:"And they are free to choose liberty and eternal life, through the great Mediator of all men,", r:"2 Nephi 2:27", u:sc("bofm/2-ne/2",27) },
+];
+
+/* Storms: the “plagues of the world” President Nelson named. */
+const STORMS = [
+  { name:"Pride", d:"You start to think you are better than everyone else." },
+  { name:"Anger", d:"Something goes wrong and you want to yell and stomp." },
+  { name:"Jealousy", d:"Your friend got the toy you wanted, and you feel upset inside." },
+  { name:"Fear", d:"Something new and scary is coming, and you feel worried." },
+  { name:"Greed", d:"You want more and more things and don’t want to share." },
+  { name:"Hatred", d:"Someone hurt you and you want to stay mad at them forever." },
+  { name:"Arrogance", d:"You stop listening to your parents because you think you know everything." },
+];
+const PLAGUES = { t:"You can overcome the spiritually and emotionally exhausting plagues of the world, including arrogance, pride, anger, immorality, hatred, greed, jealousy, and fear.", r:"President Russell M. Nelson", u:NELSON };
+const HEL512 = { t:"remember, remember that it is upon the rock of our Redeemer, who is Christ, the Son of God, that ye must build your foundation; that when the devil shall send forth his mighty winds, yea, his shafts in the whirlwind, yea, when all his hail and his mighty storm shall beat upon you, it shall have no power over you", r:"Helaman 5:12", u:sc("bofm/hel/5",12) };
+
+/* Children’s Songbook */
+const CS = s => `${C}manual/childrens-songbook/${s}?lang=eng`;
+const SONGS = [
+  { t:"I Am a Child of God", p:"2", u:CS("i-am-a-child-of-god") },
+  { t:"I Lived in Heaven", p:"4", u:CS("i-lived-in-heaven") },
+  { t:"A Child’s Prayer", p:"12", u:CS("a-childs-prayer") },
+  { t:"He Sent His Son", p:"34", u:CS("he-sent-his-son") },
+  { t:"Did Jesus Really Live Again?", p:"64", u:CS("did-jesus-really-live-again") },
+  { t:"I Feel My Savior’s Love", p:"74", u:CS("i-feel-my-saviors-love") },
+  { t:"I’m Trying to Be like Jesus", p:"78", u:CS("im-trying-to-be-like-jesus") },
+  { t:"I Love to See the Temple", p:"95", u:CS("i-love-to-see-the-temple") },
+  { t:"Repentance", p:"98", u:CS("repentance") },
+  { t:"Baptism", p:"100", u:CS("baptism") },
+  { t:"When I Am Baptized", p:"103", u:CS("when-i-am-baptized") },
+  { t:"The Holy Ghost", p:"105", u:CS("the-holy-ghost") },
+  { t:"Search, Ponder, and Pray", p:"109", u:CS("search-ponder-and-pray") },
+  { t:"Keep the Commandments", p:"146", u:CS("keep-the-commandments") },
+  { t:"I’m Glad to Pay a Tithing", p:"150a", u:CS("im-glad-to-pay-a-tithing") },
+  { t:"Choose the Right Way", p:"160", u:CS("choose-the-right-way") },
+  { t:"Families Can Be Together Forever", p:"188", u:CS("families-can-be-together-forever") },
+  { t:"The Wise Man and the Foolish Man", p:"281", u:CS("the-wise-man-and-the-foolish-man") },
+];
+
+/* Milestones (gold “stop” spaces) */
+const MILES = {
+  premortal: { title:"Premortal Life", img:"premortal", reward:0,
+    q:[{ t:"Before we were born on earth, we lived with our heavenly parents as Their spirit children.", r:GT_CITE, u:GT }] },
+  council: { title:"The Council in Heaven", img:"council", reward:2,
+    q:[{ t:"At a council with all of His children, Heavenly Father presented a plan, known as the “plan of salvation” or “the great plan of happiness.”", r:GT_CITE, u:GT },
+       { t:"And the Lord said: Whom shall I send? And one answered like unto the Son of Man: Here am I, send me.", r:"Abraham 3:27", u:sc("pgp/abr/3",27) }],
+    note:"You chose to follow Heavenly Father’s plan!" },
+  birth: { title:"Born on Earth", img:"birth", reward:3,
+    q:[{ t:"We are on earth because we chose to follow Heavenly Father’s plan. One significant purpose of mortality is to gain a physical body.", r:GT_CITE, u:GT }],
+    note:"You received a body! Now you can learn, grow and choose." },
+  baptism: { title:"Baptism and the Holy Ghost", img:"baptism", reward:3, gift:"hg",
+    q:[{ t:"For the gate by which ye should enter is repentance and baptism by water; and then cometh a remission of your sins by fire and by the Holy Ghost.", r:"2 Nephi 31:17", u:sc("bofm/2-ne/31",17) },
+       { t:"But the Comforter, which is the Holy Ghost, whom the Father will send in my name, he shall teach you all things", r:"John 14:26", u:sc("nt/john/14",26) }],
+    note:"You received the gift of the Holy Ghost. From now on, the Holy Ghost warns and comforts you: +1 to your foundation in every storm." },
+  savior: { title:"Jesus Christ, Our Savior", img:"savior", reward:3,
+    q:[{ t:"Essential to the plan is the Atonement of Jesus Christ. Jesus overcame spiritual and physical death and took upon Himself our afflictions, sorrows, and sins.", r:GT_CITE, u:GT },
+       { t:"For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.", r:"John 3:16", u:sc("nt/john/3",16) }],
+    note:"Because of Jesus Christ, we can repent and live with God again." },
+  temple: { title:"The Temple", img:"temple", reward:4, gift:"stone7",
+    q:[{ t:"Sacred ordinances and covenants available in holy temples make it possible for individuals to return to the presence of God and for families to be united eternally.", r:"“The Family: A Proclamation to the World”", u:PROC }],
+    note:"You made covenants with God in the temple. You earn the “Go to the temple” stone." },
+  spiritworld: { title:"The Spirit World", img:"spiritworld", reward:2,
+    q:[{ t:"Our spirit, which existed in the premortal life, will live on after our death.", r:GT_CITE, u:GT },
+       { t:"a state of happiness, which is called paradise, a state of rest, a state of peace, where they shall rest from all their troubles and from all care, and sorrow.", r:"Alma 40:12", u:sc("bofm/alma/40",12) }],
+    note:"No more storms from here on. It is a place of rest." },
+  resurrection: { title:"The Resurrection", img:"resurrection", reward:3,
+    q:[{ t:"Because of Christ’s Atonement, all of God’s children will be resurrected and our bodies and spirits will be reunited.", r:GT_CITE, u:GT },
+       { t:"Jesus said unto her, I am the resurrection, and the life:", r:"John 11:25", u:sc("nt/john/11",25) }],
+    note:"Your spirit and body are together again, forever." },
+  home: { title:"Eternal Life: Home Again", img:"home", reward:0,
+    q:[{ t:"Resurrection will be followed by the Final Judgment, where God will judge us according to our desires and our obedience to the commandments. If we have qualified through repentance, we will be able to live forever with our loving heavenly parents.", r:GT_CITE, u:GT },
+       { t:"For behold, this is my work and my glory—to bring to pass the immortality and eternal life of man.", r:"Moses 1:39", u:sc("pgp/moses/1",39) }],
+    note:"Welcome home!" },
+};
+
+/* ===================== BOARD ===================== */
+const STAGES = [
+  { key:"pre",   name:"Premortal Life", color:"var(--pre)",   tint:"var(--pre-t)" },
+  { key:"earth", name:"Earth Life",     color:"var(--earth)", tint:"var(--earth-t)" },
+  { key:"sw",    name:"Spirit World",   color:"var(--sw)",    tint:"var(--sw-t)" },
+  { key:"res",   name:"Resurrection",   color:"var(--res)",   tint:"var(--res-t)" },
+];
+// codes: S scripture, F foundation, C choose, X storm, V service, G song, B sabbath, M:<milestone>
+// Storm strength rises as life goes on: childhood 1, growing up 2–3, grown-up 4–5.
+const LAYOUT = [
+  ["pre",   "M:premortal S G M:council S"],
+  ["earth", "M:birth B F C S G X1 V F S M:baptism"],
+  ["earth", "B C F X2 S V G F C B X2 S M:savior F C X3 G S M:temple"],
+  ["earth", "B F C X4 V S F G C X4 B S F V X5 C S"],
+  ["sw",    "M:spiritworld V S G S"],
+  ["res",   "M:resurrection S G M:home"],
+];
+const BOARD = [];
+LAYOUT.forEach(([stage, codes]) => codes.split(" ").forEach(c => {
+  const sp = { stage };
+  if (c.startsWith("M:")) { sp.type = "mile"; sp.mile = c.slice(2); }
+  else if (c[0] === "X") { sp.type = "storm"; sp.power = +c.slice(1); }
+  else sp.type = { S:"scripture", F:"found", C:"choose", V:"service", G:"song", B:"sabbath" }[c];
+  BOARD.push(sp);
+}));
+const LAST = BOARD.length - 1;
+const TYPES = {
+  scripture:{ label:"Scripture", color:"var(--t-scripture)", img:"scripture" },
+  found:{ label:"Foundation", color:"var(--t-found)", img:"rock" },
+  choose:{ label:"Choose the Right", color:"var(--t-choose)", img:"choose" },
+  storm:{ label:"Storm", color:"var(--t-storm)", img:"storm" },
+  service:{ label:"Service", color:"var(--t-service)", img:"service" },
+  song:{ label:"Song", color:"var(--t-song)", img:"song" },
+  sabbath:{ label:"Sabbath", color:"var(--t-sabbath)", img:"sabbath" },
+  mile:{ label:"Milestone", color:"var(--gold)" },
+};
+const ICONS = {
+  scripture:'<path d="M5 5h9a4 4 0 0 1 4 4v11H9a4 4 0 0 1-4-4z" fill="currentColor" opacity=".25"/><path d="M5 5h9a4 4 0 0 1 4 4v11H9a4 4 0 0 1-4-4zM9 10h5M9 13h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+  found:'<path d="M3 19h18M4 15h7v4H4zM13 15h7v4h-7zM8 11h8v4H8z" fill="currentColor" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>',
+  choose:'<circle cx="12" cy="12" r="9" fill="currentColor" opacity=".25"/><path d="M7.5 12.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>',
+  storm:'<path d="M7 15a4 4 0 1 1 1-7.9A5 5 0 0 1 17.6 8 3.5 3.5 0 0 1 17 15z" fill="currentColor"/><path d="M12 14l-2 4h3l-2 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>',
+  service:'<path d="M12 20s-7-4.3-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.7-7 10-7 10z" fill="currentColor"/>',
+  song:'<path d="M9 17V6l10-2v11" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="7" cy="17" r="2.6" fill="currentColor"/><circle cx="17" cy="15" r="2.6" fill="currentColor"/>',
+  sabbath:'<circle cx="12" cy="12" r="4.5" fill="currentColor"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+  mile:'<path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z" fill="currentColor"/>',
+};
+const icon = (k, color) => `<svg class="ic" viewBox="0 0 24 24" style="color:${color}" aria-hidden="true">${ICONS[k]}</svg>`;
+
+/* ===================== PICTURE HANDLING ===================== */
+const store = {
+  get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } },
+  set(k,v){ try { localStorage.setItem(k,v); return true; } catch(e){ return false; } },
+  del(k){ try { localStorage.removeItem(k); } catch(e){} },
+};
+const PALETTE = {
+  premortal:["#2B2A7A","#5450C8"], council:["#3A3896","#8D89F0"], birth:["#2F8F57","#9ED9B1"], baptism:["#1F6FA8","#8FCBEF"],
+  savior:["#7A2E3A","#D9772B"], temple:["#3C6E8F","#E8EEF4"], spiritworld:["#5B3E8E","#C9B2EE"], resurrection:["#D9772B","#FFE2A8"],
+  home:["#D99A12","#FFF3C4"], rock:["#5E6673","#B9A58E"], storm:["#2E3A4E","#7F8EA6"], scripture:["#1E4F86","#7FB0E6"],
+  choose:["#1F6B41","#7FD1A0"], service:["#9E2F55","#F3A5BD"], song:["#5A33A0","#C7A9F5"], sabbath:["#A86F00","#FFD77A"],
+};
+const SCENE = {
+  premortal:'<g fill="#fff">'+Array.from({length:26},(_,i)=>`<circle cx="${(i*73)%400}" cy="${(i*47)%170+8}" r="${i%4?1.5:2.6}" opacity=".85"/>`).join("")+'</g><circle cx="300" cy="60" r="26" fill="#fff" opacity=".9"/>',
+  council:'<g fill="#fff" opacity=".9">'+[0,1,2,3,4,5,6].map(i=>`<circle cx="${80+i*40}" cy="150" r="10"/><rect x="${72+i*40}" y="160" width="16" height="30" rx="8"/>`).join("")+'</g><circle cx="200" cy="70" r="30" fill="#FFE9A8"/>',
+  birth:'<circle cx="200" cy="240" r="140" fill="#5CC487"/><circle cx="320" cy="50" r="24" fill="#FFE9A8"/><path d="M60 170q40-50 80 0" fill="#3E9B5F"/>',
+  baptism:'<rect y="140" width="400" height="60" fill="#fff" opacity=".35"/><path d="M0 150q50-14 100 0t100 0 100 0 100 0" stroke="#fff" stroke-width="4" fill="none"/>',
+  savior:'<circle cx="200" cy="200" r="120" fill="#FFE2A8" opacity=".55"/><path d="M80 200q30-80 60-60q40-60 80 0q40-30 80 60z" fill="#3A1A20" opacity=".55"/>',
+  temple:'<rect x="140" y="80" width="120" height="110" fill="#fff"/><rect x="185" y="30" width="30" height="60" fill="#fff"/><path d="M200 4l10 30h-20z" fill="#D99A12"/><rect x="185" y="150" width="30" height="40" fill="#3C6E8F" opacity=".5"/>',
+  spiritworld:'<g fill="#fff" opacity=".55"><ellipse cx="100" cy="150" rx="90" ry="22"/><ellipse cx="300" cy="120" rx="100" ry="26"/><ellipse cx="220" cy="175" rx="120" ry="18"/></g>',
+  resurrection:'<circle cx="200" cy="200" r="80" fill="#FFF7DA"/><path d="M60 200a90 90 0 0 1 280 0z" fill="#7A4A2A" opacity=".5"/><circle cx="200" cy="170" r="40" fill="#2B1A10" opacity=".7"/>',
+  home:'<g stroke="#fff" stroke-width="3" opacity=".7">'+Array.from({length:12},(_,i)=>{const a=i*Math.PI/6;return `<line x1="200" y1="100" x2="${200+Math.cos(a)*200}" y2="${100+Math.sin(a)*200}"/>`}).join("")+'</g><circle cx="200" cy="100" r="40" fill="#fff"/>',
+  rock:'<path d="M0 200l40-50 70 10 60-30 80 20 60-25 90 40v35z" fill="#5E6673"/><path d="M140 140v-50l60-45 60 45v50z" fill="#F3E3C8"/><rect x="185" y="100" width="30" height="40" fill="#7E6A55"/>',
+  storm:'<g fill="#fff" opacity=".8"><ellipse cx="140" cy="60" rx="90" ry="34"/><ellipse cx="260" cy="70" rx="100" ry="38"/></g><path d="M200 90l-20 45h24l-18 50" stroke="#FFE066" stroke-width="7" fill="none" stroke-linejoin="round"/><g stroke="#fff" stroke-width="3" opacity=".6">'+Array.from({length:14},(_,i)=>`<line x1="${30+i*27}" y1="110" x2="${20+i*27}" y2="140"/>`).join("")+'</g>',
+  scripture:'<path d="M80 50h120v120H80z" fill="#fff"/><path d="M200 50h120v120H200z" fill="#F4F7FB"/><path d="M200 50v120" stroke="#1E4F86" stroke-width="3"/><g stroke="#9DB3CC" stroke-width="4">'+[0,1,2,3,4].map(i=>`<line x1="100" y1="${75+i*18}" x2="180" y2="${75+i*18}"/><line x1="220" y1="${75+i*18}" x2="300" y2="${75+i*18}"/>`).join("")+'</g>',
+  choose:'<path d="M200 200V120M200 120L110 50M200 120l90-70" stroke="#fff" stroke-width="14" stroke-linecap="round" fill="none"/><circle cx="290" cy="50" r="18" fill="#FFE066"/>',
+  service:'<path d="M200 170s-80-45-80-100a45 45 0 0 1 80-28 45 45 0 0 1 80 28c0 55-80 100-80 100z" fill="#fff" opacity=".9"/>',
+  song:'<path d="M150 150V60l110-20v90" stroke="#fff" stroke-width="10" fill="none"/><circle cx="135" cy="150" r="22" fill="#fff"/><circle cx="245" cy="130" r="22" fill="#fff"/>',
+  sabbath:'<circle cx="200" cy="100" r="40" fill="#fff"/><g stroke="#fff" stroke-width="6" stroke-linecap="round">'+Array.from({length:12},(_,i)=>{const a=i*Math.PI/6;return `<line x1="${200+Math.cos(a)*55}" y1="${100+Math.sin(a)*55}" x2="${200+Math.cos(a)*80}" y2="${100+Math.sin(a)*80}"/>`}).join("")+'</g>',
+};
+function placeholder(slot){
+  const [a,b] = PALETTE[slot] || ["#556","#99a"];
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs><rect width="400" height="200" fill="url(#g)"/>${SCENE[slot]||""}</svg>`;
+  return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+}
+const fileOK = {}; // slot -> true/false once the images/ file has been probed
+function probeFiles(){
+  Object.entries(IMAGES).forEach(([slot, cfg]) => {
+    if (!cfg.file) { fileOK[slot] = false; return; }
+    const im = new Image();
+    im.onload = () => { fileOK[slot] = true; refreshImages(); };
+    im.onerror = () => { fileOK[slot] = false; };
+    im.src = cfg.file;
+  });
+}
+function imgSrc(slot){
+  const custom = store.get("posq-img-" + slot);
+  if (custom) return custom;
+  if (fileOK[slot]) return IMAGES[slot].file;
+  return placeholder(slot);
+}
+function refreshImages(){
+  if (!$("#game").hidden) renderBoard();
+  if (!$("#pictures").hidden) renderPics();
+}
+
+/* ===================== STATE ===================== */
+const $ = s => document.querySelector(s);
+const COLORS = ["#D0453A","#2C6FB7","#2F9A57","#8A4FC7"];
+const SAVE = "posq-save-v1";
+let S = null;          // game state
+let busy = false;      // true while moving / a card is open
+let setupCount = 2;
+
+function shuffle(a){ a = a.slice(); for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function newDeck(n){ return shuffle([...Array(n).keys()]); }
+function draw(deckName, n){
+  if (!S.decks[deckName] || !S.decks[deckName].length) S.decks[deckName] = newDeck(n);
+  return S.decks[deckName].pop();
+}
+function save(){ if (S) store.set(SAVE, JSON.stringify(S)); }
+function cur(){ return S.players[S.turn]; }
+function stageOf(pos){ return STAGES.find(s => s.key === BOARD[pos].stage); }
+function lifeLabel(pos){
+  const st = BOARD[pos].stage;
+  if (st !== "earth") return stageOf(pos).name;
+  const b = BOARD.findIndex(s => s.mile === "baptism"), t = BOARD.findIndex(s => s.mile === "temple");
+  return pos <= b ? "Earth Life · Childhood" : pos <= t ? "Earth Life · Growing up" : "Earth Life · Grown-up";
+}
+function log(msg){ S.log.unshift(msg); S.log = S.log.slice(0, 40); renderLog(); }
+function score(p){ return p.stars + p.stones.length * 2 + p.badges.length; }
+function giveStone(p, idx){ if (p.stones.includes(idx)) return false; p.stones.push(idx); return true; }
+
+/* ===================== SETUP ===================== */
+function renderSetup(){
+  const row = $("#countRow"); row.innerHTML = "";
+  [1,2,3,4].forEach(n => {
+    const b = document.createElement("button"); b.type = "button"; b.textContent = n;
+    b.setAttribute("aria-pressed", n === setupCount); b.setAttribute("aria-label", n + (n===1?" player":" players"));
+    b.onclick = () => { setupCount = n; renderSetup(); };
+    row.appendChild(b);
+  });
+  const names = $("#nameRows"); const old = [...names.querySelectorAll("input")].map(i => i.value);
+  names.innerHTML = "";
+  for (let i=0;i<setupCount;i++){
+    const r = document.createElement("label"); r.className = "name-row";
+    r.innerHTML = `<span class="token" style="background:${COLORS[i]}">${i+1}</span><input id="pname${i}" maxlength="16" aria-label="Player ${i+1} name" value="${(old[i] ?? "Player " + (i+1)).replace(/"/g,"&quot;")}">`;
+    names.appendChild(r);
+  }
+  $("#btnResume").hidden = !store.get(SAVE);
+  const lg = $("#legend"); lg.innerHTML = "";
+  Object.entries(TYPES).forEach(([k,t]) => { lg.insertAdjacentHTML("beforeend", `<span class="chip">${icon(k, t.color)}${t.label}</span>`); });
+}
+function startGame(){
+  const players = [];
+  for (let i=0;i<setupCount;i++){
+    const nm = ($("#pname"+i).value || "").trim() || "Player " + (i+1);
+    players.push({ name:nm, color:COLORS[i], pos:0, stars:0, stones:[], badges:[], hg:false, done:false, place:0 });
+  }
+  S = { players, turn:0, decks:{}, log:[], finishedCount:0, over:false };
+  log("The journey begins in premortal life.");
+  save(); showGame();
+}
+function showGame(){
+  $("#setup").hidden = true; $("#end").hidden = true; $("#pictures").hidden = true;
+  $("#game").hidden = false; $("#turnbar").hidden = false; $("#btnNew").hidden = false;
+  renderAll();
+}
+
+/* ===================== BOARD RENDER ===================== */
+let geo = { cols:6, size:50, gap:6, pos:[] };
+function renderBoard(){
+  const el = $("#board"); const w = el.clientWidth || 360;
+  const cols = w < 460 ? 6 : w < 720 ? 8 : 10;
+  const gap = w < 460 ? 5 : 8;
+  const size = Math.floor((w - gap*(cols-1)) / cols);
+  const rows = Math.ceil(BOARD.length / cols);
+  geo = { cols, size, gap, pos:[] };
+  BOARD.forEach((_, i) => {
+    const r = Math.floor(i / cols); let c = i % cols; if (r % 2) c = cols - 1 - c;
+    geo.pos.push({ x:c*(size+gap), y:r*(size+gap) });
+  });
+  el.style.height = (rows*(size+gap)-gap) + "px";
+  const pts = geo.pos.map(p => `${p.x+size/2},${p.y+size/2}`).join(" ");
+  let html = `<svg class="path" width="100%" height="100%"><polyline points="${pts}" fill="none" stroke="var(--line)" stroke-width="${Math.max(6,size*.22)}" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  const here = S ? new Set(S.players.map(p => p.pos)) : new Set();
+  BOARD.forEach((sp, i) => {
+    const p = geo.pos[i]; const st = STAGES.find(s => s.key === sp.stage);
+    const style = `left:${p.x}px;top:${p.y}px;width:${size}px;height:${size}px;`;
+    if (sp.type === "mile"){
+      const m = MILES[sp.mile];
+      const isStop = !["premortal","home"].includes(sp.mile);
+      html += `<div class="tile mile ${here.has(i)?"here":""}" style="${style}background-image:url('${imgSrc(m.img)}')" title="${m.title}">${isStop?'<span class="stop">STOP</span>':""}<span class="lbl">${sp.mile==="premortal"?"Start":sp.mile==="home"?"Home":m.title.replace(/^The /,"").replace(/ and the Holy Ghost/,"").replace("Jesus Christ, Our Savior","The Savior")}</span></div>`;
+    } else {
+      const t = TYPES[sp.type];
+      const lbl = sp.type === "storm" ? `Storm ${sp.power}` : t.label.replace("Choose the Right","CTR");
+      html += `<div class="tile ${here.has(i)?"here":""}" style="${style}background:${st.tint};border-color:${st.color}" title="${t.label}">${icon(sp.type, t.color)}<span class="lbl">${lbl}</span></div>`;
+    }
+  });
+  if (S) S.players.forEach((pl, k) => {
+    html += `<div class="pawn ${k===S.turn && !S.over?"active":""}" id="pawn${k}" style="background:${pl.color}">${k+1}</div>`;
+  });
+  el.innerHTML = html;
+  if (S) S.players.forEach((_, k) => placePawn(k));
+  $("#stageChips").innerHTML = STAGES.map(s => `<span class="stage-chip" style="background:${s.color}">${s.name}</span>`).join("");
+}
+function placePawn(k){
+  const pl = S.players[k]; const p = geo.pos[pl.pos]; const el = $("#pawn"+k); if (!el || !p) return;
+  const off = [[0.08,0.08],[0.5,0.08],[0.08,0.5],[0.5,0.5]][k];
+  const d = 22; const sz = geo.size;
+  el.style.left = (p.x + off[0]*sz + (sz*0.42-d)/2) + "px";
+  el.style.top = (p.y + off[1]*sz + (sz*0.42-d)/2) + "px";
+}
+function renderPlayers(){
+  $("#players").innerHTML = S.players.map((p,k) => `
+    <div class="pcard ${k===S.turn && !S.over?"turn":""}">
+      <div class="row"><span class="token" style="background:${p.color}">${k+1}</span><span class="nm">${esc(p.name)}</span><span class="stars" title="Blessings">★ ${p.stars}</span></div>
+      <div class="found" title="Foundation stones: ${p.stones.length} of 13">${STONES.map((s,i)=>`<i class="${p.stones.includes(i)?"on":""}" title="${s.name}"></i>`).join("")}</div>
+      <div class="pmeta"><span>Stones <b>${p.stones.length}/13</b></span><span>Storms overcome <b>${p.badges.length}</b></span>${p.hg?"<span><b>Holy Ghost</b> +1</span>":""}${p.done?`<span><b>Home!</b></span>`:""}</div>
+    </div>`).join("");
+}
+function renderLog(){ $("#log").innerHTML = S.log.map(m => `<p>${m}</p>`).join(""); }
+function renderTurnbar(){
+  const p = cur();
+  $("#tbToken").style.background = p.color; $("#tbToken").textContent = S.turn + 1;
+  $("#tbName").textContent = p.name + "’s turn";
+  $("#tbStage").textContent = lifeLabel(p.pos);
+  $("#btnSpin").disabled = busy;
+}
+function renderAll(){ renderBoard(); renderPlayers(); renderLog(); renderTurnbar(); }
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
+
+/* ===================== SPINNER ===================== */
+const SPIN_N = 8; let spinAngle = 0;
+function drawSpinner(){
+  const cols = ["var(--pre)","var(--earth)","var(--sw)","var(--res)","var(--t-scripture)","var(--t-service)","var(--t-sabbath)","var(--t-song)"];
+  let s = "";
+  for (let i=0;i<SPIN_N;i++){
+    const a0 = (i/SPIN_N)*2*Math.PI - Math.PI/2, a1 = ((i+1)/SPIN_N)*2*Math.PI - Math.PI/2, am = (a0+a1)/2;
+    s += `<path d="M0 0L${48*Math.cos(a0)} ${48*Math.sin(a0)}A48 48 0 0 1 ${48*Math.cos(a1)} ${48*Math.sin(a1)}z" fill="${cols[i]}" stroke="var(--surface)" stroke-width="1.5"/>`;
+    s += `<text x="${32*Math.cos(am)}" y="${32*Math.sin(am)}" fill="#fff" font-family="Baloo 2, sans-serif" font-weight="800" font-size="15" text-anchor="middle" dominant-baseline="central">${i+1}</text>`;
+  }
+  s += `<circle r="7" fill="var(--surface)" stroke="var(--ink)" stroke-width="2"/>`;
+  $("#spinSvg").innerHTML = s;
+}
+function spin(){
+  if (busy || S.over) return;
+  busy = true; renderTurnbar();
+  const n = 1 + Math.floor(Math.random()*SPIN_N);
+  // segment n (1-based) centre is at angle (n-0.5)/N*360 from top; rotate so it sits under the pointer
+  const target = 360 - ((n-0.5)/SPIN_N)*360;
+  spinAngle += 360*3 + ((target - spinAngle % 360) + 360) % 360;
+  const svg = $("#spinSvg"); svg.style.transform = `rotate(${spinAngle}deg)`;
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  setTimeout(() => { toast(`${cur().name} spun a ${n}!`); move(n); }, reduce ? 50 : 1450);
+}
+
+/* ===================== MOVEMENT ===================== */
+function move(n){
+  const k = S.turn, p = S.players[k];
+  let steps = n;
+  const stepOnce = () => {
+    if (steps <= 0 || p.pos >= LAST) return arrive();
+    p.pos++; steps--;
+    placePawn(k);
+    const sp = BOARD[p.pos];
+    if (sp.type === "sabbath" && steps > 0){ p.stars += 1; toast("Passed the Sabbath: +1 ★"); }
+    if (sp.type === "mile" && sp.mile !== "home" && steps > 0){ steps = 0; toast("Stop at the milestone!"); }
+    setTimeout(stepOnce, matchMedia("(prefers-reduced-motion: reduce)").matches ? 10 : 260);
+  };
+  stepOnce();
+}
+function arrive(){
+  renderBoard(); renderPlayers();
+  const p = cur(), sp = BOARD[p.pos];
+  if (p.pos >= LAST) return finishPlayer();
+  ({ mile:cardMile, scripture:cardScripture, found:cardFound, choose:cardChoose, storm:cardStorm, service:cardService, song:cardSong, sabbath:cardSabbath })[sp.type](sp);
+}
+function endTurn(){
+  closeCard();
+  save();
+  if (S.players.every(p => p.done)) return endGame();
+  let t = S.turn;
+  do { t = (t + 1) % S.players.length; } while (S.players[t].done);
+  S.turn = t; busy = false; save(); renderAll();
+}
+
+/* ===================== CARDS ===================== */
+let lastSpeech = "";
+function openCard({ kind, color, title, img, html, speak }){
+  lastSpeech = speak || "";
+  const k = TYPES[kind] || TYPES.mile;
+  const card = $("#card");
+  card.style.setProperty("--kc", color || k.color);
+  card.innerHTML = `
+    <div class="band">${icon(kind in ICONS ? kind : "mile", "#fff").replace('class="ic"','')}<span class="kind">${esc(k.label)}</span>
+      ${"speechSynthesis" in window ? '<button type="button" id="btnSpeak">🔊 Read aloud</button>' : ""}</div>
+    ${img ? `<img class="pic" src="${imgSrc(img)}" alt="">` : ""}
+    <div class="body"><h3 id="cardTitle">${title}</h3>${html}</div>`;
+  $("#scrim").hidden = false;
+  const sb = $("#btnSpeak"); if (sb) sb.onclick = () => say(lastSpeech);
+  const first = card.querySelector(".body button"); if (first) first.focus({ preventScroll:true });
+}
+function closeCard(){ $("#scrim").hidden = true; try { speechSynthesis.cancel(); } catch(e){} }
+function say(text){
+  try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text.replace(/<[^>]+>/g,"").replace(/___/g,"blank")); u.rate = .92; speechSynthesis.speak(u); } catch(e){}
+}
+const verseHTML = (v, mark) => `<div class="verse">“${mark ? v.t.replace(mark, `<mark>${mark}</mark>`) : v.t}”<a class="ref" href="${v.u}" target="_blank" rel="noopener">${v.r}</a></div>`;
+const doneBtn = (label="Done") => `<div class="actions"><button class="btn primary" type="button" data-act="done">${label}</button></div>`;
+function wire(handlers){ $("#card").querySelectorAll("[data-act]").forEach(b => b.onclick = () => handlers[b.dataset.act](b)); }
+
+function cardMile(sp){
+  const m = MILES[sp.mile], p = cur();
+  let extra = "";
+  if (m.gift === "hg" && !p.hg){ p.hg = true; }
+  if (m.gift === "stone7"){ giveStone(p, 7); }
+  p.stars += m.reward;
+  log(`${esc(p.name)} reached <b>${m.title}</b>${m.reward?` (+${m.reward} ★)`:""}.`);
+  openCard({ kind:"mile", title:m.title, img:m.img,
+    speak: m.title + ". " + m.q.map(q => q.t + " " + q.r).join(" ") + " " + (m.note||""),
+    html: m.q.map(q => verseHTML(q)).join("") + (m.note ? `<p>${m.note}</p>` : "") + (m.reward ? `<p class="result good">+${m.reward} blessings ★</p>` : "") + extra + doneBtn() });
+  wire({ done: endTurn });
+}
+function cardScripture(){
+  const c = SCRIPTURES[draw("scripture", SCRIPTURES.length)], p = cur();
+  const opts = shuffle([c.a, ...c.w]);
+  const full = { t:c.t.replace("___", c.a), r:c.r, u:c.u };
+  openCard({ kind:"scripture", title:"Finish the scripture", img:"scripture",
+    speak: "Finish the scripture. " + c.t + " " + c.r + ". Is it: " + opts.join(", or ") + "?",
+    html: `<div class="verse">“${c.t.replace("___", '<span class="blank">?</span>')}”<span class="ref">${c.r}</span></div>
+      <div class="choices">${opts.map(o => `<button class="choice" type="button" data-act="pick" data-v="${esc(o)}">${esc(o)}</button>`).join("")}</div>
+      <div id="out"></div>` });
+  wire({ pick: b => {
+    const right = b.dataset.v === c.a;
+    $("#card").querySelectorAll(".choice").forEach(x => { x.disabled = true; if (x.dataset.v === c.a) x.classList.add("right"); else if (x === b) x.classList.add("wrong"); });
+    const pts = right ? 2 : 1; p.stars += pts;
+    log(`${esc(p.name)} read ${c.r} (+${pts} ★).`);
+    $("#out").innerHTML = `<p class="result ${right?"good":"bad"}">${right ? "That’s right! +2 ★" : "Good try! Read it together: +1 ★"}</p>${verseHTML(full, c.a)}${doneBtn()}`;
+    lastSpeech = full.t + " " + c.r;
+    wire({ done: endTurn });
+  }});
+}
+function cardFound(){
+  const p = cur();
+  const missing = STONES.map((_,i) => i).filter(i => !p.stones.includes(i));
+  const idx = missing.length ? missing[Math.floor(Math.random()*missing.length)] : Math.floor(Math.random()*STONES.length);
+  const s = STONES[idx];
+  openCard({ kind:"found", title:s.name, img:"rock",
+    speak: `Foundation stone: ${s.name}. ${s.v.t} ${s.v.r}. Tell everyone one way you can do this. For example, ${s.idea}.`,
+    html: verseHTML(s.v) + `<p><b>Tell everyone one way you can do this.</b></p><p class="small-note">Idea: ${s.idea}.</p>
+      <div class="actions"><button class="btn primary" type="button" data-act="ok">I shared an idea</button></div>` });
+  wire({ ok: () => {
+    const got = giveStone(p, idx); p.stars += 1;
+    log(`${esc(p.name)} ${got?`added the stone <b>${s.name}</b>`:"strengthened a stone"} (+1 ★).`);
+    $("#card").querySelector(".actions").outerHTML = `<p class="result good">${got ? "Stone added to your foundation! +1 ★" : "You already have this stone. +1 ★"}</p>${doneBtn()}`;
+    wire({ done: endTurn });
+  }});
+}
+function cardChoose(){
+  const c = CHOICES[draw("choose", CHOICES.length)], p = cur();
+  const v = CHOICE_VERSES[Math.floor(Math.random()*CHOICE_VERSES.length)];
+  const opts = shuffle([{t:c.good, ok:true},{t:c.bad, ok:false}]);
+  let tries = 0;
+  openCard({ kind:"choose", title:"What would you choose?", img:"choose",
+    speak: `${c.s} Will you: ${opts[0].t}? Or: ${opts[1].t}?`,
+    html: `<p style="font-size:1.1rem">${c.s}</p><div class="choices">${opts.map((o,i) => `<button class="choice" type="button" data-act="pick" data-i="${i}">${esc(o.t)}</button>`).join("")}</div><div id="out"></div>` });
+  wire({ pick: b => {
+    const o = opts[+b.dataset.i]; tries++;
+    if (!o.ok){
+      b.classList.add("wrong"); b.disabled = true;
+      $("#out").innerHTML = `<p class="result bad">Hmm. Let’s think again.</p><p>That’s part of Heavenly Father’s plan: we can repent and choose again.</p>`;
+      return;
+    }
+    b.classList.add("right"); $("#card").querySelectorAll(".choice").forEach(x => x.disabled = true);
+    const pts = tries === 1 ? 3 : 1; p.stars += pts;
+    const got = tries === 1 && giveStone(p, c.stone);
+    log(`${esc(p.name)} chose the right${got?` and added <b>${STONES[c.stone].name}</b>`:""} (+${pts} ★).`);
+    $("#out").innerHTML = `<p class="result good">${tries===1 ? "Great choice! +3 ★" : "You chose again. +1 ★"}</p>${got?`<p>New foundation stone: <b>${STONES[c.stone].name}</b></p>`:""}${verseHTML(v)}${doneBtn()}`;
+    lastSpeech = v.t + " " + v.r;
+    wire({ done: endTurn });
+  }});
+}
+function cardStorm(sp){
+  const p = cur(), st = STORMS[draw("storm", STORMS.length)];
+  const strength = p.stones.length + (p.hg ? 1 : 0);
+  const stands = strength >= sp.power;
+  let res;
+  if (stands){ p.stars += 2; p.badges.push(st.name); res = `<p class="result good">Your house stands! +2 ★</p><p>You overcame <b>${st.name}</b>. Your foundation is built on the rock.</p>`; }
+  else { const lost = Math.min(2, p.stars); p.stars -= lost; res = `<p class="result bad">Your house was shaken.${lost?` −${lost} ★`:""}</p><p>Keep building your foundation. Jesus Christ can help you rise and try again.</p>`; }
+  log(`${esc(p.name)} faced the storm of ${st.name}: ${stands?"the house stood":"the house was shaken"}.`);
+  openCard({ kind:"storm", title:`Storm of ${st.name}`, img:"storm",
+    speak: `Storm of ${st.name}. ${st.d} This storm has strength ${sp.power}. Your foundation is ${strength}. ${stands?"Your house stands!":"Your house was shaken. Keep building your foundation."}`,
+    html: `<p style="font-size:1.1rem">${st.d}</p>
+      <div class="housebar"><span>Storm strength: ${sp.power}</span><span>·</span><span>Your foundation: ${p.stones.length}${p.hg?" + 1 Holy Ghost":""} = ${strength}</span></div>
+      ${res}${verseHTML(HEL512)}${doneBtn()}` });
+  wire({ done: endTurn });
+}
+function cardService(){
+  const p = cur(); const others = S.players.filter(x => x !== p);
+  const v = STONES[12].v;
+  const got = giveStone(p, 12);
+  const body = others.length
+    ? `<p>Choose someone to help. You both get +1 ★.</p><div class="choices">${others.map(o => `<button class="choice" type="button" data-act="pick" data-n="${S.players.indexOf(o)}"><span class="token" style="display:inline-grid;width:24px;height:24px;margin-right:8px;background:${o.color}">${S.players.indexOf(o)+1}</span>${esc(o.name)}</button>`).join("")}</div>`
+    : `<p>Do something kind for someone in your family right now. Then tap below.</p><div class="actions"><button class="btn primary" type="button" data-act="solo">I helped someone</button></div>`;
+  openCard({ kind:"service", title:"Time to serve", img:"service",
+    speak: `Time to serve. ${v.t} ${v.r}. ${others.length?"Choose someone to help.":"Do something kind for someone in your family."}`,
+    html: verseHTML(v) + (got ? `<p>New foundation stone: <b>Serve others</b></p>` : "") + body + `<div id="out"></div>` });
+  const finish = msg => { $("#card").querySelectorAll(".choice,[data-act=solo]").forEach(x => x.disabled = true); $("#out").innerHTML = `<p class="result good">${msg}</p>${doneBtn()}`; wire({ done: endTurn }); };
+  wire({
+    pick: b => { const o = S.players[+b.dataset.n]; p.stars += 1; o.stars += 1; log(`${esc(p.name)} served ${esc(o.name)} (+1 ★ each).`); finish(`${esc(p.name)} and ${esc(o.name)} each get +1 ★`); },
+    solo: () => { p.stars += 2; log(`${esc(p.name)} served someone (+2 ★).`); finish("+2 ★ for serving!"); },
+  });
+}
+function cardSong(){
+  const s = SONGS[draw("song", SONGS.length)], p = cur();
+  openCard({ kind:"song", title:s.t, img:"song",
+    speak: `Song time! Sing or hum ${s.t} together.`,
+    html: `<p>Sing or hum a verse of this Primary song together.</p><p class="small-note"><a href="${s.u}" target="_blank" rel="noopener">${s.t}</a>, <i>Children’s Songbook</i>, ${s.p}</p>
+      <div class="actions"><button class="btn primary" type="button" data-act="ok">We sang it!</button></div>` });
+  wire({ ok: () => { p.stars += 2; log(`${esc(p.name)} led “${s.t}” (+2 ★).`); endTurn(); } });
+}
+function cardSabbath(){
+  const p = cur(); const v = STONES[4].v;
+  const got = giveStone(p, 4); p.stars += 2;
+  log(`${esc(p.name)} kept the Sabbath day holy (+2 ★).`);
+  openCard({ kind:"sabbath", title:"Sabbath day", img:"sabbath",
+    speak: `Sabbath day. You took the sacrament and remembered Jesus. ${v.t} ${v.r}`,
+    html: `<p>You went to church, took the sacrament, and remembered Jesus Christ.</p>${verseHTML(v)}<p class="result good">+2 ★${got?" and the stone “Take the sacrament worthily”":""}</p>${doneBtn()}` });
+  wire({ done: endTurn });
+}
+function finishPlayer(){
+  const p = cur(); S.finishedCount++; p.done = true; p.place = S.finishedCount;
+  const bonus = [0,5,3,2,1][p.place]; p.stars += bonus;
+  const m = MILES.home;
+  log(`<b>${esc(p.name)} made it home!</b> Arrival bonus +${bonus} ★.`);
+  openCard({ kind:"mile", title:`${esc(p.name)} made it home!`, img:"home",
+    speak: `${p.name} made it home! ` + m.q.map(q => q.t + " " + q.r).join(" "),
+    html: m.q.map(q => verseHTML(q)).join("") + `<p class="result good">Arrival bonus: +${bonus} ★</p>` + doneBtn() });
+  wire({ done: endTurn });
+}
+function endGame(){
+  S.over = true; busy = false; save(); store.del(SAVE);
+  $("#game").hidden = true; $("#turnbar").hidden = true; $("#end").hidden = false;
+  const ranked = S.players.slice().sort((a,b) => score(b) - score(a));
+  $("#podium").innerHTML = ranked.map((p,i) => `
+    <div class="place"><span class="rank" style="color:${p.color}">${i+1}</span>
+      <div><b style="font-family:var(--display);font-size:1.15rem">${esc(p.name)}</b>
+        <div class="detail">★ ${p.stars} blessings · ${p.stones.length} stones × 2 = ${p.stones.length*2} · ${p.badges.length} storms overcome</div></div>
+      <span class="stars">${score(p)}</span></div>`).join("");
+  window.scrollTo({ top:0 });
+}
+
+/* ===================== PICTURES PANEL ===================== */
+let pendingSlot = null;
+function renderPics(){
+  $("#picGrid").innerHTML = Object.entries(IMAGES).map(([slot, cfg]) => {
+    const custom = !!store.get("posq-img-"+slot);
+    return `<div class="pic-slot"><img src="${imgSrc(slot)}" alt="${cfg.label}">
+      <div class="meta"><b>${cfg.label}</b><span class="small-note">Search the Media Library for: ${cfg.search}</span>
+        <input type="url" id="url-${slot}" placeholder="Or paste a picture link" aria-label="Picture link for ${cfg.label}">
+        <div class="btns"><button class="btn small primary" type="button" data-up="${slot}">Upload</button><button class="btn small" type="button" data-link="${slot}">Use link</button>${custom?`<button class="btn small" type="button" data-reset="${slot}">Reset</button>`:""}</div>
+      </div></div>`;
+  }).join("");
+  $("#picGrid").querySelectorAll("[data-up]").forEach(b => b.onclick = () => { pendingSlot = b.dataset.up; $("#fileIn").value = ""; $("#fileIn").click(); });
+  $("#picGrid").querySelectorAll("[data-link]").forEach(b => b.onclick = () => {
+    const slot = b.dataset.link, url = $("#url-"+slot).value.trim(); if (!url) return toast("Paste a picture link first.");
+    const im = new Image();
+    im.onload = () => { store.set("posq-img-"+slot, url); renderPics(); toast("Picture updated."); };
+    im.onerror = () => toast("That link didn’t load here. Download the picture and use Upload instead.");
+    im.src = url;
+  });
+  $("#picGrid").querySelectorAll("[data-reset]").forEach(b => b.onclick = () => { store.del("posq-img-"+b.dataset.reset); renderPics(); });
+}
+$("#fileIn").addEventListener("change", e => {
+  const f = e.target.files[0]; if (!f || !pendingSlot) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    const im = new Image();
+    im.onload = () => {
+      const max = 900, sc2 = Math.min(1, max / Math.max(im.width, im.height));
+      const cv = document.createElement("canvas"); cv.width = Math.round(im.width*sc2); cv.height = Math.round(im.height*sc2);
+      cv.getContext("2d").drawImage(im, 0, 0, cv.width, cv.height);
+      const data = cv.toDataURL("image/jpeg", 0.82);
+      if (store.set("posq-img-"+pendingSlot, data)) { toast("Picture updated."); } else { toast("This browser is out of picture space. Reset a few pictures and try again."); }
+      renderPics();
+    };
+    im.onerror = () => toast("That file isn’t a picture this browser can open.");
+    im.src = rd.result;
+  };
+  rd.readAsDataURL(f);
+});
+let returnTo = "setup";
+function openPics(){
+  returnTo = !$("#game").hidden ? "game" : !$("#end").hidden ? "end" : "setup";
+  ["#setup","#game","#end"].forEach(s => $(s).hidden = true); $("#turnbar").hidden = true;
+  $("#pictures").hidden = false; renderPics(); window.scrollTo({ top:0 });
+}
+function closePics(){
+  $("#pictures").hidden = true;
+  if (returnTo === "game") showGame(); else if (returnTo === "end") $("#end").hidden = false; else { $("#setup").hidden = false; renderSetup(); }
+}
+
+/* ===================== MISC ===================== */
+let toastT;
+function toast(msg){
+  let t = $(".toast"); if (!t){ t = document.createElement("div"); t.className = "toast"; t.setAttribute("role","status"); document.body.appendChild(t); }
+  t.textContent = msg; t.hidden = false; clearTimeout(toastT); toastT = setTimeout(() => t.hidden = true, 1800);
+}
+function showRules(){
+  openCard({ kind:"mile", title:"How to play", img:"rock", speak: $("#howPanel").innerText,
+    html: $("#howPanel").innerHTML.replace(/<h2>.*?<\/h2>/, "") + doneBtn("Got it") });
+  wire({ done: closeCard });
+}
+$("#btnStart").onclick = startGame;
+$("#btnResume").onclick = () => { try { S = JSON.parse(store.get(SAVE)); busy = false; showGame(); } catch(e){ toast("The saved game could not be opened."); store.del(SAVE); renderSetup(); } };
+$("#btnSpin").onclick = spin;
+$("#btnRules").onclick = showRules;
+$("#btnPics").onclick = openPics;
+$("#btnPicsDone").onclick = closePics;
+$("#btnAgain").onclick = () => { S = null; $("#end").hidden = true; $("#btnNew").hidden = true; $("#setup").hidden = false; renderSetup(); };
+$("#btnNew").onclick = () => {
+  openCard({ kind:"mile", title:"Start a new game?", html:`<p>This ends the game in progress.</p><div class="actions"><button class="btn" type="button" data-act="no">Keep playing</button><button class="btn primary" type="button" data-act="yes">New game</button></div>` });
+  wire({ no: closeCard, yes: () => { closeCard(); store.del(SAVE); S = null; busy = false; $("#game").hidden = true; $("#turnbar").hidden = true; $("#btnNew").hidden = true; $("#setup").hidden = false; renderSetup(); } });
+};
+let rz; addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => { if (S && !$("#game").hidden) renderBoard(); }, 120); });
+
+function start(data){
+  drawSpinner(); renderSetup(); probeFiles();
+  if (data && data.S){ S = data.S; busy = false; if (!S.over) showGame(); }
+}
+window.claude?.hot?.snapshot?.(() => ({ S }));
+window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
+</script>
