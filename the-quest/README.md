@@ -8,9 +8,10 @@ The trail is a map of the handout *The Quest*. Players start in the premortal li
 
 Open `index.html` in a web browser. It's one file with nothing to install.
 
-1. **Premortal life.** Choose 1 to 4 players. The game opens in the premortal life, then the Council in Heaven.
-2. **Spin** (1 to 8) and follow the trail.
-3. **Landmarks (1–13)** are the foundation from the handout, in its order:
+1. **Start menu.** Choose 1 to 4 players, type names, and tap **Play**.
+2. **Premortal life.** A scene of the premortal life appears while "I Lived in Heaven" plays (the sung recording from the Church's Children's Songbook, in `audio/`). Read the words together, then tap **Start the journey**.
+3. **Your turn.** Tap **Spin** (1 to 8), then **tap your own piece** (or the glowing space, or the **Hop** button) to move one space at a time.
+4. **Landmarks (1–13)** are the foundation from the handout, in its order:
    1. Daily scripture study
    2. Daily prayer and revelation
    3. Repent daily
@@ -25,9 +26,9 @@ Open `index.html` in a web browser. It's one file with nothing to install.
    12. Be grateful
    13. Serve others
 
-   Everyone stops at every landmark and takes its challenge: either finish its scripture, or a Choose the Right card about it. Pass the challenge to add that stone to your house's foundation (+2 ★). Then keep moving with any spaces left.
-4. **Milestones** pause your move so you can read them: Born on Earth, Baptism and the Holy Ghost, Jesus Christ Our Savior, the Spirit World and the Resurrection.
-5. **Spaces between landmarks:**
+   Everyone stops at every landmark and takes its challenge: either finish its scripture, or a Choose the Right card about it. Pass the challenge to add that stone to your house's foundation (+2 ★). Then keep hopping with any moves left.
+5. **Milestones** pause your move so you can read them: Born on Earth, Baptism and the Holy Ghost, Jesus Christ Our Savior, the Spirit World and the Resurrection.
+6. **Spaces between landmarks:**
 
 | Space | What happens |
 |---|---|
@@ -38,7 +39,7 @@ Open `index.html` in a web browser. It's one file with nothing to install.
 | Song | Sing or hum a Primary song together: +2 ★. |
 | Sabbath | +2 ★ for landing on it, +1 ★ for passing it. |
 
-6. **Home.** Arrival bonuses: first +5 ★, second +3, third +2, fourth +1. When everyone is home, **score = blessings + 2 for each stone + 1 for each storm overcome.** Highest score wins.
+7. **Home.** Arrival bonuses: first +5 ★, second +3, third +2, fourth +1. When everyone is home, **score = blessings + 2 for each stone + 1 for each storm overcome.** Highest score wins.
 
 Every card has a **Read aloud** button. A game in progress is saved on the device.
 
@@ -48,7 +49,8 @@ Every picture has a slot name. To change one for everyone, put a picture in `ima
 
 | Slot | Picture |
 |---|---|
-| `premortal`, `council`, `birth`, `baptism`, `savior`, `spiritworld`, `resurrection`, `home` | Milestones |
+| `premortal` | The Premortal Life scene at the start, and the Start space |
+| `council`, `birth`, `baptism`, `savior`, `spiritworld`, `resurrection`, `home` | Milestones |
 | `stone1` … `stone13` | Landmarks 1–13 (landmark 8 uses `temple`) |
 | `temple` | Landmark 8, Go to the temple |
 | `rock` | Default picture for any landmark without its own |
