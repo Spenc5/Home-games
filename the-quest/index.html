@@ -50,7 +50,16 @@ a{color:var(--t-scripture)}
 .btn:disabled{opacity:.5;cursor:default}
 
 /* start menu */
-.menu{max-width:480px;margin:4vh auto 0;display:grid;gap:14px}
+.sky,.panel.sky{position:relative;overflow:hidden;background:linear-gradient(180deg,#1C1A55 0%,#3B37A0 60%,#6D69D8 100%);color:#F4F2FF}
+.sky > canvas.stars{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.sky > :not(canvas){position:relative}
+.menu{max-width:480px;margin:4vh auto 0;display:grid;gap:14px;border:0;border-radius:20px}
+.menu h2{color:#fff}
+.menu .count-row button{border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.08);color:#fff}
+.menu .count-row button[aria-pressed="true"]{background:var(--gold);border-color:var(--gold);color:var(--gold-ink)}
+.menu .name-row input{border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.95);color:#1B2740}
+.menu .btn{border-color:rgba(255,255,255,.5);background:rgba(255,255,255,.12);color:#fff}
+.menu .btn.primary{background:#FFC94A;border-color:#FFC94A;color:#2A1B00}
 .menu h2{font-size:1.6rem}
 .count-row{display:flex;gap:10px}
 .count-row button{width:56px;height:56px;border-radius:50%;border:2px solid var(--line);background:var(--surface-2);font-family:var(--display);font-size:1.5rem;font-weight:800}
@@ -62,8 +71,8 @@ a{color:var(--t-scripture)}
 .how ol{padding-left:1.2em;margin:8px 0}
 .how li{margin:6px 0}
 
-/* premortal life intro: one fixed look (deep blue), same in both themes */
-.intro{background:#1F6E95;color:#fff;border-radius:20px;overflow:hidden;box-shadow:var(--shadow)}
+/* premortal life intro: one fixed look (starry sky), same in both themes */
+.intro{color:#fff;border-radius:20px;box-shadow:var(--shadow)}
 .intro .scene{display:block;width:100%;height:auto;max-height:60vh;object-fit:cover}
 .intro .lines{padding:8px 24px 20px;display:grid;gap:10px;text-align:center;max-width:720px;margin:0 auto}
 .intro .lines h2{font-size:clamp(1.5rem,4.5vw,2.2rem);color:#fff}
@@ -176,7 +185,7 @@ a{color:var(--t-scripture)}
 
   <!-- START MENU -->
   <section id="setup">
-    <div class="panel menu">
+    <div class="panel menu sky"><canvas class="stars" aria-hidden="true"></canvas>
       <h2>Who is playing?</h2>
       <div class="count-row" role="group" aria-label="Number of players" id="countRow"></div>
       <div id="nameRows" style="display:grid;gap:8px"></div>
@@ -187,7 +196,7 @@ a{color:var(--t-scripture)}
 
   <!-- PREMORTAL LIFE -->
   <section id="intro" hidden>
-    <div class="intro">
+    <div class="intro sky"><canvas class="stars" aria-hidden="true"></canvas>
       <div id="sceneBox"></div>
       <div class="lines" id="introLines">
         <h2>Heavenly Father has a plan for me.</h2>
@@ -609,6 +618,20 @@ function renderSetup(){
     names.insertAdjacentHTML("beforeend", `<label class="name-row"><span class="token" style="background:${COLORS[i]}">${i+1}</span><input id="pname${i}" maxlength="16" aria-label="Player ${i+1} name" value="${esc(old[i] ?? "Player " + (i+1))}"></label>`);
   }
   $("#btnResume").hidden = !store.get(SAVE);
+  drawStars();
+}
+function drawStars(){
+  document.querySelectorAll("canvas.stars").forEach(cv => {
+    const box = cv.parentElement; if (box.closest("[hidden]")) return;
+    const w = box.clientWidth, h = box.clientHeight, dpr = Math.min(2, devicePixelRatio || 1);
+    cv.width = w * dpr; cv.height = h * dpr;
+    const g = cv.getContext("2d"); g.scale(dpr, dpr);
+    let seed = 7; const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+    for (let i = 0; i < Math.floor(w * h / 1800); i++){
+      g.fillStyle = `rgba(255,255,255,${.35 + rnd() * .6})`;
+      g.beginPath(); g.arc(rnd() * w, rnd() * h, rnd() * 1.6 + .3, 0, 7); g.fill();
+    }
+  });
 }
 function startGame(){
   const players = [];
@@ -629,7 +652,7 @@ function sceneSvg(){
   const cloudCols = ["#CFEFF5","#7FD3E0","#A9E3EE","#5FC0D6","#E3F6FA"];
   return `<svg class="scene" viewBox="0 0 1120 600" role="img" aria-label="Premortal life: Jesus Christ in light above Heavenly Father’s spirit children">
     <defs><radialGradient id="halo"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".55" stop-color="#E9F7FB" stop-opacity=".55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>
-    <rect width="1120" height="600" fill="#1F6E95"/>
+    
     <circle cx="560" cy="170" r="170" fill="url(#halo)"/>
     ${[0,14,28].map(r => `<polygon points="${Array.from({length:9},(_,i)=>{const a=(i/9)*Math.PI*2+r*Math.PI/180;return `${560+118*Math.cos(a)},${170+118*Math.sin(a)}`}).join(" ")}" fill="#fff" fill-opacity=".14" stroke="#fff" stroke-opacity=".55" stroke-width="2"/>`).join("")}
     <g><circle cx="560" cy="92" r="17" fill="#fff"/><path d="M548 112h24l26 40-12 6-10-18 8 112h-50l8-112-10 18-12-6z" fill="#fff"/><path d="M552 114l18 0-34 150-10-2z" fill="#D9CFA0"/><path d="M545 270l-3 14M575 270l3 14" stroke="#D9CFA0" stroke-width="4" stroke-linecap="round"/></g>
@@ -645,6 +668,7 @@ function showIntro(){
   $("#sceneBox").innerHTML = custom ? `<img class="scene" src="${custom}" alt="Premortal life">` : sceneSvg();
   [...$("#introLines").children].forEach((el, i) => el.style.animationDelay = (0.6 + i * 1.6) + "s");
   scrollTo({ top:0 });
+  drawStars();
   playSong();
 }
 const song = () => $("#song");
@@ -1094,7 +1118,7 @@ $("#btnNew").onclick = () => {
   openCard({ kind:"mile", label:"New game", title:"Start a new game?", html:`<p>This ends the game in progress.</p><div class="actions"><button class="btn" type="button" data-act="no">Keep playing</button><button class="btn primary" type="button" data-act="yes">New game</button></div>` });
   wire({ no: closeCard, yes: () => { closeCard(); store.del(SAVE); S = null; mode = "spin"; stopSong(); ["#game","#intro","#turnbar","#btnNew"].forEach(x => $(x).hidden = true); $("#setup").hidden = false; renderSetup(); } });
 };
-let rz; addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => { if (S && !$("#game").hidden) renderMap(); }, 120); });
+let rz; addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => { if (S && !$("#game").hidden) renderMap(); else drawStars(); }, 120); });
 matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => { if (S && !$("#game").hidden) renderMap(); });
 
 function start(data){
