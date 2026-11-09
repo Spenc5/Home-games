@@ -82,6 +82,31 @@ https://www.churchofjesuschrist.org/study/general-conference/2022/10/47nelson?la
 - Families Can Be Together Forever (188): https://www.churchofjesuschrist.org/study/manual/childrens-songbook/families-can-be-together-forever?lang=eng
 - The Wise Man and the Foolish Man (281): https://www.churchofjesuschrist.org/study/manual/childrens-songbook/the-wise-man-and-the-foolish-man?lang=eng
 
+## Friend magazine
+
+Kid situations come from true stories in the *Friend* magazine. Each card shows a short summary and what really happened, with a link to the full story.
+
+- “Forgiving Like Nephi,” Friend, Jan. 2024: https://www.churchofjesuschrist.org/study/friend/2024/01/04-forgiving-like-nephi?lang=eng
+- “Sami’s Scriptures,” Friend, Jan. 2024: https://www.churchofjesuschrist.org/study/friend/2024/01/07-samis-scriptures?lang=eng
+- “The Potato Chip Prompting,” Friend, Jan. 2024: https://www.churchofjesuschrist.org/study/friend/2024/01/10-the-potato-chip-prompting?lang=eng
+- “Sleepy Scripture Time,” Friend, Jan. 2024: https://www.churchofjesuschrist.org/study/friend/2024/01/20-sleepy-scripture-time?lang=eng
+- “Tommy’s Very Bad Day,” Friend, Feb. 2024: https://www.churchofjesuschrist.org/study/friend/2024/02/04-tommys-very-bad-day?lang=eng
+- “Friends Following Jesus,” Friend, Feb. 2024: https://www.churchofjesuschrist.org/study/friend/2024/02/10-friends-following-jesus?lang=eng
+- “Bug Bites and Blessings,” Friend, Feb. 2024: https://www.churchofjesuschrist.org/study/friend/2024/02/07-bug-bites-and-blessings?lang=eng
+- “The Shiny Purple Stone,” Friend, Mar. 2024: https://www.churchofjesuschrist.org/study/friend/2024/03/07-the-shiny-purple-stone?lang=eng
+- “Pencil Peacemaker,” Friend, Mar. 2024: https://www.churchofjesuschrist.org/study/friend/2024/03/13-pencil-peacemaker?lang=eng
+- “Janeelyn Stops Scrolling,” Friend, Mar. 2024: https://www.churchofjesuschrist.org/study/friend/2024/03/for-older-kids/25-janeelyn-stops-scrolling?lang=eng
+- “Road-Trip Trouble,” Friend, Apr. 2024: https://www.churchofjesuschrist.org/study/friend/2024/04/04-road-trip-trouble?lang=eng
+- “Louie, Nephi, and the Piano,” Friend, Apr. 2024: https://www.churchofjesuschrist.org/study/friend/2024/04/20-louie-nephi-and-the-piano?lang=eng
+- “Shine On,” Friend, Apr. 2024: https://www.churchofjesuschrist.org/study/friend/2024/04/13-shine-on?lang=eng
+- “We Can Solve It,” Friend, Apr. 2024: https://www.churchofjesuschrist.org/study/friend/2024/04/10-we-can-solve-it?lang=eng
+- “Sharing God’s Love,” Friend, May 2024: https://www.churchofjesuschrist.org/study/friend/2024/05/22-sharing-gods-love?lang=eng
+- “Scripture Story Time,” Friend, May 2024: https://www.churchofjesuschrist.org/study/friend/2024/05/21-scripture-story-time?lang=eng
+- “Eggs and Pennies,” Friend, June 2024: https://www.churchofjesuschrist.org/study/friend/2024/06/10-eggs-and-pennies?lang=eng
+- “Papa’s Perfect Party,” Friend, Jan. 2024: https://www.churchofjesuschrist.org/study/friend/2024/01/13-papas-perfect-party?lang=eng
+
+The things to do come from the *Friend*'s “Come, Follow Me Activities” pages, January–June 2024 (for example https://www.churchofjesuschrist.org/study/friend/2024/02/19-come-follow-me-activities?lang=eng).
+
 ## Written for the game
 
-The game instructions, the modern Choose the Right situations, the short scripture-story setups, and the storm descriptions are written for this game in plain language for children. They summarize no doctrine. Every doctrinal statement in the game is a direct quotation listed above.
+The game instructions, the wrong answer choices on story cards, the short scripture-story setups, and the storm descriptions are written for this game in plain language for children. They summarize no doctrine. Every doctrinal statement in the game is a direct quotation listed above.

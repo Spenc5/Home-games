@@ -8,23 +8,23 @@ Players start in the premortal life, are born, and travel around earth life coll
 
 Open `index.html` in a web browser. It's one file with nothing to install. The whole board fits on the screen.
 
-1. **Start menu.** Choose 1 to 4 players, type names, and tap **Play**. Each player has one piece.
+1. **Start menu.** Choose 1 to 4 players, type names, pick **Short** (4 stones) or **Long** (6 stones), and tap **Play**. Each player has one piece.
 2. **Premortal life.** The opening scene shows (with "I Lived in Heaven"). Tap **Start the journey**.
-3. **Born on earth.** Everyone starts in the Premortal Life circle with the Christus. Tap **Pop!** to roll the die. You need a **1 or 6** to be born. Pop a 6 any time and you go again.
+3. **Born on earth.** Everyone starts in the Premortal Life circle. Tap **Pop!** to roll the die. You need a **1 or 6** to be born. Pop a 6 any time and you go again.
 4. **Move your own piece.** Tap the glowing space (or your piece) once for each space and count out loud; a number pops up on each space. Go around the board as many times as you need. To leave earth you need:
    - **All 4 ordinances**, in order: Baptism and Confirmation, Sacrament, Temple Endowment, Temple Sealing. Land on or pass a gold **Ordinance** space to receive the next one you need (one per turn).
-   - **A foundation of 6 stones.** Win the challenge on a brown foundation space (the ideas from the handout: prayer, scriptures, tithing, service and more) or a green Choose space.
+   - **A foundation of stones** (4 in a short game, 6 in a long one). Win the challenge on a brown foundation space (the ideas from the handout: prayer, scriptures, tithing, service and more) or a green Choose space.
 5. **Daily repentance.** Teal **Repent** spaces are all around the board. Storms can knock a stone loose; landing on Repent puts it back. Miss a challenge? Repent and try again.
-6. **Death and the road home.** With all 4 ordinances and 6 stones, turn off at **Death** onto the road into the **Spirit World**. Wait there; on your turns, help players still on earth (win a challenge and they get a stone).
+6. **The road home.** Death is not on the loop, so no one can land on it early. With all 4 ordinances and your stones, turn onto the **road home** at the signpost. It leads through **Death** into the **Spirit World**. Wait there; on your turns, help players still on earth (win a challenge and they get a stone).
 7. **The Celestial Kingdom.** When everyone is in the Spirit World, keep popping and moving along the road (Scripture, Song, Risen). Win a challenge to enter the **Celestial Kingdom** in the center. The Terrestrial and Telestial kingdoms are shown beside it.
 
 | Space | What happens |
 |---|---|
 | Ordinance (gold) | Receive your next ordinance (+3 ★). |
-| Foundation (brown) | A challenge about one of the handout's ideas. Win a stone (+1 ★). |
+| Foundation (brown) | A *Friend* story or scripture about one of the handout's ideas. Win a stone (+1 ★). |
 | Repent (teal) | Put back a loose stone, or get +2 ★. |
-| Choose (green) | A modern situation or scripture story. Right the first time: +3 ★, a stone, and jump ahead. |
-| Scripture (blue) | Pick the missing word. +2 ★. |
+| Choose (green) | A kid situation from a true story in the *Friend* magazine, or a scripture story. Choose, then see what really happened. Right the first time: +3 ★, a stone, and jump ahead. |
+| Scripture (blue) | Pick the missing word in a verse (+2 ★), or **something to do** from the *Friend*'s Come, Follow Me activities (+2 ★ when you do it). |
 | Storm | If your stones (+1 Holy Ghost) are at least the storm's number, your house stands (+2 ★). If not, a stone comes loose. |
 | Landing on someone | **Team challenge.** Work it out together: +2 ★ each if right. |
 | Service, Song, Sabbath | Move ahead with a friend, sing a Primary song, or collect ★. |

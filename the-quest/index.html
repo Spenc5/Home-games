@@ -67,6 +67,9 @@ a{color:var(--t-scripture)}
 .name-row{display:flex;align-items:center;gap:10px}
 .name-row input{flex:1;min-width:0;width:0;border:2px solid var(--line);background:var(--surface-2);color:var(--ink);border-radius:10px;padding:10px 12px;font:inherit;font-size:1.05rem}
 .token{width:34px;height:34px;border-radius:50%;flex:none;border:3px solid #fff;box-shadow:0 0 0 2px rgba(0,0,0,.35);display:grid;place-items:center;color:#fff;font-family:var(--display);font-weight:800;font-size:.95rem}
+.len-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;color:#fff;font-family:var(--display);font-weight:700}
+.len-row button{border:2px solid rgba(255,255,255,.35);background:rgba(255,255,255,.08);color:#fff;border-radius:999px;padding:6px 12px;font-family:var(--display);font-weight:700}
+.len-row button[aria-pressed="true"]{background:#FFC94A;border-color:#FFC94A;color:#2A1B00}
 .play-btn{font-size:1.6rem;padding:14px 40px;justify-self:center}
 .how ol{padding-left:1.2em;margin:8px 0}
 .how li{margin:6px 0}
@@ -194,6 +197,7 @@ a{color:var(--t-scripture)}
       <h2>Who is playing?</h2>
       <div class="count-row" role="group" aria-label="Number of players" id="countRow"></div>
       <div id="nameRows" style="display:grid;gap:8px"></div>
+      <div class="len-row" role="group" aria-label="Game length"><span>Game length</span><button type="button" id="lenShort" aria-pressed="true">Short · 4 stones</button><button type="button" id="lenLong" aria-pressed="false">Long · 6 stones</button></div>
       <button class="btn primary play-btn" id="btnStart" type="button">Play</button>
       <button class="btn" id="btnResume" type="button" hidden style="justify-self:center">Continue saved game</button>
     </div>
@@ -226,10 +230,10 @@ a{color:var(--t-scripture)}
       <li><b>Start in the Premortal Life circle.</b> Tap <b>Pop!</b> You need a <b>1 or 6</b> to be born. Pop a 6 any time and you go again.</li>
       <li><b>Move your own piece:</b> tap the glowing space (or your piece) once for each space, and count out loud. Keep going around the board as many times as you need.</li>
       <li><b>Land on or pass a gold Ordinance space</b> to receive the next ordinance you need (one per turn), in order: Baptism and Confirmation, Sacrament, Temple Endowment, Temple Sealing.</li>
-      <li><b>Build a foundation of 6 stones.</b> Win the challenge on a brown foundation space (prayer, scriptures, tithing and more) or a green Choose space. Sometimes a win is a surprise trip to the next Ordinance space!</li>
+      <li><b>Build a foundation of stones</b> (4 in a short game, 6 in a long one). Win the challenge on a brown foundation space (prayer, scriptures, tithing and more) or a green Choose space. Sometimes a win is a surprise trip to the next Ordinance space!</li>
       <li><b>Repent spaces</b> are all around the board. Storms can knock a stone loose; repenting puts it back. Miss a challenge? Repent and try again.</li>
       <li><b>Land on someone?</b> Team challenge! Work it out together, and you both earn blessings.</li>
-      <li>With all 4 ordinances and 6 stones, turn off at <b>Death</b> onto the road to the <b>Spirit World</b>. Wait there and help players still on earth.</li>
+      <li>With all 4 ordinances and your stones, turn onto the <b>road home</b> at the signpost. It leads through <b>Death</b> to the <b>Spirit World</b>. Wait there and help players still on earth.</li>
       <li>When everyone is in the Spirit World, keep popping and moving along the road through the Resurrection. <b>Win a challenge to enter the Celestial Kingdom.</b></li>
       <li>Most points wins: blessings ★ + 2 for each stone + 1 for each storm overcome. The first into the Celestial Kingdom gets +5 ★.</li>
     </ol>
@@ -349,22 +353,81 @@ const SCRIPTURES = [
 
 /* Choose the Right cards: modern situations and scripture stories.
    stone = which landmark stone it relates to (0–12). Stories show the verse that tells what really happened. */
+const FR = (path) => `${C}friend/${path}?lang=eng`;
 const CHOICES = [
-  { s:"You wake up late and have one minute before you leave for school.", good:"Say a quick prayer for help today", bad:"Skip it. There’s no time.", stone:1 },
-  { s:"Your little brother knocks over the tower you built. You feel angry!", good:"Take a deep breath, then tell him how you feel", bad:"Yell and knock over his stuff", stone:8 },
-  { s:"You earned $10 helping a neighbor.", good:"Set aside $1 for tithing", bad:"Spend it all on candy", stone:10 },
-  { s:"A new kid is sitting alone at lunch.", good:"Invite them to sit with you", bad:"Pretend you don’t see them", stone:12 },
-  { s:"A friend offers you something that is bad for your body.", good:"Say “No thanks” and choose something healthy", bad:"Try it so they think you’re cool", stone:5 },
-  { s:"You broke a dish and told your mom you didn’t.", good:"Tell the truth and say sorry", bad:"Keep the secret", stone:2 },
-  { s:"It’s sacrament time at church, and you want to play a game on the tablet.", good:"Think about Jesus during the sacrament", bad:"Play the game quietly", stone:4 },
-  { s:"A friend asks why you go to church on Sunday.", good:"Share what you believe about Jesus Christ", bad:"Change the subject", stone:3 },
-  { s:"It’s bedtime. You can read scriptures or watch one more video.", good:"Read a few verses with your family", bad:"Watch one more video", stone:0 },
-  { s:"Your math homework is really hard and you want to give up.", good:"Pray for help and keep trying", bad:"Throw your pencil and quit", stone:6 },
-  { s:"Grandma gives you socks for your birthday. You wanted a toy.", good:"Smile and say “Thank you, Grandma!”", bad:"Say “Socks? Boring.”", stone:11 },
-  { s:"After school you want to play video games all afternoon.", good:"Do homework and chores first, then play", bad:"Play until bedtime", stone:9 },
-  { s:"Your family is going to walk around the temple grounds on Saturday.", good:"Go along and enjoy being there together", bad:"Complain and stay in the car", stone:7 },
-  { s:"Someone at school says something mean to you.", good:"Be kind back", bad:"Say something even meaner", stone:8 },
-  { s:"Your sister is sad because her friend moved away.", good:"Give her a hug and play with her", bad:"Tell her to stop crying", stone:12 },
+  // Kid situations from true stories in the Friend magazine. "did" is what really happened.
+  { friend:"Forgiving Like Nephi", issue:"Friend, Jan. 2024", u:FR("2024/01/04-forgiving-like-nephi"), stone:8,
+    s:"After a soccer game, a boy on the other team called Aisea a mean name. Aisea felt sad and angry all day.",
+    good:"Forgive him, like Nephi forgave his brothers", bad:"Stay mad at him forever",
+    did:"Aisea read how Nephi forgave his brothers. He decided he could forgive Josh too." },
+  { friend:"Sami’s Scriptures", issue:"Friend, Jan. 2024", u:FR("2024/01/07-samis-scriptures"), stone:0,
+    s:"Sami’s family set a goal to read the Book of Mormon every day. But Sami was five and couldn’t read yet.",
+    good:"Read the pictures and tell what he sees", bad:"Just sit and wait",
+    did:"Mamá gave Sami a Book of Mormon picture book. On his turn, he told the family what he saw. Months later, he could read the words!" },
+  { friend:"The Potato Chip Prompting", issue:"Friend, Jan. 2024", u:FR("2024/01/10-the-potato-chip-prompting"), stone:5,
+    s:"Maya has food allergies. She put a chip in her mouth, and a strong feeling said, “Check the ingredients.”",
+    good:"Stop and check the bag", bad:"Ignore the feeling and keep eating",
+    did:"Maya checked. The chips had milk in them! She spat it out and told her parents. She knew the Holy Ghost had warned her." },
+  { friend:"Sleepy Scripture Time", issue:"Friend, Jan. 2024", u:FR("2024/01/20-sleepy-scripture-time"), stone:0,
+    s:"It was early, dark and cold. Dad said, “Time for scriptures.” Elvira didn’t want to leave her cozy bed.",
+    good:"Get up and read with her family", bad:"Stay in bed",
+    did:"Elvira read the Book of Mormon with her family and cousins on a video call. She felt a warm feeling that it is true." },
+  { friend:"Tommy’s Very Bad Day", issue:"Friend, Feb. 2024", u:FR("2024/02/04-tommys-very-bad-day"), stone:12,
+    s:"Everything went wrong for Tommy, so he sat on the steps. Then he saw his neighbor having a hard time raking leaves alone.",
+    good:"Go help hold the bag", bad:"Keep sitting and feeling grumpy",
+    did:"Tommy helped Mr. Johnson hold the bag open, and his bad day started to feel better." },
+  { friend:"Friends Following Jesus", issue:"Friend, Feb. 2024", u:FR("2024/02/10-friends-following-jesus"), stone:3,
+    s:"Saría was getting baptized soon. She wanted to invite her school friends.",
+    good:"Invite them and tell why she is being baptized", bad:"Keep it a secret",
+    did:"Saría invited her friends and told them a covenant is a promise with God." },
+  { friend:"Bug Bites and Blessings", issue:"Friend, Feb. 2024", u:FR("2024/02/07-bug-bites-and-blessings"), stone:5,
+    s:"Mom packed sunscreen and bug spray for Carlos’s Primary hike.",
+    good:"Use them like Mom said", bad:"Skip them",
+    did:"Carlos skipped them and got a sunburn and lots of bug bites. He learned he could make a better choice next time." },
+  { friend:"The Shiny Purple Stone", issue:"Friend, Mar. 2024", u:FR("2024/03/07-the-shiny-purple-stone"), stone:2,
+    s:"Marie took a tiny purple stone from a library display and put it in her pocket. At bedtime, Dad read a story about repenting.",
+    good:"Tell the truth and take it back", bad:"Keep it hidden",
+    did:"Marie told her dad, prayed to say she was sorry, and planned to take the stone back. She felt peace." },
+  { friend:"Pencil Peacemaker", issue:"Friend, Mar. 2024", u:FR("2024/03/13-pencil-peacemaker"), stone:8,
+    s:"A girl took Aryah’s pencil. Aryah was so mad!",
+    good:"Remember that Jesus said to forgive", bad:"Grab it back and fight",
+    did:"The girl said she was sorry, and Aryah said, “It’s OK. I forgive you.”" },
+  { friend:"Janeelyn Stops Scrolling", issue:"Friend, Mar. 2024", u:FR("2024/03/for-older-kids/25-janeelyn-stops-scrolling"), stone:9,
+    s:"Janeelyn kept scrolling videos, even some with bad language. Her little sister asked her to come draw.",
+    good:"Put the phone down and talk to Mom", bad:"Keep scrolling",
+    did:"Janeelyn talked with Mom, and they made a plan to watch videos together. After dinner, she drew with her sister." },
+  { friend:"Road-Trip Trouble", issue:"Friend, Apr. 2024", u:FR("2024/04/04-road-trip-trouble"), stone:1,
+    s:"Emma’s family got a flat tire on a busy road, far from home.",
+    good:"Pray for help", bad:"Give up on the trip",
+    did:"They prayed, and a worker found someone with a spare tire that fit. Emma said a prayer of thanks." },
+  { friend:"Louie, Nephi, and the Piano", issue:"Friend, Apr. 2024", u:FR("2024/04/20-louie-nephi-and-the-piano"), stone:6,
+    s:"Louie kept making mistakes on a hard part of his piano song.",
+    good:"Keep practicing, like Nephi kept trying", bad:"Quit",
+    did:"Louie tried again even when it was hard. At his recital he played it right, and he knew Heavenly Father had helped him." },
+  { friend:"Shine On", issue:"Friend, Apr. 2024", u:FR("2024/04/13-shine-on"), stone:12,
+    s:"Some kids laughed at a girl named Awesome. She sat crying under a tree while everyone played kickball.",
+    good:"Go and be her friend", bad:"Join the game and ignore her",
+    did:"Lynn sat with Awesome. Awesome started coming to church with Lynn and was later baptized!" },
+  { friend:"We Can Solve It", issue:"Friend, Apr. 2024", u:FR("2024/04/10-we-can-solve-it"), stone:8,
+    s:"Grant broke Joey’s truck, and Joey took Grant’s football. Dad asked if they could solve it themselves.",
+    good:"Talk it over and say sorry", bad:"Keep fighting",
+    did:"They both said sorry and made a plan to get along. Dad was proud they were peacemakers." },
+  { friend:"Sharing God’s Love", issue:"Friend, May 2024", u:FR("2024/05/22-sharing-gods-love"), stone:12,
+    s:"Thais saw a little girl crying alone on the steps. Her friend said they would be late for class.",
+    good:"Stop and help", bad:"Hurry to class",
+    did:"Thais helped the girl remember how much Heavenly Father loves her. The girl smiled and gave her a hug." },
+  { friend:"Scripture Story Time", issue:"Friend, May 2024", u:FR("2024/05/21-scripture-story-time"), stone:3,
+    s:"Nyameye’s teacher asked if anyone had a book to read to the class. Nyameye had his Book of Mormon storybook.",
+    good:"Share his favorite book", bad:"Stay quiet",
+    did:"The class read his Book of Mormon stories, and more friends came to read with him." },
+  { friend:"Eggs and Pennies", issue:"Friend, June 2024", u:FR("2024/06/10-eggs-and-pennies"), stone:10,
+    s:"Izzy earned 10 pennies gathering eggs. In Primary, her teacher talked about tithing.",
+    good:"Give one penny as tithing", bad:"Keep all 10",
+    did:"Izzy put her shiniest penny in a tithing envelope and felt warm all over." },
+  { friend:"Papa’s Perfect Party", issue:"Friend, Jan. 2024", u:FR("2024/01/13-papas-perfect-party"), stone:11,
+    s:"Alex prayed for the rain to stop for his grandpa’s birthday party. The weather stayed nice for the party!",
+    good:"Say a prayer of thanks", bad:"Forget to say thank you",
+    did:"Alex thanked Heavenly Father for the nice weather and for his wonderful Papa." },
   // scripture stories
   { story:true, s:"The Lord told Nephi to get the brass plates from Laban. His brothers said it was too hard. What did Nephi say?",
     good:"“I will go and do the things which the Lord hath commanded”", bad:"“It’s too hard. Let’s go home.”", stone:6,
@@ -390,6 +453,23 @@ const CHOICES = [
   { story:true, s:"King Noah told Abinadi to take back what he taught about God, or he would be killed. What did Abinadi do?",
     good:"Kept his testimony", bad:"Took his words back", stone:3,
     v:{ t:"I will not recall the words which I have spoken unto you concerning this people, for they are true;", r:"Mosiah 17:9", u:sc("bofm/mosiah/17",9) } },
+];
+
+/* Things to do, from the Friend magazine’s “Come, Follow Me Activities” pages. */
+const ACT = (m) => ({ src:`“Come, Follow Me Activities,” Friend, ${m}`, u: FR(`2024/${{"Jan. 2024":"01/19","Feb. 2024":"02/19","Mar. 2024":"03/come-follow-me/19","Apr. 2024":"04/come-follow-me/19","May 2024":"05/come-follow-me/20","June 2024":"06/come-follow-me/19"}[m]}-come-follow-me-activities`) });
+const ACTIVITIES = [
+  { title:"Bouncy-Ball Blessings", t:"Bounce a ball (or toss a pillow) back and forth. When it’s your turn, say a blessing Heavenly Father has given you. Keep going as long as you can!", ...ACT("Feb. 2024") },
+  { title:"Liahona Hints", t:"One person hides an object. Everyone else takes turns asking yes-or-no questions to find it together.", ...ACT("Feb. 2024") },
+  { title:"Testimony Tower", t:"Build a tower together. Talk about how we build our testimony of Heavenly Father and Jesus Christ one piece at a time.", ...ACT("Jan. 2024") },
+  { title:"Nephi’s Courage", t:"Sing “Nephi’s Courage.” Each time you sing the words “go” or “do,” jump in the air!", ...ACT("Jan. 2024") },
+  { title:"Singing Testimonies", t:"What songs about Jesus do you like? Talk about why you love them. Then sing one together!", ...ACT("Mar. 2024") },
+  { title:"Line upon Line Storytime", t:"Tell a favorite scripture story one line at a time. Everyone takes turns saying one sentence until the story is done.", ...ACT("Mar. 2024") },
+  { title:"Follow the Leader", t:"Form a line and walk around. The person in front is the leader. Everyone copies how the leader walks. Take turns being the leader!", ...ACT("Mar. 2024") },
+  { title:"Sharing Together", t:"Think of a kind thing you can do for someone else, and plan to do it.", ...ACT("Apr. 2024") },
+  { title:"Walk in His Footsteps", t:"Take turns stepping where the leader steps. Talk about how we can follow Jesus Christ by doing things He did, like helping others.", ...ACT("May 2024") },
+  { title:"Hearts Knit in Unity", t:"Say one thing you love about each person playing.", ...ACT("May 2024") },
+  { title:"Baptism Song", t:"Sing “Baptism.” Every time you hear the words “baptism” or “Jesus,” stand up!", ...ACT("June 2024") },
+  { title:"Speedy Actions", t:"Do an action like jumping, touching your toes or spinning around, faster and faster. Talk about how we can be speedy to follow God.", ...ACT("June 2024") },
 ];
 
 /* Storms: the “plagues of the world” named on the handout. */
@@ -455,7 +535,7 @@ const MILES = {
 const REPENT = { t:"Behold, he who has repented of his sins, the same is forgiven, and I, the Lord, remember them no more.", r:"Doctrine and Covenants 58:42", u:sc("dc-testament/dc/58",42) };
 const SHORT = ["Scriptures","Prayer","Repent","Testimony","Sacrament","Body temple","Lord’s help","Temple","Feelings","Use time","Tithing","Grateful","Serve"];
 const HABITS = [0,1,3,5,6,8,9,10,11,12];   // handout items that appear as spaces (Repent, Sacrament and Temple have their own)
-const NEED_STONES = 6;
+let NEED_STONES = 4;
 
 /* =====================================================================
    PICTURES — every picture has a slot name. To replace one for everyone,
@@ -493,8 +573,8 @@ const STAGES = [
   { key:"ck",    name:"Celestial Kingdom" },
 ];
 // One loop around the board. H habit space (handout item) · R Repent · O ordinance (gives your next one) · S scripture · C choose · V service · G song · B Sabbath · Xn storm · M:name milestone
-const LAYOUT = "M:birth H0 R H1 O X1 C H2 R O H3 G H4 X1 R O S H5 B H6 R O V X2 H7 C R O H8 G M:death X3 H9 R O";
-const LANE = "M:spiritworld S G M:resurrection M:home";   // the road from Death into the Celestial Kingdom
+const LAYOUT = "M:birth H0 R H1 O X1 C H2 R O H3 G H4 X1 R O S H5 B H6 R O V X2 H7 C R O H8 G X3 H9 R O";
+const LANE = "M:death M:spiritworld S G M:resurrection M:home";   // the road home: leaves the loop at FORK
 const BOARD = (LAYOUT + " " + LANE).split(" ").map(c => {
   if (c.startsWith("M:")) return { type:"mile", mile:c.slice(2) };
   if (c === "O") return { type:"ord" };
@@ -503,7 +583,7 @@ const BOARD = (LAYOUT + " " + LANE).split(" ").map(c => {
   return { type:{ S:"scripture", C:"choose", V:"service", G:"song", B:"sabbath", R:"repent" }[c] };
 });
 const LOOP = LAYOUT.split(" ").length, LANE0 = LOOP, LAST = BOARD.length - 1;
-const DEATH = BOARD.findIndex(b => b.mile === "death");
+const FORK = 29, DEATH = LANE0, SWI = LANE0 + 1;   // FORK: the loop space where the road home begins
 const TYPES = {
   habit:{ label:"Foundation", color:"#8A6A48" },
   ord:{ label:"Ordinance", color:"#D99A12" },
@@ -533,22 +613,22 @@ const iconSvg = (k, color, cls="") => `<svg class="${cls}" width="22" height="22
 
 /* Board geometry (viewBox 1000×1000). The loop runs clockwise around the edge.
    Inside: the Premortal Life circle (start), the Spirit World, and the three kingdoms. */
-const PRE = { x:232, y:232, r:86 };
+const PRE = { x:262, y:212, r:80 };
 const CK = { x:540, y:540, r:112 }, TER = { x:792, y:404, r:52 }, TEL = { x:792, y:690, r:52 };
 const POS = (() => {
   const pts = [[160,90],[840,90],[910,160],[910,840],[840,910],[160,910],[90,840],[90,160],[160,90]];
   const segs = []; let total = 0;
   for (let i=0;i<pts.length-1;i++){ const [ax,ay]=pts[i],[bx,by]=pts[i+1], L=Math.hypot(bx-ax,by-ay); segs.push({ax,ay,bx,by,L,start:total}); total += L; }
   const step = total / LOOP, out = [];
-  for (let i=0;i<LOOP;i++){ const d = (170 + i*step) % total; const sg = segs.find(z => d <= z.start + z.L + .01) || segs[segs.length-1]; const t = (d - sg.start)/sg.L;
+  for (let i=0;i<LOOP;i++){ const d = (189 + i*step) % total; const sg = segs.find(z => d <= z.start + z.L + .01) || segs[segs.length-1]; const t = (d - sg.start)/sg.L;
     out.push({ x: sg.ax + (sg.bx-sg.ax)*t, y: sg.ay + (sg.by-sg.ay)*t, r: 39 }); }
-  const A = out[DEATH], ang = Math.atan2(CK.y - A.y, CK.x - A.x), B = { x: CK.x - Math.cos(ang)*(CK.r+6), y: CK.y - Math.sin(ang)*(CK.r+6) };
+  const A = out[FORK], ang = Math.atan2(CK.y - A.y, CK.x - A.x), B = { x: CK.x - Math.cos(ang)*(CK.r+6), y: CK.y - Math.sin(ang)*(CK.r+6) };
   const laneN = LAST - LANE0, L = Math.hypot(B.x-A.x, B.y-A.y), st = (L - 34) / laneN;
-  for (let k=1;k<=laneN;k++){ const d = st * k; out.push({ x: A.x + (B.x-A.x)*d/L, y: A.y + (B.y-A.y)*d/L, r: 34 }); }
+  for (let k=1;k<=laneN;k++){ const d = st * k; out.push({ x: A.x + (B.x-A.x)*d/L, y: A.y + (B.y-A.y)*d/L, r: 31 }); }
   out.push({ x: CK.x, y: CK.y, r: CK.r });
   return out;
 })();
-const START = k => ({ x: PRE.x + [-30,30,-30,30][k], y: PRE.y + [-6,-6,32,32][k] });
+const START = k => ({ x: PRE.x + [-28,28,-28,28][k], y: PRE.y + [-6,-6,30,30][k] });
 
 /* ===================== PICTURES ===================== */
 const store = {
@@ -610,7 +690,7 @@ function refreshImages(){ if (S && !$("#game").hidden) renderMap(); if (!$("#pic
 /* ===================== STATE ===================== */
 const $ = s => document.querySelector(s);
 const COLORS = ["#D0453A","#2C6FB7","#2F9A57","#8A4FC7"];
-const SAVE = "quest-save-v5";
+const SAVE = "quest-save-v6";
 let S = null, setupCount = 2, mode = "spin"; // mode: spin | hop | wait
 
 function shuffle(a){ a = a.slice(); for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
@@ -627,7 +707,7 @@ function where(p){
   if (p.inSW) return "Spirit World · help someone on earth";
   if (p.pos >= LOOP) return "On the road to the Celestial Kingdom";
   if (p.pos < 0) return "Premortal Life · pop a 1 or 6 to be born";
-  return `Ordinances ${p.ords.length}/4 · Foundation ${Math.min(p.stones, NEED_STONES)}/${NEED_STONES}${ready(p) ? " · Ready! Head for Death" : ""}`;
+  return `Ordinances ${p.ords.length}/4 · Foundation ${Math.min(p.stones, NEED_STONES)}/${NEED_STONES}${ready(p) ? " · Ready! Head for the road home" : ""}`;
 }
 function log(msg){ S.log.unshift(msg); S.log = S.log.slice(0, 40); renderLog(); }
 function score(p){ return p.stars + Math.min(p.stones, NEED_STONES) * 2 + p.badges.length; }
@@ -669,7 +749,7 @@ function startGame(){
     const nm = ($("#pname"+i).value || "").trim() || "Player " + (i+1);
     players.push({ name:nm, color:COLORS[i], pos:-1, stars:0, stones:0, lost:0, ords:[], badges:[], hg:false, inSW:false, done:false, place:0 });
   }
-  S = { players, turn:0, decks:{}, log:[], finishedCount:0, over:false, remaining:0 };
+  S = { players, turn:0, decks:{}, log:[], finishedCount:0, over:false, remaining:0, need:NEED_STONES };
   log("The quest begins in premortal life.");
   save(); showIntro();
 }
@@ -738,13 +818,15 @@ function renderMap(){
   // Premortal Life circle (the starting area)
   g += `<circle cx="${PRE.x}" cy="${PRE.y}" r="${PRE.r+8}" fill="#FFC94A"/><circle cx="${PRE.x}" cy="${PRE.y}" r="${PRE.r}" fill="url(#sky)"/>`;
   for (let i=0;i<46;i++){ const a = rnd()*6.283, d = Math.sqrt(rnd())*(PRE.r-8); g += `<circle cx="${PRE.x+Math.cos(a)*d}" cy="${PRE.y+Math.sin(a)*d}" r="${rnd()*2+.6}" fill="#fff" opacity="${.4+rnd()*.6}"/>`; }
-  g += `<text x="${PRE.x}" y="${PRE.y-44}" text-anchor="middle" fill="#fff" class="lbl" font-size="19" letter-spacing="1">PREMORTAL LIFE</text>
-    <text x="${PRE.x}" y="${PRE.y+70}" text-anchor="middle" fill="#FFE29A" class="lbl" font-size="16">Pop 1 or 6</text>
+  g += `<text x="${PRE.x}" y="${PRE.y-38}" text-anchor="middle" fill="#fff" class="lbl" font-size="17" letter-spacing="1">PREMORTAL LIFE</text>
+    <text x="${PRE.x}" y="${PRE.y+62}" text-anchor="middle" fill="#FFE29A" class="lbl" font-size="15">Pop 1 or 6</text>
     <path d="M${PRE.x+PRE.r-6} ${PRE.y-50} Q${POS[0].x-20} ${PRE.y-70} ${POS[0].x-30} ${POS[0].y+40}" fill="none" stroke="#FFC94A" stroke-width="7" stroke-dasharray="2 12" stroke-linecap="round"/>`;
   // The road to the Celestial Kingdom: from Death through the Spirit World and the Resurrection
-  const lane = [POS[DEATH], ...POS.slice(LANE0)].map(p => `${p.x},${p.y}`).join(" ");
+  const lane = [POS[FORK], ...POS.slice(LANE0)].map(p => `${p.x},${p.y}`).join(" ");
   g += `<polyline points="${lane}" fill="none" stroke="#B9A0DE" stroke-width="80" stroke-linecap="round"/><polyline points="${lane}" fill="none" stroke="url(#laneG)" stroke-width="68" stroke-linecap="round"/>
-    <g transform="translate(${POS[LANE0+1].x-10} ${POS[LANE0+1].y+64}) rotate(${Math.atan2(CK.y-POS[DEATH].y, CK.x-POS[DEATH].x)*180/Math.PI})"><rect x="-98" y="-15" width="196" height="28" rx="14" fill="#4B2E80"/><text y="5" text-anchor="middle" fill="#fff" class="lbl" font-size="13">Need 4 ordinances + 6 stones</text></g>`;
+    <g transform="translate(${POS[LANE0+2].x-6} ${POS[LANE0+2].y+60}) rotate(${Math.atan2(CK.y-POS[FORK].y, CK.x-POS[FORK].x)*180/Math.PI})"><rect x="-98" y="-15" width="196" height="28" rx="14" fill="#4B2E80"/><text y="5" text-anchor="middle" fill="#fff" class="lbl" font-size="13">Need 4 ordinances + ${NEED_STONES} stones</text></g>`;
+  // signpost where the road home leaves the loop
+  { const f = POS[FORK]; g += `<g transform="translate(${f.x+48} ${f.y-44})"><rect x="-3" y="0" width="6" height="34" fill="#7A5A3A"/><path d="M-6 -16h52l10 10-10 10h-52z" fill="#4B2E80" stroke="#fff" stroke-width="2"/><text x="22" y="-1" text-anchor="middle" fill="#fff" class="lbl" font-size="11">Road home</text></g>`; }
   // The three kingdoms
   g += `<circle cx="${CK.x}" cy="${CK.y}" r="${CK.r+24}" fill="#FFE9A8" opacity=".55"/>`;
   for (let i=0;i<16;i++){ const a = i*Math.PI/8; g += `<line x1="${CK.x+Math.cos(a)*(CK.r+4)}" y1="${CK.y+Math.sin(a)*(CK.r+4)}" x2="${CK.x+Math.cos(a)*(CK.r+28)}" y2="${CK.y+Math.sin(a)*(CK.r+28)}" stroke="#FFF6D8" stroke-width="6" stroke-linecap="round"/>`; }
@@ -811,10 +893,11 @@ function scrollToPawn(){}
 function houseSvg(p){
   // 6 foundation stones under the house: 3 on the bottom row, 3 above
   let s = `<path d="M2 62l10-8 18 2 14-6 22 3 16-5 20 4 16-2v12z" fill="var(--rock)"/>`;
+  const per = Math.ceil(NEED_STONES / 2);
   for (let i=0;i<NEED_STONES;i++){
-    const row = i < 3 ? 0 : 1, col = i % 3, x = 22 + col*27 + (row ? 0 : 0), y = row ? 37 : 47;
+    const row = i < per ? 0 : 1, col = row ? i - per : i, w = per === 2 ? 38 : 24, x = 61 - per*(w+3)/2 + col*(w+3), y = row ? 37 : 47;
     const on = i < p.stones;
-    s += `<rect x="${x}" y="${y}" width="24" height="9" rx="2" fill="${on?"var(--t-land)":"var(--surface-2)"}" stroke="${on?"var(--t-land)":"var(--line)"}"/>`;
+    s += `<rect x="${x}" y="${y}" width="${w}" height="9" rx="2" fill="${on?"var(--t-land)":"var(--surface-2)"}" stroke="${on?"var(--t-land)":"var(--line)"}"/>`;
   }
   const full = ready(p);
   s += `<rect x="36" y="21" width="48" height="16" fill="${p.stones?"var(--surface)":"none"}" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="${p.stones?"":"3 3"}"/><path d="M30 22L60 5l30 17" fill="${full?"var(--gold)":"none"}" stroke="var(--ink)" stroke-width="1.5" stroke-linejoin="round"/><rect x="55" y="27" width="10" height="10" fill="var(--t-land)" opacity="${p.stones?1:.3}"/>`;
@@ -908,7 +991,7 @@ function hop(){
   p.pos = (p.pos + 1) % LOOP; S.remaining--;
   placePawn(k); countPop(p.pos); renderTurnbar();
   const sp = BOARD[p.pos], wait = reduced() ? 20 : 700;
-  if (p.pos === DEATH && ready(p)) { S.remaining = 0; return setTimeout(cardDeath, wait); }   // ready players stop at Death
+  if (p.pos === FORK && ready(p)) { S.remaining = 0; return setTimeout(cardDeath, wait); }   // ready players turn onto the road home
   if (sp.type === "sabbath" && S.remaining > 0){ p.stars += 1; toast("Passed the Sabbath: +1 ★"); renderPlayers(); }
   if (sp.type === "ord" && S.remaining > 0 && !S.ordThisTurn && p.ords.length < 4)   // passing an Ordinance space counts too (one per turn)
     return setTimeout(() => cardOrd(sp, () => { closeCard(); save(); toast(`${S.remaining} more to go. Keep counting!`); setMode("hop"); }), wait);
@@ -921,21 +1004,21 @@ function land(){
   const other = p.pos < LOOP && S.players.find((o, j) => j !== S.turn && o.pos === p.pos);
   if (other && sp.type !== "mile") return cardChallenge(other, endTurn);
   ({ habit:cardHabit, ord:cardOrd, repent:cardRepent, scripture:cardScripture, choose:cardChoose, storm:cardStorm, service:cardService, song:cardSong, sabbath:cardSabbath,
-     mile: () => { if (sp.mile === "death") toast(`Not yet: you need all 4 ordinances and ${NEED_STONES} foundation stones.`); setTimeout(endTurn, reduced() ? 20 : 1400); } })[sp.type](sp, endTurn);
+     mile: () => setTimeout(endTurn, reduced() ? 20 : 600) })[sp.type](sp, endTurn);
 }
 /* Move the current player forward on their own (after a good choice). */
 function autoHop(n, done){
   const k = S.turn, p = S.players[k];
   if (n <= 0) return done();
   p.pos = (p.pos + 1) % LOOP; placePawn(k);
-  if (p.pos === DEATH && ready(p)) return setTimeout(cardDeath, reduced() ? 20 : 600);
+  if (p.pos === FORK && ready(p)) return setTimeout(cardDeath, reduced() ? 20 : 600);
   setTimeout(() => autoHop(n - 1, done), reduced() ? 10 : 450);
 }
 /* Hop forward to the next Ordinance space and receive the ordinance there. */
 function hopToOrd(done){
   const k = S.turn, p = S.players[k];
   p.pos = (p.pos + 1) % LOOP; placePawn(k);
-  if (p.pos === DEATH && ready(p)) return setTimeout(cardDeath, reduced() ? 20 : 600);
+  if (p.pos === FORK && ready(p)) return setTimeout(cardDeath, reduced() ? 20 : 600);
   if (BOARD[p.pos].type === "ord") return setTimeout(() => cardOrd(BOARD[p.pos], done), reduced() ? 20 : 600);
   setTimeout(() => hopToOrd(done), reduced() ? 10 : 380);
 }
@@ -1008,29 +1091,39 @@ function cardOrd(sp, next){
     html: verseHTML(o.q) + (o.rule ? `<p><b>${o.rule}</b></p>` : "") + `<p class="result good">Ordinance received! +3 ★ <span class="small-note">(${p.ords.length} of 4)</span></p>` + btn("done","Done") });
   wire({ done: next });
 }
+/* Friend stories: name the story, then tell what really happened. */
+const storyHead = c => c.friend ? `<p class="small-note">From a true story in the <i>Friend</i>: “${c.friend}”</p>` : "";
+const storyEnd = c => c.friend ? `<div class="verse"><b>What really happened:</b> ${c.did}<a class="ref" href="${c.u}" target="_blank" rel="noopener">Read “${c.friend}” (${c.issue})</a></div>` : (c.v ? verseHTML(c.v) : "");
+/* Something to do (honor system). */
+function cardActivity(next){
+  const a = ACTIVITIES[draw("act", ACTIVITIES.length)], p = cur();
+  openCard({ kind:"scripture", label:"Something to do", title:a.title, img:"scripture", speak:`Something to do: ${a.title}. ${a.t}`,
+    html: `<p style="font-size:1.12rem">${a.t}</p><p class="small-note"><a href="${a.u}" target="_blank" rel="noopener">${a.src}</a></p>` + btn("ok","We did it! +2 ★") });
+  wire({ ok: () => { p.stars += 2; log(`${esc(p.name)} did “${a.title}” (+2 ★).`); renderPlayers(); next(); } });
+}
 /* Sometimes a win is a surprise trip to the next Ordinance space. */
 function surprise(p){ return p.ords.length < 4 && Math.random() < 0.25; }
 function addStone(p){ if (p.stones >= NEED_STONES) { p.stars += 2; return false; } p.stones++; return true; }
 function cardHabit(sp, next){
   const i = sp.topic, s = STONES[i], p = cur();
   const pool = CHOICES.map((c, j) => j).filter(j => CHOICES[j].stone === i);
-  const finish = (won) => {
+  const finish = (won, extra = "") => {
     let msg;
     if (won){ const got = addStone(p); p.stars += 1; msg = `<p class="result good">${got ? `A stone for your foundation! (${p.stones} of ${NEED_STONES})` : "Your foundation is full. +2 ★"} +1 ★</p>`; log(`${esc(p.name)} earned a stone: <b>${s.name}</b>.`); renderPlayers(); }
     else msg = `<p class="result bad">No stone this time.</p>`;
-    $("#out").innerHTML = msg + btn("done","Done"); wire({ done: next });
+    $("#out").innerHTML = msg + extra + btn("done","Done"); wire({ done: next });
   };
   const head = `<span class="tag">Foundation · ${s.name}</span>`;
   if (pool.length && Math.random() < 0.5){
     const c = CHOICES[pool[Math.floor(Math.random()*pool.length)]];
     const opts = shuffle([{t:c.good, ok:true},{t:c.bad, ok:false}]); let tries = 0;
     openCard({ kind:"habit", label:"Foundation", title:s.name, img:"rock", speak:`${s.name}. ${c.s} ${opts[0].t}? Or ${opts[1].t}?`,
-      html: head + `<p style="font-size:1.08rem">${c.s}</p><div class="choices">${opts.map((o,k) => `<button class="choice" type="button" data-act="pick" data-k="${k}">${esc(o.t)}</button>`).join("")}</div><div id="out"></div>` });
+      html: head + storyHead(c) + `<p style="font-size:1.08rem">${c.s}</p><div class="choices">${opts.map((o,k) => `<button class="choice" type="button" data-act="pick" data-k="${k}">${esc(o.t)}</button>`).join("")}</div><div id="out"></div>` });
     wire({ pick: b => {
       const o = opts[+b.dataset.k]; tries++;
       if (!o.ok && tries === 1){ b.classList.add("wrong"); b.disabled = true; $("#out").innerHTML = `<p class="result bad">Repent and try again!</p>`; return; }
       $("#card").querySelectorAll(".choice").forEach(x => x.disabled = true); if (o.ok) b.classList.add("right");
-      finish(o.ok);
+      finish(o.ok, storyEnd(c));
     }});
   } else {
     const q = blankQuiz(s.v.t, s.blank, s.w, s.v.r, s.v.u, (right) => finish(right));
@@ -1049,6 +1142,7 @@ function cardRepent(sp, next){
 }
 
 function cardScripture(sp, next){
+  if (Math.random() < 0.5) return cardActivity(next);
   const c = SCRIPTURES[draw("scripture", SCRIPTURES.length)], p = cur();
   const text = c.t.replace("___", c.a);
   const q = blankQuiz(text, c.a, c.w, c.r, c.u, (right) => {
@@ -1065,19 +1159,19 @@ function cardChoose(sp, next){
   const c = CHOICES[draw("choose", CHOICES.length)], p = cur();
   const opts = shuffle([{t:c.good, ok:true},{t:c.bad, ok:false}]);
   let tries = 0;
-  openCard({ kind:"choose", label: c.story ? "Scripture story" : "Choose the Right", title: c.story ? "What did they do?" : "What would you choose?", img: c.story ? "story" : "choose",
+  openCard({ kind:"choose", label: c.story ? "Scripture story" : "Choose the Right", title: c.story ? "What did they do?" : "What would you do?", img: c.story ? "story" : "choose",
     speak: `${c.s} ${opts[0].t}? Or ${opts[1].t}?`,
-    html: `<p style="font-size:1.1rem">${c.s}</p><div class="choices">${opts.map((o,i) => `<button class="choice" type="button" data-act="pick" data-i="${i}">${esc(o.t)}</button>`).join("")}</div><div id="out"></div>` });
+    html: storyHead(c) + `<p style="font-size:1.1rem">${c.s}</p><div class="choices">${opts.map((o,i) => `<button class="choice" type="button" data-act="pick" data-i="${i}">${esc(o.t)}</button>`).join("")}</div><div id="out"></div>` });
   wire({ pick: b => {
     const o = opts[+b.dataset.i]; tries++;
     if (!o.ok){ b.classList.add("wrong"); b.disabled = true; $("#out").innerHTML = `<p class="result bad">Repent and try again!</p>`; return; }
     b.classList.add("right"); $("#card").querySelectorAll(".choice").forEach(x => x.disabled = true);
-    if (tries > 1){ p.stars += 1; log(`${esc(p.name)} chose again (+1 ★).`); $("#out").innerHTML = `<p class="result good">+1 ★</p>${btn("done","Done")}`; return wire({ done: next }); }
+    if (tries > 1){ p.stars += 1; log(`${esc(p.name)} chose again (+1 ★).`); $("#out").innerHTML = `<p class="result good">+1 ★</p>${storyEnd(c)}${btn("done","Done")}`; return wire({ done: next }); }
     p.stars += 3;
     const got = addStone(p);
     log(`${esc(p.name)} chose the right${got?" and earned a stone":""} (+3 ★).`);
     const toOrd = surprise(p);
-    $("#out").innerHTML = `<p class="result good">${c.story ? "That’s what happened!" : "Great choice!"} +3 ★${got?` and a stone (${p.stones} of ${NEED_STONES})`:""}</p>${c.v ? verseHTML(c.v) : ""}${toOrd ? `<p class="result good">Surprise! Go to the next Ordinance space!</p>${btn("jump","Go ➜")}` : btn("jump","Jump ahead 2 ➜")}`;
+    $("#out").innerHTML = `<p class="result good">${c.story ? "That’s what happened!" : "Great choice!"} +3 ★${got?` and a stone (${p.stones} of ${NEED_STONES})`:""}</p>${storyEnd(c)}${toOrd ? `<p class="result good">Surprise! Go to the next Ordinance space!</p>${btn("jump","Go ➜")}` : btn("jump","Jump ahead 2 ➜")}`;
     renderPlayers();
     wire({ jump: () => { closeCard(); toOrd ? hopToOrd(next) : autoHop(2, next); } });
   }});
@@ -1097,7 +1191,7 @@ function cardStorm(sp, next){
 }
 function cardService(sp, next){
   const p = cur(), others = S.players.filter(x => x !== p && x.pos >= 0 && x.pos < LOOP);
-  const stepFwd = pl => { if (pl.pos < 0 || pl.pos >= LOOP || (pl.pos + 1) % LOOP === DEATH) { pl.stars += 1; return false; } pl.pos = (pl.pos + 1) % LOOP; placePawn(S.players.indexOf(pl)); return true; };
+  const stepFwd = pl => { if (pl.pos < 0 || pl.pos >= LOOP || (pl.pos + 1) % LOOP === FORK) { pl.stars += 1; return false; } pl.pos = (pl.pos + 1) % LOOP; placePawn(S.players.indexOf(pl)); return true; };
   const body = others.length
     ? `<p>Choose someone to help. You both move ahead 1.</p><div class="choices">${others.map(o => { const n = S.players.indexOf(o); return `<button class="choice" type="button" data-act="pick" data-n="${n}"><span class="token" style="display:inline-grid;width:24px;height:24px;margin-right:8px;background:${o.color}">${n+1}</span>${esc(o.name)}</button>`; }).join("")}</div>`
     : `<p>Do something kind for someone in your family right now.</p>${btn("solo","I helped someone")}`;
@@ -1139,10 +1233,11 @@ function cardChallenge(other, next){
 }
 function cardDeath(){
   const p = cur(), m = MILES.death;
+  p.pos = DEATH; placePawn(S.turn);
   log(`<b>${esc(p.name)}</b> passed through death into the Spirit World.`);
   openCard({ kind:"mile", title:"Death", img:"death", speak:`Death. ${m.q.t} ${m.q.r}. Then the spirit world. ${MILES.spiritworld.q.t}`,
     html: verseHTML(m.q) + verseHTML(MILES.spiritworld.q) + `<p>Wait in the Spirit World. On your turns, help players still on earth. When everyone is there, you all head to the Celestial Kingdom.</p>` + btn("go","Go to the Spirit World") });
-  wire({ go: () => { closeCard(); p.pos = LANE0; p.inSW = true; placePawn(S.turn); renderPlayers(); setTimeout(endTurn, reduced() ? 20 : 700); } });
+  wire({ go: () => { closeCard(); p.pos = SWI; p.inSW = true; placePawn(S.turn); renderPlayers(); setTimeout(endTurn, reduced() ? 20 : 700); } });
 }
 /* From the Spirit World: help someone still on earth. Win the challenge and they gain a foundation stone (or are born, if still in the premortal life). */
 function cardHelp(){
@@ -1263,7 +1358,9 @@ function showRules(){
 }
 $("#mosesLink").href = sc("pgp/moses/1",39); $("#nelsonLink").href = `${C}general-conference/2022/10/47nelson?lang=eng`;
 $("#btnStart").onclick = startGame;
-$("#btnResume").onclick = () => { try { S = JSON.parse(store.get(SAVE)); mode = "spin"; S.remaining = 0; showGame(); } catch(e){ toast("The saved game could not be opened."); store.del(SAVE); renderSetup(); } };
+const setLen = n => { NEED_STONES = n; $("#lenShort").setAttribute("aria-pressed", n === 4); $("#lenLong").setAttribute("aria-pressed", n === 6); };
+$("#lenShort").onclick = () => setLen(4); $("#lenLong").onclick = () => setLen(6);
+$("#btnResume").onclick = () => { try { S = JSON.parse(store.get(SAVE)); NEED_STONES = S.need || 6; mode = "spin"; S.remaining = 0; showGame(); } catch(e){ toast("The saved game could not be opened."); store.del(SAVE); renderSetup(); } };
 $("#btnSpin").onclick = onTurnButton;
 $("#popper").addEventListener("click", () => { if (mode === "spin" && !cur().inSW) spin(); });
 $("#map").addEventListener("click", e => { if (e.target.closest("#nextRing") || e.target.closest(".pawnG.go")) hop(); });
@@ -1283,7 +1380,7 @@ matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => { 
 
 function start(data){
   drawSpinner(); renderSetup(); probeFiles();
-  if (data && data.S && !data.S.over){ S = data.S; mode = "spin"; S.remaining = 0; showGame(); }
+  if (data && data.S && !data.S.over){ S = data.S; NEED_STONES = S.need || 6; mode = "spin"; S.remaining = 0; showGame(); }
 }
 window.claude?.hot?.snapshot?.(() => ({ S }));
 window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
