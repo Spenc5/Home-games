@@ -226,7 +226,7 @@ a{color:var(--t-scripture)}
     <ol>
       <li><b>Start in the Premortal Life circle.</b> Tap <b>Pop!</b> You need a <b>1 or 6</b> to be born. Pop a 6 any time and you go again.</li>
       <li><b>Move your own piece:</b> tap the glowing space (or your piece) once for each space, and count out loud. Keep going around the board as many times as you need.</li>
-      <li><b>Land on or pass a gold Ordinance space</b> to receive the next ordinance you need (one per turn), in order: Baptism and Confirmation, Sacrament, Temple Endowment, Temple Sealing.</li>
+      <li><b>Land on a gold Ordinance space</b> to receive the next ordinance you need, in order: Baptism and Confirmation, Sacrament, Temple Endowment, Temple Sealing.</li>
       <li><b>Build a foundation of stones</b> (4 in a short game, 6 in a long one). Win the challenge on a brown foundation space (prayer, scriptures, tithing and more) or a green Choose space. Sometimes a win is a surprise trip to the next Ordinance space!</li>
       <li><b>Repent spaces</b> are all around the board. Storms can knock a stone loose; repenting puts it back. Miss a challenge? Repent and try again.</li>
       <li><b>Land on someone?</b> Team challenge! Work it out together, and you both earn blessings.</li>
@@ -990,8 +990,6 @@ function hop(){
   const sp = BOARD[p.pos], wait = reduced() ? 20 : 700;
   if (p.pos === FORK && ready(p)) { S.remaining = 0; return setTimeout(cardDeath, wait); }   // ready players turn onto the road home
   if (sp.type === "sabbath" && S.remaining > 0){ p.stars += 1; toast("Passed the Sabbath: +1 ★"); renderPlayers(); }
-  if (sp.type === "ord" && S.remaining > 0 && !S.ordThisTurn && p.ords.length < 4)   // passing an Ordinance space counts too (one per turn)
-    return setTimeout(() => cardOrd(sp, () => { closeCard(); save(); toast(`${S.remaining} more to go. Keep counting!`); setMode("hop"); }), wait);
   if (S.remaining > 0) return setTimeout(() => setMode("hop"), reduced() ? 10 : 350);
   setTimeout(land, wait);
 }

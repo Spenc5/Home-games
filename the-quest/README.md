@@ -12,7 +12,7 @@ Open `index.html` in a web browser. It's one file with nothing to install. The w
 2. **Premortal life.** The opening scene shows (with "I Lived in Heaven"). Tap **Start the journey**.
 3. **Born on earth.** Everyone starts in the Premortal Life circle. Tap **Pop!** to roll the die. You need a **1 or 6** to be born. Pop a 6 any time and you go again.
 4. **Move your own piece.** Tap the glowing space (or your piece) once for each space and count out loud; a number pops up on each space. Go around the board as many times as you need. To leave earth you need:
-   - **All 4 ordinances**, in order: Baptism and Confirmation, Sacrament, Temple Endowment, Temple Sealing. Land on or pass a gold **Ordinance** space to receive the next one you need (one per turn).
+   - **All 4 ordinances**, in order: Baptism and Confirmation, Sacrament, Temple Endowment, Temple Sealing. Land on a gold **Ordinance** space to receive the next one you need.
    - **A foundation of stones** (4 in a short game, 6 in a long one). Win the challenge on a brown foundation space (the ideas from the handout: prayer, scriptures, tithing, service and more) or a green Choose space.
 5. **Daily repentance.** Teal **Repent** spaces are all around the board. Storms can knock a stone loose; landing on Repent puts it back. Miss a challenge? Repent and try again.
 6. **The road home.** Death is not on the loop, so no one can land on it early. With all 4 ordinances and your stones, turn onto the **road home** at the signpost. It leads through **Death** into the **Spirit World**. Wait there; on your turns, help players still on earth (win a challenge and they get a stone).
