@@ -2,7 +2,7 @@
 
 A board game about the plan of salvation for children ages 6 to 10. It's for 1 to 4 players on one phone, tablet or computer, and reinforces what children have been taught.
 
-The trail is a map of the handout *The Quest*. Players start in the premortal life, then walk earth life past the handout's 13 foundation landmarks, building a house on the rock as they go. Then they continue through the spirit world and the Resurrection to eternal life.
+Players start in the premortal life, are born, and travel around earth life collecting the four ordinances and building a house on the rock from the ideas in the handout *The Quest*. Then they pass through death and the spirit world, and are resurrected together into the Celestial Kingdom.
 
 ## Playing
 
@@ -42,9 +42,8 @@ Every picture has a slot name. To change one for everyone, put a picture in `ima
 | `premortal` | The opening Premortal Life scene |
 | `birth`, `death`, `baptism`, `sabbath` (Sacrament), `temple` (Temple Endowment), `sealing`, `spiritworld`, `resurrection`, `home` | Milestones and ordinances (`home` is the Celestial Kingdom) |
 | `christus` | The Christus in the Premortal Life circle |
-| `stone1` … `stone13` | Landmarks 1–13 (landmark 8 uses `temple`) |
 | `temple` | Landmark 8, Go to the temple |
-| `rock` | Default picture for any landmark without its own |
+| `rock` | Foundation cards (house on the rock) |
 | `storm`, `scripture`, `choose`, `story`, `service`, `song`, `sabbath` | Card pictures |
 
 Find pictures in the Church [Media Library](https://www.churchofjesuschrist.org/media/images?lang=eng) and the [Gospel Art Book](https://www.churchofjesuschrist.org/media/collection/gospel-art-book-images?lang=eng). Church images may be used for non-commercial family and Church use. Check each image's usage notes.
@@ -53,7 +52,8 @@ Find pictures in the Church [Media Library](https://www.churchofjesuschrist.org/
 
 Everything is near the top of the script in `index.html`:
 
-- `STONES` holds the 13 landmarks and their scriptures.
+- `STONES` holds the handout's ideas and their scriptures (used on foundation spaces).
+- `ORDS` holds the four ordinances.
 - `SCRIPTURES` holds the finish-the-verse cards.
 - `CHOICES` holds the modern situations and scripture stories.
 - `STORMS` holds the storms.
