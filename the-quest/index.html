@@ -1,8 +1,5 @@
 <title>The Quest</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Andika:wght@400;700&display=swap">
 <style>
 /* Layout: a winding trail map from premortal life (top) to home (bottom), with a player rail beside it; cards open over the map. */
 :root{
@@ -11,8 +8,8 @@
   --pre:#5450C8; --earth:#2F8F57; --sw:#8A63C4; --res:#D9772B;
   --t-scripture:#2C6FB7; --t-land:#7E6A55; --t-choose:#2F8F57; --t-storm:#56637A; --t-service:#C2456B; --t-song:#7A4FC0; --t-sabbath:#C98A0E;
   --good:#2F8F57; --bad:#B8443A;
-  --display:"Baloo 2", "Trebuchet MS", system-ui, sans-serif;
-  --body:"Andika", "Verdana", system-ui, sans-serif;
+  --display:"Times New Roman", Times, serif;
+  --body:"Times New Roman", Times, serif;
   --radius:14px; --shadow:0 6px 22px rgba(27,39,64,.16);
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
@@ -768,7 +765,7 @@ function sceneSvg(){
     <g><circle cx="560" cy="92" r="17" fill="#fff"/><path d="M548 112h24l26 40-12 6-10-18 8 112h-50l8-112-10 18-12-6z" fill="#fff"/><path d="M552 114l18 0-34 150-10-2z" fill="#D9CFA0"/><path d="M545 270l-3 14M575 270l3 14" stroke="#D9CFA0" stroke-width="4" stroke-linecap="round"/></g>
     ${people(130, 9, false)}${people(745, 9, true)}
     ${clouds.map((c,i) => `<polygon points="${c.reduce((a,v,j)=>a+(j%2?v+" ":v+","),"")}" fill="${cloudCols[i%cloudCols.length]}"/>`).join("")}
-    <text x="560" y="575" text-anchor="middle" fill="#fff" font-family="Baloo 2, Arial, sans-serif" font-weight="800" font-size="82" letter-spacing="3">PREMORTAL LIFE</text>
+    <text x="560" y="575" text-anchor="middle" fill="#fff" font-family="Times New Roman, Times, serif" font-weight="800" font-size="82" letter-spacing="3">PREMORTAL LIFE</text>
   </svg>`;
 }
 function showIntro(){
