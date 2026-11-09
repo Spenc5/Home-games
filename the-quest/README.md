@@ -31,7 +31,7 @@ Open `index.html` in a web browser. It's one file with nothing to install. The w
 
 Sometimes a win is a surprise trip to the next Ordinance space. **Score = blessings + 2 for each stone + 1 for each storm overcome.** First into the Celestial Kingdom gets +5 ★, second +3, third +2, fourth +1.
 
-Every card has a **Read aloud** button. A game in progress is saved on the device.
+Every card has a **Read aloud** button. The game has sound effects (die pop, counting ticks, chimes, thunder for storms, fanfares for ordinances); turn them off with **Sound** at the top. A game in progress is saved on the device.
 
 ## Changing the pictures
 

@@ -183,6 +183,7 @@ a{color:var(--t-scripture)}
     </div>
     <div class="top-actions">
       <button class="btn small" id="btnRules" type="button">How to play</button>
+      <button class="btn small" id="btnSound" type="button">🔊 Sound on</button>
       <button class="btn small" id="btnPics" type="button">Pictures</button>
       <button class="btn small" id="btnNew" type="button" hidden>New game</button>
     </div>
@@ -684,6 +685,49 @@ function imgSrc(slot){
 const stoneImg = () => "rock";
 function refreshImages(){ if (S && !$("#game").hidden) renderMap(); if (!$("#pictures").hidden) renderPics(); }
 
+/* ===================== SOUND EFFECTS (made in the browser, no files) ===================== */
+const SFX = (() => {
+  let ctx = null, on = true;
+  try { on = localStorage.getItem("quest-sound") !== "off"; } catch(e){}
+  const ac = () => { if (!ctx) { try { ctx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){} } if (ctx && ctx.state === "suspended") ctx.resume(); return ctx; };
+  function tone(freq, dur, type = "sine", vol = .2, when = 0, slide = 0){
+    const c = ac(); if (!c) return; const t = c.currentTime + when;
+    const o = c.createOscillator(), g = c.createGain(); o.type = type; o.frequency.setValueAtTime(freq, t);
+    if (slide) o.frequency.exponentialRampToValueAtTime(slide, t + dur);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + .012); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    o.connect(g).connect(c.destination); o.start(t); o.stop(t + dur + .03);
+  }
+  function noise(dur, vol = .25, when = 0, cutoff = 600){
+    const c = ac(); if (!c) return; const t = c.currentTime + when;
+    const b = c.createBuffer(1, Math.floor(c.sampleRate * dur), c.sampleRate), d = b.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = (Math.random()*2 - 1) * (1 - i / d.length);
+    const src = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
+    src.buffer = b; f.type = "lowpass"; f.frequency.value = cutoff; g.gain.value = vol;
+    src.connect(f).connect(g).connect(c.destination); src.start(t);
+  }
+  const notes = (list, type = "sine", vol = .2, gap = .1, dur = .2) => list.forEach((fq, i) => tone(fq, dur, type, vol, i * gap));
+  const S = {
+    rattle(){ for (let i = 0; i < 8; i++) tone(260 + Math.random()*380, .04, "square", .05, i * .09); },
+    pop(){ tone(420, .09, "sine", .3, 0, 1300); tone(1000, .06, "triangle", .12, .06); },
+    hop(n = 1){ tone(392 * Math.pow(1.12, Math.min(n, 8) - 1), .1, "triangle", .22); },
+    good(){ notes([523, 659, 784], "sine", .2, .09, .2); },
+    bad(){ tone(330, .18, "triangle", .16, 0, 260); tone(262, .26, "triangle", .14, .16, 208); },
+    stone(){ noise(.14, .45, .32, 320); tone(110, .16, "sine", .3, .32); },
+    ord(){ notes([523, 659, 784, 1047], "triangle", .2, .12, .28); tone(1047, .6, "sine", .12, .48); },
+    storm(){ noise(1.6, .5, 0, 260); noise(.9, .35, .5, 500); },
+    repent(){ notes([1047, 1319, 1568, 2093], "sine", .12, .07, .25); },
+    coin(){ tone(988, .08, "square", .1); tone(1319, .18, "square", .1, .08); },
+    born(){ notes([392, 523, 659, 784], "sine", .2, .1, .22); },
+    soft(){ tone(294, .5, "sine", .14); tone(392, .6, "sine", .1, .25); },
+    finish(){ notes([523, 659, 784, 1047, 784, 1047], "triangle", .2, .13, .3); tone(1568, .9, "sine", .1, .8); },
+  };
+  return {
+    play(k, ...a){ if (!on) return; try { S[k] && S[k](...a); } catch(e){} },
+    toggle(){ on = !on; try { localStorage.setItem("quest-sound", on ? "on" : "off"); } catch(e){} if (on) ac(); return on; },
+    get on(){ return on; },
+  };
+})();
+
 /* ===================== STATE ===================== */
 const $ = s => document.querySelector(s);
 const COLORS = ["#D0453A","#2C6FB7","#2F9A57","#8A4FC7"];
@@ -943,16 +987,16 @@ function setMode(m){ mode = m; renderTurnbar(); }
 function onTurnButton(){ if (cur().inSW) { if (mode === "spin") cardHelp(); } else if (mode === "spin") spin(); }
 function spin(){
   if (mode !== "spin" || S.over || cur().inSW) return;
-  setMode("wait");
+  setMode("wait"); SFX.play("rattle");
   const n = 1 + Math.floor(Math.random()*SPIN_N);
   const pop = $("#popper"); pop.classList.remove("pop"); void pop.offsetWidth; pop.classList.add("pop");
   let flips = 0; const flip = setInterval(() => { $("#die").innerHTML = dieFace(1 + Math.floor(Math.random()*6)); $("#die").style.transform = `rotate(${(Math.random()-.5)*50}deg) translate(${(Math.random()-.5)*8}px,${(Math.random()-.5)*8}px)`; if (++flips > 7) clearInterval(flip); }, 90);
   setTimeout(() => {
-    clearInterval(flip); $("#die").innerHTML = dieFace(n); $("#die").style.transform = "";
+    clearInterval(flip); $("#die").innerHTML = dieFace(n); $("#die").style.transform = ""; SFX.play("pop");
     const p = cur(); S.again = n === 6;
     if (p.pos < 0){
       if (n === 1 || n === 6){
-        toast(`${p.name} popped a ${n}. Born on earth!`); log(`${esc(p.name)} was born on earth.`);
+        SFX.play("born"); toast(`${p.name} popped a ${n}. Born on earth!`); log(`${esc(p.name)} was born on earth.`);
         p.pos = 0; placePawn(S.turn);
         return setTimeout(() => cardMile("birth", endTurn), reduced() ? 20 : 800);
       }
@@ -964,7 +1008,7 @@ function spin(){
 }
 /* Show the count (1, 2, 3…) on the space the piece just reached. */
 function countPop(pos){
-  S.counted = (S.counted || 0) + 1;
+  S.counted = (S.counted || 0) + 1; SFX.play("hop", S.counted);
   const svg = document.querySelector("#map svg"); if (!svg) return;
   const p = POS[pos], t = document.createElementNS("http://www.w3.org/2000/svg", "g");
   t.setAttribute("class", "countPop");
@@ -1062,7 +1106,7 @@ function blankQuiz(text, answer, wrong, ref, url, onDone){
   const speak = `${text.replace(answer, "blank")} ${ref}. Is it: ${opts.join(", or ")}?`;
   let tries = 0;
   const wireIt = () => wire({ pick: b => {
-    const right = b.dataset.v === answer; tries++;
+    const right = b.dataset.v === answer; tries++; SFX.play(right ? "good" : "bad");
     if (!right && tries === 1){ b.classList.add("wrong"); b.disabled = true; $("#out").innerHTML = `<p class="result bad">Repent and try again!</p>`; return; }
     $("#card").querySelectorAll(".choice").forEach(x => { x.disabled = true; if (x.dataset.v === answer) x.classList.add("right"); else if (x === b) x.classList.add("wrong"); });
     lastSpeech = text + " " + ref;
@@ -1080,7 +1124,7 @@ function cardOrd(sp, next){
   const p = cur(), o = ORDS[p.ords.length];   // the next ordinance this player needs
   if (!o || S.ordThisTurn){ p.stars += 1; toast(o ? "One ordinance per turn. +1 ★" : "You have all 4 ordinances. +1 ★"); renderPlayers(); return setTimeout(next, reduced() ? 20 : 1300); }
   S.ordThisTurn = true;
-  p.ords.push(o.key); p.stars += 3; if (o.key === "baptism") p.hg = true;
+  p.ords.push(o.key); p.stars += 3; SFX.play("ord"); if (o.key === "baptism") p.hg = true;
   log(`${esc(p.name)} received <b>${o.title}</b> (+3 ★).`); renderPlayers();
   openCard({ kind:"ord", label:"Ordinance", title:o.title, img:o.img, speak:`${o.title}. ${o.q.t} ${o.q.r}. ${o.rule||""}`,
     html: verseHTML(o.q) + (o.rule ? `<p><b>${o.rule}</b></p>` : "") + `<p class="result good">Ordinance received! +3 ★ <span class="small-note">(${p.ords.length} of 4)</span></p>` + btn("done","Done") });
@@ -1094,11 +1138,11 @@ function cardActivity(next){
   const a = ACTIVITIES[draw("act", ACTIVITIES.length)], p = cur();
   openCard({ kind:"scripture", label:"Something to do", title:a.title, img:"scripture", speak:`Something to do: ${a.title}. ${a.t}`,
     html: `<p style="font-size:1.12rem">${a.t}</p><p class="small-note"><a href="${a.u}" target="_blank" rel="noopener">${a.src}</a></p>` + btn("ok","We did it! +2 ★") });
-  wire({ ok: () => { p.stars += 2; log(`${esc(p.name)} did “${a.title}” (+2 ★).`); renderPlayers(); next(); } });
+  wire({ ok: () => { p.stars += 2; SFX.play("coin"); log(`${esc(p.name)} did “${a.title}” (+2 ★).`); renderPlayers(); next(); } });
 }
 /* Sometimes a win is a surprise trip to the next Ordinance space. */
 function surprise(p){ return p.ords.length < 4 && Math.random() < 0.25; }
-function addStone(p){ if (p.stones >= NEED_STONES) { p.stars += 2; return false; } p.stones++; return true; }
+function addStone(p){ if (p.stones >= NEED_STONES) { p.stars += 2; return false; } p.stones++; SFX.play("stone"); return true; }
 function cardHabit(sp, next){
   const i = sp.topic, s = STONES[i], p = cur();
   const pool = CHOICES.map((c, j) => j).filter(j => CHOICES[j].stone === i);
@@ -1115,7 +1159,7 @@ function cardHabit(sp, next){
     openCard({ kind:"habit", label:"Foundation", title:s.name, img:"rock", speak:`${s.name}. ${c.s} ${opts[0].t}? Or ${opts[1].t}?`,
       html: head + storyHead(c) + `<p style="font-size:1.08rem">${c.s}</p><div class="choices">${opts.map((o,k) => `<button class="choice" type="button" data-act="pick" data-k="${k}">${esc(o.t)}</button>`).join("")}</div><div id="out"></div>` });
     wire({ pick: b => {
-      const o = opts[+b.dataset.k]; tries++;
+      const o = opts[+b.dataset.k]; tries++; SFX.play(o.ok ? "good" : "bad");
       if (!o.ok && tries === 1){ b.classList.add("wrong"); b.disabled = true; $("#out").innerHTML = `<p class="result bad">Repent and try again!</p>`; return; }
       $("#card").querySelectorAll(".choice").forEach(x => x.disabled = true); if (o.ok) b.classList.add("right");
       finish(o.ok, storyEnd(c));
@@ -1127,7 +1171,7 @@ function cardHabit(sp, next){
   }
 }
 function cardRepent(sp, next){
-  const p = cur();
+  const p = cur(); SFX.play("repent");
   let msg;
   if (p.lost > 0){ p.lost--; p.stones++; msg = `A loose stone goes back in your foundation! (${p.stones} of ${NEED_STONES})`; log(`${esc(p.name)} repented and restored a stone.`); }
   else { p.stars += 2; msg = "A fresh start! +2 ★"; log(`${esc(p.name)} repented (+2 ★).`); }
@@ -1158,7 +1202,7 @@ function cardChoose(sp, next){
     speak: `${c.s} ${opts[0].t}? Or ${opts[1].t}?`,
     html: storyHead(c) + `<p style="font-size:1.1rem">${c.s}</p><div class="choices">${opts.map((o,i) => `<button class="choice" type="button" data-act="pick" data-i="${i}">${esc(o.t)}</button>`).join("")}</div><div id="out"></div>` });
   wire({ pick: b => {
-    const o = opts[+b.dataset.i]; tries++;
+    const o = opts[+b.dataset.i]; tries++; SFX.play(o.ok ? "good" : "bad");
     if (!o.ok){ b.classList.add("wrong"); b.disabled = true; $("#out").innerHTML = `<p class="result bad">Repent and try again!</p>`; return; }
     b.classList.add("right"); $("#card").querySelectorAll(".choice").forEach(x => x.disabled = true);
     if (tries > 1){ p.stars += 1; log(`${esc(p.name)} chose again (+1 ★).`); $("#out").innerHTML = `<p class="result good">+1 ★</p>${storyEnd(c)}${btn("done","Done")}`; return wire({ done: next }); }
@@ -1173,7 +1217,7 @@ function cardChoose(sp, next){
 }
 
 function cardStorm(sp, next){
-  const p = cur(), st = STORMS[draw("storm", STORMS.length)];
+  const p = cur(), st = STORMS[draw("storm", STORMS.length)]; SFX.play("storm");
   const strength = p.stones + (p.hg ? 1 : 0), stands = strength >= sp.power;
   let res;
   if (stands){ p.stars += 2; p.badges.push(st.name); res = `<p class="result good">Your house stands! +2 ★</p>`; }
@@ -1192,7 +1236,7 @@ function cardService(sp, next){
     : `<p>Do something kind for someone in your family right now.</p>${btn("solo","I helped someone")}`;
   openCard({ kind:"service", title:"Time to serve", img:"service", speak:`Time to serve. ${others.length?"Choose someone to help.":"Do something kind for someone in your family."}`, html: body + `<div id="out"></div>` });
   wire({
-    pick: b => { const o = S.players[+b.dataset.n]; closeCard(); stepFwd(p); stepFwd(o); log(`${esc(p.name)} served ${esc(o.name)}. Both moved ahead.`); toast(`${p.name} and ${o.name} move ahead!`); renderPlayers(); setTimeout(next, reduced() ? 20 : 900); },
+    pick: b => { const o = S.players[+b.dataset.n]; closeCard(); SFX.play("coin"); stepFwd(p); stepFwd(o); log(`${esc(p.name)} served ${esc(o.name)}. Both moved ahead.`); toast(`${p.name} and ${o.name} move ahead!`); renderPlayers(); setTimeout(next, reduced() ? 20 : 900); },
     solo: () => { p.stars += 2; log(`${esc(p.name)} served someone (+2 ★).`); closeCard(); toast("+2 ★ for serving!"); renderPlayers(); setTimeout(next, reduced() ? 20 : 900); },
   });
 }
@@ -1201,11 +1245,11 @@ function cardSong(sp, next){
   const s = SONGS[draw("song", SONGS.length)], p = cur();
   openCard({ kind:"song", title:s.t, img:"song", speak:`Song time! Sing or hum ${s.t} together.`,
     html: `<p>Sing or hum a verse together!</p><p class="small-note"><a href="${s.u}" target="_blank" rel="noopener">${s.t}</a>, <i>Children’s Songbook</i>, ${s.p}</p>${btn("ok","We sang it! +2 ★")}` });
-  wire({ ok: () => { p.stars += 2; log(`${esc(p.name)} led “${s.t}” (+2 ★).`); next(); } });
+  wire({ ok: () => { p.stars += 2; SFX.play("coin"); log(`${esc(p.name)} led “${s.t}” (+2 ★).`); next(); } });
 }
 
 function cardSabbath(sp, next){
-  const p = cur(); p.stars += 2;
+  const p = cur(); p.stars += 2; SFX.play("coin");
   log(`${esc(p.name)} kept the Sabbath day holy (+2 ★).`); toast("Sabbath day! +2 ★"); renderPlayers();
   setTimeout(next, reduced() ? 20 : 1200);
 }
@@ -1227,7 +1271,7 @@ function cardChallenge(other, next){
   q.wireIt();
 }
 function cardDeath(){
-  const p = cur(), m = MILES.death;
+  const p = cur(), m = MILES.death; SFX.play("soft");
   p.pos = DEATH; placePawn(S.turn);
   log(`<b>${esc(p.name)}</b> passed through death into the Spirit World.`);
   openCard({ kind:"mile", title:"Death", img:"death", speak:`Death. ${m.q.t} ${m.q.r}. Then the spirit world. ${MILES.spiritworld.q.t}`,
@@ -1270,7 +1314,7 @@ function cardGate(){
 }
 function finishPlayer(){
   const p = cur(), h = MILES.home;
-  S.finishedCount = (S.finishedCount || 0) + 1; p.done = true; p.place = S.finishedCount;
+  S.finishedCount = (S.finishedCount || 0) + 1; p.done = true; p.place = S.finishedCount; SFX.play("finish");
   const bonus = [0,5,3,2,1][p.place] || 0; p.stars += bonus;
   placePawn(S.turn); renderPlayers();
   log(`<b>${esc(p.name)} entered the Celestial Kingdom!</b> +${bonus} ★`);
@@ -1352,6 +1396,9 @@ function showRules(){
   wire({ done: closeCard });
 }
 $("#mosesLink").href = sc("pgp/moses/1",39); $("#nelsonLink").href = `${C}general-conference/2022/10/47nelson?lang=eng`;
+const soundLabel = () => $("#btnSound").textContent = SFX.on ? "🔊 Sound on" : "🔇 Sound off";
+$("#btnSound").onclick = () => { SFX.toggle(); soundLabel(); if (SFX.on) SFX.play("coin"); };
+soundLabel();
 $("#btnStart").onclick = startGame;
 const setLen = n => { NEED_STONES = n; $("#lenShort").setAttribute("aria-pressed", n === 4); $("#lenLong").setAttribute("aria-pressed", n === 6); };
 $("#lenShort").onclick = () => setLen(4); $("#lenLong").onclick = () => setLen(6);
