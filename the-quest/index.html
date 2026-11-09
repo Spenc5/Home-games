@@ -92,16 +92,14 @@ a{color:var(--t-scripture)}
 /* game */
 .game{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}
 @media (max-width:900px){.game{grid-template-columns:minmax(0,1fr)}}
-.map-wrap{border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);min-width:0;background:var(--surface)}
-.map{position:relative;width:100%}
-.map svg{display:block}
-.map .lbl{font-family:var(--display);font-weight:700}
-.pawn{position:absolute;width:24px;height:24px;margin:-12px 0 0 -12px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.5);transition:left .45s ease, top .45s ease;z-index:5;display:grid;place-items:center;color:#fff;font-family:var(--display);font-weight:800;font-size:.72rem}
-.pawn.active{z-index:6;animation:bob 1s ease-in-out infinite}
-.pawn.go{width:32px;height:32px;margin:-16px 0 0 -16px;font-size:.9rem;cursor:pointer;box-shadow:0 0 0 4px var(--gold),0 2px 6px rgba(0,0,0,.5)}
-.next-ring{position:absolute;width:54px;height:54px;margin:-27px 0 0 -27px;border-radius:50%;border:4px dashed var(--gold);background:color-mix(in srgb, var(--gold) 18%, transparent);z-index:4;cursor:pointer;animation:pulse 1.1s ease-in-out infinite;padding:0}
-@keyframes pulse{50%{transform:scale(1.12)}}
-@keyframes bob{50%{transform:translateY(-4px)}}
+.board-wrap{min-width:0;display:flex;justify-content:center}
+.board{display:block;width:min(100%, calc(100vh - 200px));height:auto;aspect-ratio:1;filter:drop-shadow(0 8px 18px rgba(0,0,0,.25))}
+.board .lbl{font-family:var(--display);font-weight:800}
+.pawnG{transition:transform .45s ease}
+.pawnG.go{cursor:pointer}
+.pawnG.go .pbody{stroke:#FFC94A;stroke-width:6}
+#nextRing{transform-box:fill-box;transform-origin:center;animation:pulse 1.1s ease-in-out infinite;cursor:pointer}
+@keyframes pulse{50%{transform:scale(1.1)}}
 .side{display:flex;flex-direction:column;gap:12px;min-width:0;position:sticky;top:calc(12px + env(safe-area-inset-top, 0px))}
 @media (max-width:900px){.side{position:static}}
 .pcard{background:var(--surface);border:2px solid var(--line);border-radius:var(--radius);padding:12px;display:grid;gap:6px}
@@ -228,7 +226,7 @@ a{color:var(--t-scripture)}
   </div>
 
   <section id="game" class="game" hidden>
-    <div class="map-wrap"><div class="map" id="map"></div></div>
+    <div class="board-wrap"><div id="map" style="width:100%;display:flex;justify-content:center"></div></div>
     <aside class="side">
       <div id="players" style="display:grid;gap:10px"></div>
       <div class="log" id="log" aria-live="polite"></div>
@@ -420,33 +418,22 @@ const SONGS = [
 
 /* Milestones. `rule` is game text only (no doctrine in our own words). */
 const MILES = {
-  premortal: { title:"Premortal Life", short:"Start", img:"premortal", reward:0,
-    q:[{ t:"Before we were born on earth, we lived with our heavenly parents as Their spirit children.", r:GT_CITE, u:GT }] },
-  council: { title:"The Council in Heaven", short:"Council", img:"council", reward:2,
-    q:[{ t:"At a council with all of His children, Heavenly Father presented a plan, known as the “plan of salvation” or “the great plan of happiness.”", r:GT_CITE, u:GT },
-       { t:"And the Lord said: Whom shall I send? And one answered like unto the Son of Man: Here am I, send me.", r:"Abraham 3:27", u:sc("pgp/abr/3",27) }] },
-  birth: { title:"Born on Earth", short:"Born on Earth", img:"birth", reward:3,
-    q:[{ t:"We are on earth because we chose to follow Heavenly Father’s plan. One significant purpose of mortality is to gain a physical body.", r:GT_CITE, u:GT }],
-    rule:"Your quest begins. The 13 landmarks are ahead." },
-  baptism: { title:"Baptism and the Holy Ghost", short:"Baptism", img:"baptism", reward:3, gift:"hg",
-    q:[{ t:"For the gate by which ye should enter is repentance and baptism by water; and then cometh a remission of your sins by fire and by the Holy Ghost.", r:"2 Nephi 31:17", u:sc("bofm/2-ne/31",17) },
-       { t:"But the Comforter, which is the Holy Ghost, whom the Father will send in my name, he shall teach you all things", r:"John 14:26", u:sc("nt/john/14",26) }],
-    rule:"Gift of the Holy Ghost: +1 to your foundation in every storm." },
-  savior: { title:"Jesus Christ, Our Savior", short:"The Savior", img:"savior", reward:3,
-    q:[{ t:"Essential to the plan is the Atonement of Jesus Christ. Jesus overcame spiritual and physical death and took upon Himself our afflictions, sorrows, and sins.", r:GT_CITE, u:GT },
-       { t:"It is through Christ’s sacrifice that we can repent and live with God again.", r:GT_CITE, u:GT },
-       { t:"For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.", r:"John 3:16", u:sc("nt/john/3",16) }] },
-  spiritworld: { title:"The Spirit World", short:"Spirit World", img:"spiritworld", reward:2,
-    q:[{ t:"Our spirit, which existed in the premortal life, will live on after our death.", r:GT_CITE, u:GT },
-       { t:"a state of happiness, which is called paradise, a state of rest, a state of peace, where they shall rest from all their troubles and from all care, and sorrow.", r:"Alma 40:12", u:sc("bofm/alma/40",12) }],
-    rule:"No more storms from here to the end." },
-  resurrection: { title:"The Resurrection", short:"Resurrection", img:"resurrection", reward:3,
-    q:[{ t:"Because of Christ’s Atonement, all of God’s children will be resurrected and our bodies and spirits will be reunited.", r:GT_CITE, u:GT },
-       { t:"Jesus said unto her, I am the resurrection, and the life:", r:"John 11:25", u:sc("nt/john/11",25) }] },
-  home: { title:"Eternal Life", short:"Home", img:"home", reward:0,
-    q:[{ t:"Resurrection will be followed by the Final Judgment, where God will judge us according to our desires and our obedience to the commandments. If we have qualified through repentance, we will be able to live forever with our loving heavenly parents.", r:GT_CITE, u:GT },
-       { t:"For behold, this is my work and my glory—to bring to pass the immortality and eternal life of man.", r:"Moses 1:39", u:sc("pgp/moses/1",39) }] },
+  birth: { title:"Born on Earth", short:"Born", img:"birth", reward:3,
+    q:{ t:"One significant purpose of mortality is to gain a physical body.", r:GT_CITE, u:GT } },
+  baptism: { title:"Baptism", short:"Baptism", img:"baptism", reward:3, gift:"hg",
+    q:{ t:"Except a man be born of water and of the Spirit, he cannot enter into the kingdom of God.", r:"John 3:5", u:sc("nt/john/3",5) },
+    rule:"Gift of the Holy Ghost: +1 in every storm." },
+  savior: { title:"Jesus Christ, Our Savior", short:"Savior", img:"savior", reward:3,
+    q:{ t:"For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.", r:"John 3:16", u:sc("nt/john/3",16) } },
+  spiritworld: { title:"Spirit World", short:"Spirit World", img:"spiritworld", reward:2,
+    q:{ t:"a state of rest, a state of peace,", r:"Alma 40:12", u:sc("bofm/alma/40",12) },
+    rule:"No more storms from here on." },
+  resurrection: { title:"Resurrection", short:"Risen", img:"resurrection", reward:3,
+    q:{ t:"I am the resurrection, and the life:", r:"John 11:25", u:sc("nt/john/11",25) } },
+  home: { title:"Home!", short:"Home", img:"home", reward:0,
+    q:{ t:"For behold, this is my work and my glory—to bring to pass the immortality and eternal life of man.", r:"Moses 1:39", u:sc("pgp/moses/1",39) } },
 };
+const SHORT = ["Scriptures","Prayer","Repent","Testimony","Sacrament","Body temple","Lord’s help","Temple","Feelings","Use time","Tithing","Grateful","Serve"];
 
 /* =====================================================================
    PICTURES — every picture has a slot name. To replace one for everyone,
@@ -454,8 +441,7 @@ const MILES = {
    Or use the in-game “Pictures” button.
    ===================================================================== */
 const IMAGES = {
-  premortal:    { label:"Premortal life",          search:"premortal life, Heavenly Father" },
-  council:      { label:"Council in heaven",       search:"plan of salvation, Jesus Christ premortal" },
+  premortal:    { label:"Premortal life (opening scene)", search:"premortal life, Heavenly Father" },
   birth:        { label:"Born on earth",           search:"baby, family, creation" },
   baptism:      { label:"Baptism",                 search:"baptism of Jesus, child baptism" },
   savior:       { label:"Jesus Christ, our Savior",search:"Gethsemane, Atonement, Jesus Christ" },
@@ -477,17 +463,16 @@ Object.entries(IMAGES).forEach(([k, v]) => v.file = `images/${k}.jpg`);
 
 /* ===================== BOARD ===================== */
 const STAGES = [
-  { key:"pre",   name:"Premortal Life", color:"var(--pre)" },
-  { key:"earth", name:"Earth Life",     color:"var(--earth)" },
-  { key:"sw",    name:"Spirit World",   color:"var(--sw)" },
-  { key:"res",   name:"Resurrection",   color:"var(--res)" },
+  { key:"pre",   name:"Premortal Life" },
+  { key:"earth", name:"Earth Life" },
+  { key:"sw",    name:"Spirit World" },
+  { key:"res",   name:"Resurrection" },
 ];
-// S scripture · C choose the right · V service · G song · B Sabbath · Xn storm of strength n · Ln landmark n (1–13) · M:name milestone
+// S scripture · C choose the right · V service · G song · B Sabbath · Xn storm (strength n) · Ln landmark n · Rn rainbow bridge (needs n stones) · M:name milestone
 const LAYOUT = [
-  ["pre",   "M:premortal S G M:council S"],
-  ["earth", "M:birth S B L1 C S L2 X1 G L3 S M:baptism B L4 C X1 L5 S V L6 X2 M:savior G L7 C X2 B L8 S X3 L9 C G L10 X3 B L11 S V L12 X4 C L13 S X4 B"],
-  ["sw",    "M:spiritworld V S G"],
-  ["res",   "M:resurrection S G M:home"],
+  ["earth", "M:birth S L1 C L2 X1 G L3 M:baptism B L4 C X1 L5 V L6 R4 X2 M:savior S L7 C X2 B L8 X3 L9 C G L10 R8 X3 L11 V B L12 X4 C L13 S"],
+  ["sw",    "M:spiritworld V S"],
+  ["res",   "M:resurrection G M:home"],
 ];
 const BOARD = [];
 LAYOUT.forEach(([stage, codes]) => codes.split(" ").forEach(c => {
@@ -495,20 +480,22 @@ LAYOUT.forEach(([stage, codes]) => codes.split(" ").forEach(c => {
   if (c.startsWith("M:")) { sp.type = "mile"; sp.mile = c.slice(2); }
   else if (c[0] === "X") { sp.type = "storm"; sp.power = +c.slice(1); }
   else if (c[0] === "L") { sp.type = "land"; sp.stone = +c.slice(1) - 1; }
+  else if (c[0] === "R") { sp.type = "bridge"; sp.need = +c.slice(1); }
   else sp.type = { S:"scripture", C:"choose", V:"service", G:"song", B:"sabbath" }[c];
   BOARD.push(sp);
 }));
 const LAST = BOARD.length - 1;
 const landPos = STONES.map((_, i) => BOARD.findIndex(s => s.type === "land" && s.stone === i));
 const TYPES = {
-  land:{ label:"Landmark", color:"var(--t-land)" },
-  scripture:{ label:"Scripture", color:"var(--t-scripture)" },
-  choose:{ label:"Choose the Right", color:"var(--t-choose)" },
-  storm:{ label:"Storm", color:"var(--t-storm)" },
-  service:{ label:"Service", color:"var(--t-service)" },
-  song:{ label:"Song", color:"var(--t-song)" },
-  sabbath:{ label:"Sabbath", color:"var(--t-sabbath)" },
-  mile:{ label:"Milestone", color:"var(--gold)" },
+  land:{ label:"Landmark", color:"#8A6A48" },
+  scripture:{ label:"Scripture", color:"#2C6FB7" },
+  choose:{ label:"Choose", color:"#2F8F57" },
+  storm:{ label:"Storm", color:"#56637A" },
+  service:{ label:"Service", color:"#C2456B" },
+  song:{ label:"Song", color:"#7A4FC0" },
+  sabbath:{ label:"Sabbath", color:"#C98A0E" },
+  bridge:{ label:"Bridge", color:"#E0672B" },
+  mile:{ label:"Milestone", color:"#D99A12" },
 };
 const ICONS = {
   scripture:'<path d="M5 5h9a4 4 0 0 1 4 4v11H9a4 4 0 0 1-4-4zM9 10h5M9 13h5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>',
@@ -518,9 +505,17 @@ const ICONS = {
   service:'<path d="M12 20s-7-4.3-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.7-7 10-7 10z" fill="currentColor"/>',
   song:'<path d="M9 17V6l10-2v11" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="7" cy="17" r="2.6" fill="currentColor"/><circle cx="17" cy="15" r="2.6" fill="currentColor"/>',
   sabbath:'<circle cx="12" cy="12" r="4.5" fill="currentColor"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
+  bridge:'<path d="M3 18a9 9 0 0 1 18 0M6.5 18a5.5 5.5 0 0 1 11 0" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>',
   mile:'<path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z" fill="currentColor"/>',
 };
 const iconSvg = (k, color, cls="") => `<svg class="${cls}" width="22" height="22" viewBox="0 0 24 24" style="color:${color}" aria-hidden="true">${ICONS[k]}</svg>`;
+
+/* Board geometry: a square board, 7 columns × 7 rows. The path snakes across it.
+   The Premortal Life corner (top-left) is the starting area, like the START circle in Sorry. */
+const SLOTS = (() => { const out = []; for (let c=3;c<7;c++) out.push([c,0]);
+  for (let r=1;r<7;r++){ const cols = [0,1,2,3,4,5,6]; (r % 2 ? cols.reverse() : cols).forEach(c => out.push([c,r])); } return out; })();
+const POS = BOARD.map((_, i) => ({ x: 95 + SLOTS[i][0]*135, y: 112 + SLOTS[i][1]*130 }));
+const START = k => ({ x: 92 + k*72, y: 106 });
 
 /* ===================== PICTURES ===================== */
 const store = {
@@ -582,7 +577,7 @@ function refreshImages(){ if (S && !$("#game").hidden) renderMap(); if (!$("#pic
 /* ===================== STATE ===================== */
 const $ = s => document.querySelector(s);
 const COLORS = ["#D0453A","#2C6FB7","#2F9A57","#8A4FC7"];
-const SAVE = "quest-save-v1";
+const SAVE = "quest-save-v2";
 let S = null, setupCount = 2, mode = "spin"; // mode: spin | hop | wait
 
 function shuffle(a){ a = a.slice(); for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
@@ -594,9 +589,10 @@ function save(){ if (S) store.set(SAVE, JSON.stringify(S)); }
 function cur(){ return S.players[S.turn]; }
 function stageOf(pos){ return STAGES.find(s => s.key === BOARD[pos].stage); }
 function where(pos){
+  if (pos < 0) return "Premortal Life · spin 1 or 2 to be born";
   if (BOARD[pos].stage !== "earth") return stageOf(pos).name;
   const next = landPos.findIndex(lp => lp >= pos);
-  return next === -1 ? "Earth Life · all 13 landmarks passed" : `Earth Life · next landmark ${next+1}: ${STONES[next].name}`;
+  return next === -1 ? "Earth Life" : `Earth Life · next landmark ${next+1}`;
 }
 function log(msg){ S.log.unshift(msg); S.log = S.log.slice(0, 40); renderLog(); }
 function score(p){ return p.stars + p.stones.length * 2 + p.badges.length; }
@@ -637,7 +633,7 @@ function startGame(){
   const players = [];
   for (let i=0;i<setupCount;i++){
     const nm = ($("#pname"+i).value || "").trim() || "Player " + (i+1);
-    players.push({ name:nm, color:COLORS[i], pos:0, stars:0, stones:[], badges:[], hg:false, done:false, place:0 });
+    players.push({ name:nm, color:COLORS[i], pos:-1, stars:0, stones:[], badges:[], hg:false, done:false, place:0 });
   }
   S = { players, turn:0, decks:{}, log:[], finishedCount:0, over:false, remaining:0 };
   log("The quest begins in premortal life.");
@@ -684,89 +680,80 @@ function showGame(){
   renderAll(); scrollToPawn(true);
 }
 
-/* ===================== MAP ===================== */
-let geo = { pos:[], W:360, H:0 };
+/* ===================== BOARD DRAWING ===================== */
 const BIG = sp => sp.type === "mile" || sp.type === "land";
-function layoutMap(W){
-  const amp = Math.min(W * 0.28, 210), cx = W / 2;
-  let y = 54, t = 0; const pos = [];
-  BOARD.forEach((sp, i) => {
-    if (i > 0) { const prevBig = BIG(BOARD[i-1]); y += prevBig ? 74 : 46; if (BIG(sp)) y += 22; if (sp.stage !== BOARD[i-1].stage) y += 40; }
-    t += BIG(sp) ? 0.62 : 0.5;
-    pos.push({ x: cx + amp * Math.sin(t), y });
-  });
-  return { pos, W, H: y + 90 };
-}
 function renderMap(){
-  const el = $("#map"); const W = Math.round(el.clientWidth || 360);
-  geo = layoutMap(W);
-  const { pos, H } = geo;
-  // stage bands
-  const bands = STAGES.map(st => {
-    const idx = BOARD.map((s,i) => s.stage === st.key ? i : -1).filter(i => i >= 0);
-    return { st, y0: idx[0] === 0 ? 0 : (pos[idx[0]-1].y + pos[idx[0]].y) / 2, y1: idx[idx.length-1] === LAST ? H : (pos[idx[idx.length-1]].y + pos[idx[idx.length-1]+1].y) / 2 };
-  });
-  const bandFill = { pre:["#1C1A55","#4A46B5"], earth:["#BFE3C6","#8CCB9B"], sw:["#D9CDF0","#B9A3E3"], res:["#FCD9A8","#FFF1D2"] };
-  const bandFillDark = { pre:["#0E0D33","#27246E"], earth:["#1E3B2A","#28513A"], sw:["#2C2442","#3B2F5A"], res:["#4A3220","#5C4128"] };
-  const dark = matchMedia("(prefers-color-scheme: dark)").matches && document.documentElement.dataset.theme !== "light" || document.documentElement.dataset.theme === "dark";
-  const fills = dark ? bandFillDark : bandFill;
-  let defs = "", bg = "";
-  bands.forEach(({st, y0, y1}) => {
-    const [a,b] = fills[st.key];
-    defs += `<linearGradient id="bg-${st.key}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient>`;
-    bg += `<rect x="0" y="${y0}" width="${W}" height="${y1-y0}" fill="url(#bg-${st.key})"/>`;
-    // decorations
-    let seed = st.key.length * 97; const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
-    if (st.key === "pre") for (let i=0;i<70;i++) bg += `<circle cx="${rnd()*W}" cy="${y0 + rnd()*(y1-y0)}" r="${rnd()*1.7+.3}" fill="#fff" opacity="${.4+rnd()*.6}"/>`;
-    if (st.key === "earth") for (let i=0;i<26;i++){ const x = rnd()*W, y = y0 + 40 + rnd()*(y1-y0-80); bg += `<ellipse cx="${x}" cy="${y}" rx="${30+rnd()*50}" ry="${10+rnd()*12}" fill="${dark?"#2F6045":"#76BC87"}" opacity=".55"/>`; if (rnd() > .5) bg += `<g transform="translate(${x+20} ${y-14})"><rect x="-2" y="0" width="4" height="12" fill="${dark?"#5A4632":"#8A6A44"}"/><circle cy="-4" r="9" fill="${dark?"#2B6B44":"#3E9B5F"}"/></g>`; }
-    if (st.key === "sw") for (let i=0;i<10;i++) bg += `<ellipse cx="${rnd()*W}" cy="${y0 + rnd()*(y1-y0)}" rx="${40+rnd()*60}" ry="${10+rnd()*10}" fill="#fff" opacity="${dark?.08:.45}"/>`;
-    if (st.key === "res") bg += `<circle cx="${W/2}" cy="${y1}" r="${Math.min(W*.45,260)}" fill="#FFF7DA" opacity="${dark?.18:.7}"/>`;
-    const ly = y0 + 22;
-    bg += `<rect x="10" y="${ly-15}" rx="13" width="${st.name.length*8.6+24}" height="26" fill="rgba(0,0,0,.35)"/><text x="22" y="${ly+3}" fill="#fff" class="lbl" font-size="14">${st.name}</text>`;
-  });
-  // trail
-  let d = `M${pos[0].x} ${pos[0].y}`;
-  for (let i=1;i<pos.length;i++){ const a = pos[i-1], b = pos[i], my = (a.y + b.y)/2; d += ` C${a.x} ${my} ${b.x} ${my} ${b.x} ${b.y}`; }
-  let trail = `<path d="${d}" fill="none" stroke="var(--trail-edge)" stroke-width="30" stroke-linecap="round"/><path d="${d}" fill="none" stroke="var(--trail)" stroke-width="24" stroke-linecap="round"/><path d="${d}" fill="none" stroke="var(--trail-edge)" stroke-width="2" stroke-dasharray="2 9" stroke-linecap="round" opacity=".7"/>`;
-  // nodes
-  let nodes = "";
+  const T = 55; // half tile
+  let g = `<defs>
+    <linearGradient id="felt" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#A8DDB0"/><stop offset="1" stop-color="#6DBA83"/></linearGradient>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1C1A55"/><stop offset="1" stop-color="#5450C8"/></linearGradient>
+    <linearGradient id="after" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#C9B5EE"/><stop offset=".5" stop-color="#E8DDF8"/><stop offset=".75" stop-color="#FFE3B0"/><stop offset="1" stop-color="#FFC66B"/></linearGradient>
+  </defs>
+  <rect x="4" y="4" width="992" height="992" rx="34" fill="#2F5E3C"/>
+  <rect x="18" y="18" width="964" height="964" rx="24" fill="url(#felt)"/>`;
+  // scenery: a few hills and trees in the gaps
+  let seed = 11; const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+  for (let i=0;i<9;i++) g += `<ellipse cx="${60+rnd()*880}" cy="${240+rnd()*560}" rx="${70+rnd()*60}" ry="${20+rnd()*14}" fill="#5FAE74" opacity=".45"/>`;
+  // afterlife band (bottom row, columns 1–6)
+  g += `<rect x="${POS[40].x-T-14}" y="${POS[40].y-T-14}" width="${POS[45].x-POS[40].x+2*T+28}" height="${2*T+28}" rx="26" fill="url(#after)" opacity=".95"/>`;
+  // premortal start corner
+  g += `<rect x="24" y="24" width="356" height="150" rx="22" fill="url(#sky)"/>`;
+  for (let i=0;i<46;i++) g += `<circle cx="${34+rnd()*336}" cy="${32+rnd()*136}" r="${rnd()*2.2+.6}" fill="#fff" opacity="${.4+rnd()*.6}"/>`;
+  g += `<text x="202" y="62" text-anchor="middle" fill="#fff" class="lbl" font-size="28" letter-spacing="2">PREMORTAL LIFE</text>
+    <text x="202" y="160" text-anchor="middle" fill="#FFE29A" class="lbl" font-size="19">Spin 1 or 2 to be born</text>`;
+  // the path ribbon
+  const pts = POS.map(p => `${p.x},${p.y}`).join(" ");
+  g += `<polyline points="${pts}" fill="none" stroke="#C9A867" stroke-width="44" stroke-linejoin="round" stroke-linecap="round"/>
+    <polyline points="${pts}" fill="none" stroke="#F3E2B8" stroke-width="34" stroke-linejoin="round" stroke-linecap="round"/>`;
+  // tiles
   BOARD.forEach((sp, i) => {
-    const { x, y } = pos[i];
-    const right = x < W/2; // put label on the roomier side
-    if (BIG(sp)){
-      const isLand = sp.type === "land";
-      const slot = isLand ? stoneImg(sp.stone) : MILES[sp.mile].img;
-      const label = isLand ? STONES[sp.stone].name : MILES[sp.mile].short;
-      const r = 30;
-      defs += `<clipPath id="cp${i}"><circle cx="${x}" cy="${y}" r="${r}"/></clipPath>`;
-      nodes += `<g><circle cx="${x}" cy="${y}" r="${r+4}" fill="${isLand?"var(--t-land)":"var(--gold)"}"/><image href="${imgSrc(slot)}" x="${x-r*1.8}" y="${y-r}" width="${r*3.6}" height="${r*2}" preserveAspectRatio="xMidYMid slice" clip-path="url(#cp${i})"/>`;
-      if (isLand) nodes += `<circle cx="${x+r*.78}" cy="${y-r*.78}" r="12" fill="var(--gold)" stroke="#fff" stroke-width="2"/><text x="${x+r*.78}" y="${y-r*.78+1}" fill="var(--gold-ink)" class="lbl" font-size="13" text-anchor="middle" dominant-baseline="central">${sp.stone+1}</text>`;
-      const tw = Math.min(label.length * 7.4 + 18, W/2 - r - 18);
-      const lx = right ? x + r + 10 : x - r - 10 - tw;
-      nodes += `<rect x="${lx}" y="${y-13}" width="${tw}" height="26" rx="13" fill="var(--surface)" stroke="${isLand?"var(--t-land)":"var(--gold)"}" stroke-width="2"/><text x="${lx + tw/2}" y="${y+1}" fill="var(--ink)" class="lbl" font-size="12.5" text-anchor="middle" dominant-baseline="central" ${label.length*7.4 > tw-14 ? `textLength="${tw-14}" lengthAdjust="spacingAndGlyphs"` : ""}>${esc(label)}</text></g>`;
+    const { x, y } = POS[i];
+    if (sp.type === "mile"){
+      const m = MILES[sp.mile];
+      g += `<clipPath id="cp${i}"><rect x="${x-T}" y="${y-T}" width="${2*T}" height="${2*T}" rx="16"/></clipPath>
+        <rect x="${x-T-5}" y="${y-T-5}" width="${2*T+10}" height="${2*T+10}" rx="20" fill="#D99A12"/>
+        <image href="${imgSrc(m.img)}" x="${x-T*1.9}" y="${y-T}" width="${T*3.8}" height="${2*T}" preserveAspectRatio="xMidYMid slice" clip-path="url(#cp${i})"/>
+        <rect x="${x-T}" y="${y+T-30}" width="${2*T}" height="30" fill="rgba(20,16,40,.72)" clip-path="url(#cp${i})"/>
+        <text x="${x}" y="${y+T-11}" text-anchor="middle" fill="#fff" class="lbl" font-size="19">${m.short}</text>`;
+    } else if (sp.type === "land"){
+      g += `<rect x="${x-T}" y="${y-T}" width="${2*T}" height="${2*T}" rx="16" fill="#F7EBD3" stroke="#8A6A48" stroke-width="6"/>
+        <g transform="translate(${x-26} ${y-40}) scale(2.2)" style="color:#8A6A48">${ICONS.land}</g>
+        <circle cx="${x+T-12}" cy="${y-T+12}" r="19" fill="#D99A12" stroke="#fff" stroke-width="3"/>
+        <text x="${x+T-12}" y="${y-T+13}" text-anchor="middle" dominant-baseline="central" fill="#3A2600" class="lbl" font-size="20">${sp.stone+1}</text>
+        <text x="${x}" y="${y+T-14}" text-anchor="middle" fill="#5A4026" class="lbl" font-size="${SHORT[sp.stone].length > 9 ? 16 : 19}">${SHORT[sp.stone]}</text>`;
     } else {
       const t = TYPES[sp.type];
-      nodes += `<g><circle cx="${x}" cy="${y}" r="17" fill="${t.color}" stroke="#fff" stroke-width="2.5"/><g transform="translate(${x-10} ${y-10}) scale(.84)" style="color:#fff">${ICONS[sp.type]}</g>`;
-      if (sp.type === "storm") nodes += `<circle cx="${x+13}" cy="${y-13}" r="9" fill="var(--surface)" stroke="${t.color}" stroke-width="2"/><text x="${x+13}" y="${y-12}" fill="var(--ink)" class="lbl" font-size="11" text-anchor="middle" dominant-baseline="central">${sp.power}</text>`;
-      nodes += `</g>`;
+      const lbl = sp.type === "storm" ? `Storm ${sp.power}` : sp.type === "bridge" ? `${sp.need} stones` : t.label;
+      g += `<rect x="${x-T}" y="${y-T}" width="${2*T}" height="${2*T}" rx="16" fill="${t.color}" stroke="#fff" stroke-width="4"/>
+        <g transform="translate(${x-26} ${y-42}) scale(2.2)" style="color:#fff">${ICONS[sp.type]}</g>
+        <text x="${x}" y="${y+T-14}" text-anchor="middle" fill="#fff" class="lbl" font-size="18">${lbl}</text>`;
     }
   });
-  el.style.height = H + "px";
-  el.innerHTML = `<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Trail map of the quest"><defs>${defs}</defs>${bg}${trail}${nodes}</svg>` +
-    `<button type="button" id="nextRing" class="next-ring" aria-label="Hop to the next space" hidden></button>` +
-    (S ? S.players.map((pl,k) => `<div class="pawn ${k===S.turn && !S.over?"active":""}" id="pawn${k}" style="background:${pl.color}">${k+1}</div>`).join("") : "");
+  // rainbow bridges over storms
+  BOARD.forEach((sp, i) => { if (sp.type !== "bridge") return;
+    const a = POS[i], b = POS[i+2], mx = (a.x+b.x)/2;
+    ["#E4572E","#F3A712","#4FB477","#3B8EDB"].forEach((c, k) => g += `<path d="M${a.x} ${a.y-30} Q${mx} ${a.y-150+k*12} ${b.x} ${b.y-30}" fill="none" stroke="${c}" stroke-width="7" stroke-linecap="round" opacity=".9"/>`);
+  });
+  g += `<circle id="nextRing" r="68" cx="0" cy="0" fill="rgba(255,201,74,.25)" stroke="#FFC94A" stroke-width="8" stroke-dasharray="14 10" style="display:none"/>`;
+  if (S) S.players.forEach((pl, k) => {
+    g += `<g class="pawnG" id="pawn${k}"><ellipse cy="22" rx="20" ry="7" fill="rgba(0,0,0,.3)"/>
+      <path class="pbody" d="M-16 20 Q-15 2 -7 -3 Q-12 -9 -12 -15 A12 12 0 1 1 12 -15 Q12 -9 7 -3 Q15 2 16 20Z" fill="${pl.color}" stroke="#fff" stroke-width="4"/>
+      <text y="12" text-anchor="middle" fill="#fff" class="lbl" font-size="17">${k+1}</text></g>`;
+  });
+  $("#map").innerHTML = `<svg class="board" viewBox="0 0 1000 1000" role="img" aria-label="The Quest game board">${g}</svg>`;
   if (S) { S.players.forEach((_, k) => placePawn(k)); showNextRing(); }
 }
+function pawnXY(k, pos){
+  if (pos < 0) return START(k);
+  const p = POS[pos], off = [[-28,-24],[28,-24],[-28,22],[28,22]][k];
+  return { x: p.x + off[0], y: p.y + off[1] };
+}
 function placePawn(k){
-  const pl = S.players[k], p = geo.pos[pl.pos], el = $("#pawn"+k); if (!el || !p) return;
-  const big = BIG(BOARD[pl.pos]);
-  const off = [[-1,-1],[1,-1],[-1,1],[1,1]][k], m = big ? 20 : 12;
-  el.style.left = (p.x + off[0]*m) + "px"; el.style.top = (p.y + off[1]*m) + "px";
+  const el = $("#pawn"+k); if (!el) return;
+  const { x, y } = pawnXY(k, S.players[k].pos);
+  el.style.transform = `translate(${x}px, ${y}px)`;
 }
-function scrollToPawn(instant){
-  if (!S) return; const el = $("#pawn"+S.turn); if (!el) return;
-  el.scrollIntoView({ block:"center", behavior: instant || matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
-}
+function scrollToPawn(){}
 function houseSvg(p){
   // 13 stones: 7 on the bottom row, 6 above; house sits on top
   let s = `<path d="M2 62l10-8 18 2 14-6 22 3 16-5 20 4 16-2v12z" fill="var(--rock)"/>`;
@@ -799,10 +786,11 @@ function renderTurnbar(){
   showNextRing();
 }
 function showNextRing(){
-  const r = $("#nextRing"); if (!r) return;
-  const p = S && cur(); const nxt = p && geo.pos[p.pos + 1];
-  if (mode !== "hop" || !nxt){ r.hidden = true; } else { r.hidden = false; r.style.left = nxt.x + "px"; r.style.top = nxt.y + "px"; }
-  S && S.players.forEach((_, k) => { const el = $("#pawn"+k); if (el) el.classList.toggle("go", mode === "hop" && k === S.turn); });
+  const r = $("#nextRing"); if (!r || !S) return;
+  const p = cur(), nxt = p.pos >= 0 && POS[p.pos + 1];
+  if (mode !== "hop" || !nxt) r.style.display = "none";
+  else { r.style.display = ""; r.setAttribute("cx", nxt.x); r.setAttribute("cy", nxt.y); }
+  S.players.forEach((_, k) => { const el = $("#pawn"+k); if (el) el.classList.toggle("go", mode === "hop" && k === S.turn); });
 }
 function renderAll(){ renderMap(); renderPlayers(); renderLog(); renderTurnbar(); }
 
@@ -828,7 +816,19 @@ function spin(){
   const target = 360 - ((n-0.5)/SPIN_N)*360;
   spinAngle += 360*3 + ((target - spinAngle % 360) + 360) % 360;
   $("#spinSvg").style.transform = `rotate(${spinAngle}deg)`;
-  setTimeout(() => { toast(`${cur().name} spun a ${n}! Tap your piece to move.`); S.remaining = n; setMode("hop"); scrollToPawn(); }, reduced() ? 50 : 2500);
+  setTimeout(() => {
+    const p = cur();
+    if (p.pos < 0){
+      if (n <= 2){
+        toast(`${p.name} spun a ${n}. Born on earth!`); log(`${esc(p.name)} was born on earth.`);
+        p.pos = 0; placePawn(S.turn);
+        return setTimeout(() => cardMile(BOARD[0], endTurn), reduced() ? 20 : 800);
+      }
+      toast(`${p.name} spun a ${n}. You need a 1 or 2 to be born.`);
+      return setTimeout(endTurn, reduced() ? 20 : 1600);
+    }
+    toast(`${p.name} spun a ${n}! Tap your piece to move.`); S.remaining = n; setMode("hop");
+  }, reduced() ? 50 : 2500);
 }
 function hop(){
   if (mode !== "hop") return;
@@ -836,7 +836,7 @@ function hop(){
   if (S.remaining <= 0 || p.pos >= LAST) return;
   setMode("wait");
   p.pos++; S.remaining--;
-  placePawn(k); scrollToPawn(); renderTurnbar();
+  placePawn(k); renderTurnbar();
   const sp = BOARD[p.pos], wait = reduced() ? 20 : 700;
   if (p.pos >= LAST) return setTimeout(finishPlayer, wait);
   if (sp.type === "sabbath" && S.remaining > 0){ p.stars += 1; toast("Passed the Sabbath: +1 ★"); renderPlayers(); }
@@ -853,15 +853,31 @@ function land(){
   renderPlayers();
   const p = cur(), sp = BOARD[p.pos];
   if (p.pos >= LAST) return finishPlayer();
-  const done = () => endTurn();
-  ({ scripture:cardScripture, choose:cardChoose, storm:cardStorm, service:cardService, song:cardSong, sabbath:cardSabbath })[sp.type](sp, done);
+  ({ scripture:cardScripture, choose:cardChoose, storm:cardStorm, service:cardService, song:cardSong, sabbath:cardSabbath, bridge:cardBridge })[sp.type](sp, endTurn);
+}
+/* Move the current player forward on their own (after a good choice or a bridge). Landmarks and milestones still stop them. */
+function autoHop(n, done){
+  const k = S.turn, p = S.players[k];
+  if (n <= 0) return done();
+  if (p.pos >= LAST) return finishPlayer();
+  p.pos++; placePawn(k);
+  const sp = BOARD[p.pos], wait = reduced() ? 20 : 600;
+  if (p.pos >= LAST) return setTimeout(finishPlayer, wait);
+  if (BIG(sp)) return setTimeout(() => (sp.type === "land" ? cardLand : cardMile)(sp, () => { closeCard(); done(); }), wait);
+  setTimeout(() => autoHop(n - 1, done), reduced() ? 10 : 450);
+}
+function slideBack(k, n, done){
+  const p = S.players[k];
+  if (n <= 0 || p.pos <= 0) { renderPlayers(); return done(); }
+  p.pos--; placePawn(k);
+  setTimeout(() => slideBack(k, n - 1, done), reduced() ? 10 : 320);
 }
 function endTurn(){
   closeCard(); save();
   if (S.players.every(p => p.done)) return endGame();
   let t = S.turn;
   do { t = (t + 1) % S.players.length; } while (S.players[t].done);
-  S.turn = t; S.remaining = 0; mode = "spin"; save(); renderAll(); scrollToPawn();
+  S.turn = t; S.remaining = 0; mode = "spin"; save(); renderAll();
 }
 
 /* ===================== CARDS ===================== */
@@ -906,40 +922,37 @@ function cardMile(sp, next){
   if (m.gift === "hg") p.hg = true;
   p.stars += m.reward;
   log(`${esc(p.name)} reached <b>${m.title}</b>${m.reward?` (+${m.reward} ★)`:""}.`);
-  openCard({ kind:"mile", title:m.title, img:m.img,
-    speak: m.title + ". " + m.q.map(q => q.t + " " + q.r).join(" ") + " " + (m.rule||""),
-    html: m.q.map(q => verseHTML(q)).join("") + (m.rule ? `<p><b>${m.rule}</b></p>` : "") + (m.reward ? `<p class="result good">+${m.reward} ★</p>` : "") + btn("done", sp.mile==="premortal" ? "Begin" : contLabel()) });
+  openCard({ kind:"mile", title:m.title, img:m.img, speak: `${m.title}. ${m.q.t} ${m.q.r}. ${m.rule||""}`,
+    html: verseHTML(m.q) + (m.rule ? `<p><b>${m.rule}</b></p>` : "") + (m.reward ? `<p class="result good">+${m.reward} ★</p>` : "") + btn("done", contLabel()) });
   wire({ done: next });
 }
 
 function cardLand(sp, next){
   const i = sp.stone, s = STONES[i], p = cur();
   const pool = CHOICES.map((c, j) => j).filter(j => CHOICES[j].stone === i);
-  const useChoice = pool.length && Math.random() < 0.5;
-  const head = `<span class="tag">Landmark ${i+1} of 13</span>` + (s.extra ? verseHTML(s.extra) : "");
   const finish = (won, extraHtml) => {
     let msg;
-    if (won){ const got = giveStone(p, i); p.stars += 2; msg = `<p class="result good">${got ? "Stone added to your foundation! +2 ★" : "+2 ★"}</p>`; log(`${esc(p.name)} earned landmark ${i+1}: <b>${s.name}</b>.`); }
-    else { msg = `<p class="result bad">No stone this time.</p><p class="small-note">You can still win it on a Choose the Right space later.</p>`; log(`${esc(p.name)} passed landmark ${i+1} without the stone.`); }
+    if (won){ const got = giveStone(p, i); p.stars += 2; msg = `<p class="result good">${got ? "You earned a stone! +2 ★" : "+2 ★"}</p>`; log(`${esc(p.name)} earned landmark ${i+1}: <b>${s.name}</b>.`); renderPlayers(); }
+    else { msg = `<p class="result bad">No stone this time.</p><p class="small-note">Win it back on a Choose space later.</p>`; log(`${esc(p.name)} passed landmark ${i+1} without the stone.`); }
     $("#out").innerHTML = msg + (extraHtml || "") + btn("done", contLabel());
     wire({ done: next });
   };
-  if (useChoice){
+  const head = `<span class="tag">Landmark ${i+1} of 13</span>`;
+  if (pool.length && Math.random() < 0.5){
     const c = CHOICES[pool[Math.floor(Math.random()*pool.length)]];
     const opts = shuffle([{t:c.good, ok:true},{t:c.bad, ok:false}]);
     openCard({ kind:"land", label:`Landmark ${i+1}`, title:s.name, img:stoneImg(i),
-      speak: `Landmark ${i+1}: ${s.name}. ${s.v.t} ${s.v.r}. ${c.s} ${opts[0].t}? Or ${opts[1].t}?`,
-      html: head + verseHTML(s.v) + `<p style="font-size:1.08rem"><b>${c.story?"Scripture story: ":""}</b>${c.s}</p><div class="choices">${opts.map((o,k) => `<button class="choice" type="button" data-act="pick" data-k="${k}">${esc(o.t)}</button>`).join("")}</div><div id="out"></div>` });
+      speak: `${s.name}. ${c.s} ${opts[0].t}? Or ${opts[1].t}?`,
+      html: head + `<p style="font-size:1.08rem">${c.s}</p><div class="choices">${opts.map((o,k) => `<button class="choice" type="button" data-act="pick" data-k="${k}">${esc(o.t)}</button>`).join("")}</div><div id="out"></div>` });
     wire({ pick: b => {
       const o = opts[+b.dataset.k];
       $("#card").querySelectorAll(".choice").forEach((x,k) => { x.disabled = true; if (opts[k].ok) x.classList.add("right"); else if (x === b) x.classList.add("wrong"); });
       finish(o.ok, c.v ? verseHTML(c.v) : "");
     }});
   } else {
-    const q = blankQuiz(s.v.t, s.blank, s.w, s.v.r, s.v.u, (right, full) => finish(right, full));
-    openCard({ kind:"land", label:`Landmark ${i+1}`, title:s.name, img:stoneImg(i),
-      speak: `Landmark ${i+1}: ${s.name}. Finish the scripture. ${q.speak}`,
-      html: head + `<p><b>Finish the scripture.</b></p>` + q.html });
+    const q = blankQuiz(s.v.t, s.blank, s.w, s.v.r, s.v.u, (right) => finish(right, ""));
+    openCard({ kind:"land", label:`Landmark ${i+1}`, title:s.name, img:stoneImg(i), speak: `${s.name}. Finish the scripture. ${q.speak}`,
+      html: head + `<p><b>Pick the missing word.</b></p>` + q.html });
     q.wireIt();
   }
 }
@@ -947,12 +960,12 @@ function cardLand(sp, next){
 function cardScripture(sp, next){
   const c = SCRIPTURES[draw("scripture", SCRIPTURES.length)], p = cur();
   const text = c.t.replace("___", c.a);
-  const q = blankQuiz(text, c.a, c.w, c.r, c.u, (right, full) => {
+  const q = blankQuiz(text, c.a, c.w, c.r, c.u, (right) => {
     const pts = right ? 2 : 1; p.stars += pts; log(`${esc(p.name)} read ${c.r} (+${pts} ★).`);
-    $("#out").innerHTML = `<p class="result ${right?"good":"bad"}">${right ? "That’s right! +2 ★" : "Good try! Read it together: +1 ★"}</p>${full}${btn("done","Done")}`;
+    $("#out").innerHTML = `<p class="result ${right?"good":"bad"}">${right ? "That’s right! +2 ★" : "Good try! +1 ★"}</p>${btn("done","Done")}`;
     wire({ done: next });
   });
-  openCard({ kind:"scripture", title:"Finish the scripture", img:"scripture", speak:"Finish the scripture. " + q.speak, html:q.html });
+  openCard({ kind:"scripture", title:"Pick the missing word", img:"scripture", speak:"Pick the missing word. " + q.speak, html:q.html });
   q.wireIt();
 }
 
@@ -967,56 +980,61 @@ function cardChoose(sp, next){
     const o = opts[+b.dataset.i]; tries++;
     if (!o.ok){ b.classList.add("wrong"); b.disabled = true; $("#out").innerHTML = `<p class="result bad">Try again.</p>`; return; }
     b.classList.add("right"); $("#card").querySelectorAll(".choice").forEach(x => x.disabled = true);
-    const pts = tries === 1 ? 3 : 1; p.stars += pts;
-    // win back a missed stone, but only for a landmark already passed
-    const got = tries === 1 && p.pos > landPos[c.stone] && giveStone(p, c.stone);
-    log(`${esc(p.name)} chose the right${got?` and won back <b>${STONES[c.stone].name}</b>`:""} (+${pts} ★).`);
-    const v = c.v || STONES[c.stone].v;
-    lastSpeech = v.t + " " + v.r;
-    $("#out").innerHTML = `<p class="result good">${tries===1 ? (c.story ? "That’s what happened! +3 ★" : "Great choice! +3 ★") : "+1 ★"}</p>${got?`<p>You won back the stone <b>${STONES[c.stone].name}</b>!</p>`:""}${verseHTML(v)}${btn("done","Done")}`;
-    wire({ done: next });
+    if (tries > 1){ p.stars += 1; log(`${esc(p.name)} chose again (+1 ★).`); $("#out").innerHTML = `<p class="result good">+1 ★</p>${btn("done","Done")}`; return wire({ done: next }); }
+    p.stars += 3;
+    const got = p.pos > landPos[c.stone] && giveStone(p, c.stone);   // win back a stone you missed
+    log(`${esc(p.name)} chose the right${got?` and won back <b>${STONES[c.stone].name}</b>`:""} (+3 ★, jump ahead 2).`);
+    $("#out").innerHTML = `<p class="result good">${c.story ? "That’s what happened!" : "Great choice!"} +3 ★</p>${got?`<p>You won back the stone <b>${STONES[c.stone].name}</b>!</p>`:""}${c.v ? verseHTML(c.v) : ""}${btn("jump","Jump ahead 2 ➜")}`;
+    renderPlayers();
+    wire({ jump: () => { closeCard(); autoHop(2, next); } });
   }});
 }
 
 function cardStorm(sp, next){
-  const p = cur(), st = STORMS[draw("storm", STORMS.length)];
+  const p = cur(), k = S.turn, st = STORMS[draw("storm", STORMS.length)];
   const strength = p.stones.length + (p.hg ? 1 : 0), stands = strength >= sp.power;
-  let res;
-  if (stands){ p.stars += 2; p.badges.push(st.name); res = `<p class="result good">Your house stands! +2 ★</p>`; }
-  else { const lost = Math.min(2, p.stars); p.stars -= lost; res = `<p class="result bad">Your house was shaken.${lost?` −${lost} ★`:""}</p><p>Keep building your foundation at the landmarks ahead.</p>`; }
-  log(`${esc(p.name)} faced the storm of ${st.name}: ${stands?"the house stood":"the house was shaken"}.`);
+  log(`${esc(p.name)} faced the storm of ${st.name}: ${stands?"the house stood":"slid back 3"}.`);
   openCard({ kind:"storm", title:`Storm of ${st.name}`, img:"storm",
-    speak: `Storm of ${st.name}. ${st.d} Storm strength ${sp.power}. Your foundation ${strength}. ${stands?"Your house stands!":"Your house was shaken."} ${HEL512.t} ${HEL512.r}`,
-    html: `<p style="font-size:1.1rem">${st.d}</p><p><b>Storm strength ${sp.power}</b> · Your foundation: ${p.stones.length} stones${p.hg?" + 1 Holy Ghost":""} = <b>${strength}</b></p>${res}${verseHTML(HEL512)}${btn("done","Done")}` });
-  wire({ done: next });
+    speak: `Storm of ${st.name}. ${st.d} ${stands ? "Your house stands!" : "Slide back 3 spaces."}`,
+    html: `<p style="font-size:1.1rem">${st.d}</p><p>Storm <b>${sp.power}</b> · Your foundation <b>${strength}</b></p>` +
+      (stands ? `<p class="result good">Your house stands! +2 ★</p>${btn("done","Done")}` : `<p class="result bad">Too strong! Slide back 3.</p>${btn("back","Slide back")}`) });
+  if (stands){ p.stars += 2; p.badges.push(st.name); renderPlayers(); wire({ done: next }); }
+  else wire({ back: () => { closeCard(); slideBack(k, 3, next); } });
 }
 
 function cardService(sp, next){
-  const p = cur(), others = S.players.filter(x => x !== p), v = STONES[12].v;
+  const p = cur(), others = S.players.filter(x => x !== p && !x.done);
+  const stepFwd = pl => { if (pl.pos < 0 || pl.pos >= LAST - 1 || BIG(BOARD[pl.pos + 1])) { pl.stars += 1; return false; } pl.pos++; placePawn(S.players.indexOf(pl)); return true; };
   const body = others.length
-    ? `<p>Choose someone to help. You both get +1 ★.</p><div class="choices">${others.map(o => { const n = S.players.indexOf(o); return `<button class="choice" type="button" data-act="pick" data-n="${n}"><span class="token" style="display:inline-grid;width:24px;height:24px;margin-right:8px;background:${o.color}">${n+1}</span>${esc(o.name)}</button>`; }).join("")}</div>`
+    ? `<p>Choose someone to help. You both move ahead 1.</p><div class="choices">${others.map(o => { const n = S.players.indexOf(o); return `<button class="choice" type="button" data-act="pick" data-n="${n}"><span class="token" style="display:inline-grid;width:24px;height:24px;margin-right:8px;background:${o.color}">${n+1}</span>${esc(o.name)}</button>`; }).join("")}</div>`
     : `<p>Do something kind for someone in your family right now.</p>${btn("solo","I helped someone")}`;
-  openCard({ kind:"service", title:"Time to serve", img:"service", speak:`Time to serve. ${v.t} ${v.r}.`, html: verseHTML(v) + body + `<div id="out"></div>` });
-  const finish = msg => { $("#card").querySelectorAll(".choice,[data-act=solo]").forEach(x => x.disabled = true); $("#out").innerHTML = `<p class="result good">${msg}</p>${btn("done","Done")}`; wire({ done: next }); };
+  openCard({ kind:"service", title:"Time to serve", img:"service", speak:`Time to serve. ${others.length?"Choose someone to help.":"Do something kind for someone in your family."}`, html: body + `<div id="out"></div>` });
   wire({
-    pick: b => { const o = S.players[+b.dataset.n]; p.stars += 1; o.stars += 1; log(`${esc(p.name)} served ${esc(o.name)} (+1 ★ each).`); finish(`${esc(p.name)} and ${esc(o.name)} each get +1 ★`); },
-    solo: () => { p.stars += 2; log(`${esc(p.name)} served someone (+2 ★).`); finish("+2 ★"); },
+    pick: b => { const o = S.players[+b.dataset.n]; closeCard(); stepFwd(p); stepFwd(o); log(`${esc(p.name)} served ${esc(o.name)}. Both moved ahead.`); toast(`${p.name} and ${o.name} move ahead!`); renderPlayers(); setTimeout(next, reduced() ? 20 : 900); },
+    solo: () => { p.stars += 2; log(`${esc(p.name)} served someone (+2 ★).`); closeCard(); toast("+2 ★ for serving!"); renderPlayers(); setTimeout(next, reduced() ? 20 : 900); },
   });
 }
 
 function cardSong(sp, next){
   const s = SONGS[draw("song", SONGS.length)], p = cur();
   openCard({ kind:"song", title:s.t, img:"song", speak:`Song time! Sing or hum ${s.t} together.`,
-    html: `<p>Sing or hum a verse of this Primary song together.</p><p class="small-note"><a href="${s.u}" target="_blank" rel="noopener">${s.t}</a>, <i>Children’s Songbook</i>, ${s.p}</p>${btn("ok","We sang it!")}` });
+    html: `<p>Sing or hum a verse together!</p><p class="small-note"><a href="${s.u}" target="_blank" rel="noopener">${s.t}</a>, <i>Children’s Songbook</i>, ${s.p}</p>${btn("ok","We sang it! +2 ★")}` });
   wire({ ok: () => { p.stars += 2; log(`${esc(p.name)} led “${s.t}” (+2 ★).`); next(); } });
 }
 
 function cardSabbath(sp, next){
-  const p = cur(), v = STONES[4].v; p.stars += 2;
-  log(`${esc(p.name)} kept the Sabbath day holy (+2 ★).`);
-  openCard({ kind:"sabbath", title:"Sabbath day", img:"sabbath", speak:`Sabbath day. ${v.t} ${v.r}`,
-    html: `<p>You went to church and took the sacrament.</p>${verseHTML(v)}<p class="result good">+2 ★</p>${btn("done","Done")}` });
-  wire({ done: next });
+  const p = cur(); p.stars += 2;
+  log(`${esc(p.name)} kept the Sabbath day holy (+2 ★).`); toast("Sabbath day! +2 ★"); renderPlayers();
+  setTimeout(next, reduced() ? 20 : 1200);
+}
+
+function cardBridge(sp, next){
+  const p = cur();
+  if (p.stones.length >= sp.need){
+    toast(`${p.stones.length} stones! Cross the rainbow bridge over the storm.`); log(`${esc(p.name)} crossed the rainbow bridge.`);
+    setTimeout(() => { p.pos += 2; placePawn(S.turn); const t = BOARD[p.pos];
+      setTimeout(() => BIG(t) ? (t.type === "land" ? cardLand : cardMile)(t, next) : next(), reduced() ? 20 : 700); }, reduced() ? 20 : 900);
+  } else { toast(`The bridge needs ${sp.need} stones. Keep building!`); setTimeout(next, reduced() ? 20 : 1500); }
 }
 
 function finishPlayer(){
@@ -1025,8 +1043,8 @@ function finishPlayer(){
   const m = MILES.home;
   log(`<b>${esc(p.name)} made it home!</b> Arrival bonus +${bonus} ★.`);
   openCard({ kind:"mile", title:`${esc(p.name)} made it home!`, img:"home",
-    speak: `${p.name} made it home! ` + m.q.map(q => q.t + " " + q.r).join(" "),
-    html: m.q.map(q => verseHTML(q)).join("") + `<p class="result good">Arrival bonus: +${bonus} ★</p>` + btn("done","Done") });
+    speak: `${p.name} made it home! ${m.q.t} ${m.q.r}`,
+    html: verseHTML(m.q) + `<p class="result good">Arrival bonus: +${bonus} ★</p>` + btn("done","Done") });
   wire({ done: endTurn });
 }
 function endGame(){
@@ -1106,7 +1124,7 @@ $("#mosesLink").href = sc("pgp/moses/1",39); $("#nelsonLink").href = `${C}genera
 $("#btnStart").onclick = startGame;
 $("#btnResume").onclick = () => { try { S = JSON.parse(store.get(SAVE)); mode = "spin"; S.remaining = 0; showGame(); } catch(e){ toast("The saved game could not be opened."); store.del(SAVE); renderSetup(); } };
 $("#btnSpin").onclick = onTurnButton;
-$("#map").addEventListener("click", e => { if (e.target.closest("#nextRing") || e.target.closest(".pawn.go")) hop(); });
+$("#map").addEventListener("click", e => { if (e.target.closest("#nextRing") || e.target.closest(".pawnG.go")) hop(); });
 $("#btnJourney").onclick = startJourney;
 $("#btnSong").onclick = () => song().paused ? playSong() : stopSong();
 song().addEventListener("ended", updateSongBtn); song().addEventListener("play", updateSongBtn); song().addEventListener("pause", updateSongBtn);
@@ -1118,7 +1136,7 @@ $("#btnNew").onclick = () => {
   openCard({ kind:"mile", label:"New game", title:"Start a new game?", html:`<p>This ends the game in progress.</p><div class="actions"><button class="btn" type="button" data-act="no">Keep playing</button><button class="btn primary" type="button" data-act="yes">New game</button></div>` });
   wire({ no: closeCard, yes: () => { closeCard(); store.del(SAVE); S = null; mode = "spin"; stopSong(); ["#game","#intro","#turnbar","#btnNew"].forEach(x => $(x).hidden = true); $("#setup").hidden = false; renderSetup(); } });
 };
-let rz; addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => { if (S && !$("#game").hidden) renderMap(); else drawStars(); }, 120); });
+let rz; addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => { if (!S || $("#game").hidden) drawStars(); }, 120); });
 matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => { if (S && !$("#game").hidden) renderMap(); });
 
 function start(data){
