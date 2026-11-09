@@ -111,6 +111,8 @@ a{color:var(--t-scripture)}
 .house svg{width:120px;height:64px;flex:none}
 .pmeta{font-size:.8rem;color:var(--muted);display:grid;gap:2px}
 .pmeta b{color:var(--ink)}
+.pmeta .ords b{font-weight:400;color:var(--muted);white-space:nowrap}
+.pmeta .ords b.on{font-weight:700;color:var(--good)}
 .log{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:10px 12px;font-size:.85rem;color:var(--muted);max-height:170px;overflow:auto}
 .log p{margin:3px 0}
 
@@ -220,13 +222,14 @@ a{color:var(--t-scripture)}
 
   <div id="howPanel" class="how" hidden>
     <ol>
-      <li><b>Start in the Premortal Life circle.</b> Tap <b>Pop!</b> to roll. You need a <b>1 or 6</b> to be born onto earth. Pop a 6 any time and you go again.</li>
-      <li><b>Move</b> by tapping your piece (or the glowing space) one hop at a time.</li>
-      <li><b>Go around the board</b> past Baptism, the Savior and the 13 landmarks from <i>The Quest</i>. At each landmark, win a quick challenge to add it to your house on the rock.</li>
+      <li><b>Start in the Premortal Life circle</b> with the Savior. Tap <b>Pop!</b> You need a <b>1 or 6</b> to be born. Pop a 6 any time and you go again.</li>
+      <li><b>Move</b> by tapping your piece one hop at a time. Keep going around the board as many times as you need.</li>
+      <li><b>Land on or pass a gold Ordinance space</b> to receive the next ordinance you need (one per turn), in order: Baptism and Confirmation, Sacrament, Temple Endowment, Temple Sealing.</li>
+      <li><b>Build a foundation of 6 stones.</b> Win the challenge on a brown foundation space (prayer, scriptures, tithing and more) or a green Choose space. Sometimes a win is a surprise trip to the next Ordinance space!</li>
+      <li><b>Repent spaces</b> are all around the board. Storms can knock a stone loose; repenting puts it back. Miss a challenge? Repent and try again.</li>
       <li><b>Land on someone?</b> Team challenge! Work it out together, and you both earn blessings.</li>
-      <li><b>Choose</b> right to jump ahead 2. A <b>storm</b> stronger than your house slides you back 3.</li>
-      <li>After the loop, head through the Spirit World and the Resurrection. <b>Win a challenge to enter the Celestial Kingdom</b> in the center.</li>
-      <li>Most points wins: blessings ★ + 2 for each landmark earned + 1 for each storm overcome.</li>
+      <li>With all 4 ordinances and 6 stones, turn off at <b>Death</b> onto the lane to the <b>Spirit World</b>. Wait there and help players still on earth.</li>
+      <li>When everyone is in the Spirit World, all are resurrected and enter the <b>Celestial Kingdom</b>. Most points wins: blessings ★ + 2 for each stone + 1 for each storm overcome.</li>
     </ol>
   </div>
 
@@ -422,23 +425,35 @@ const SONGS = [
 ];
 
 /* Milestones. `rule` is game text only (no doctrine in our own words). */
-const MILES = {
-  birth: { title:"Born on Earth", short:"Born", img:"birth", reward:3,
-    q:{ t:"One significant purpose of mortality is to gain a physical body.", r:GT_CITE, u:GT } },
-  baptism: { title:"Baptism", short:"Baptism", img:"baptism", reward:3, gift:"hg",
+/* Ordinances: collect all four by landing on them. Some need another first. */
+const ORDS = [
+  { key:"baptism", title:"Baptism and Confirmation", short:"Baptism", img:"baptism", needs:null,
     q:{ t:"Except a man be born of water and of the Spirit, he cannot enter into the kingdom of God.", r:"John 3:5", u:sc("nt/john/3",5) },
-    rule:"Gift of the Holy Ghost: +1 in every storm." },
-  savior: { title:"Jesus Christ, Our Savior", short:"Savior", img:"savior", reward:3,
-    q:{ t:"For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.", r:"John 3:16", u:sc("nt/john/3",16) } },
-  spiritworld: { title:"Spirit World", short:"Spirit World", img:"spiritworld", reward:2,
-    q:{ t:"a state of rest, a state of peace,", r:"Alma 40:12", u:sc("bofm/alma/40",12) },
-    rule:"No more storms from here on." },
-  resurrection: { title:"Resurrection", short:"Risen", img:"resurrection", reward:3,
-    q:{ t:"I am the resurrection, and the life:", r:"John 11:25", u:sc("nt/john/11",25) } },
-  home: { title:"Celestial Kingdom", short:"Celestial Kingdom", img:"home", reward:0,
+    rule:"Gift of the Holy Ghost: +1 against every storm." },
+  { key:"sacrament", title:"Sacrament", short:"Sacrament", img:"sabbath", needs:"baptism",
+    q:{ t:"always remember him and keep his commandments which he has given them; that they may always have his Spirit to be with them.", r:"Doctrine and Covenants 20:77", u:sc("dc-testament/dc/20",77) } },
+  { key:"endowment", title:"Temple Endowment", short:"Temple Endowment", img:"temple", needs:"baptism",
+    q:{ t:"establish a house, even a house of prayer, a house of fasting, a house of faith, a house of learning, a house of glory, a house of order, a house of God;", r:"Doctrine and Covenants 88:119", u:sc("dc-testament/dc/88",119) } },
+  { key:"sealing", title:"Temple Sealing", short:"Temple Sealing", img:"sealing", needs:"endowment",
+    q:{ t:"Sacred ordinances and covenants available in holy temples make it possible for individuals to return to the presence of God and for families to be united eternally.", r:"“The Family: A Proclamation to the World”", u:PROC } },
+];
+const ORD = Object.fromEntries(ORDS.map(o => [o.key, o]));
+const MILES = {
+  birth: { title:"Born on Earth", short:"Born", img:"birth",
+    q:{ t:"One significant purpose of mortality is to gain a physical body.", r:GT_CITE, u:GT } },
+  death: { title:"Death", short:"Death", img:"death",
+    q:{ t:"Part of our Heavenly Father’s plan is that someday we will all die. Death is the separation of the spirit and the physical body.", r:GT_CITE, u:GT } },
+  spiritworld: { title:"Spirit World", img:"spiritworld",
+    q:{ t:"a state of happiness, which is called paradise, a state of rest, a state of peace,", r:"Alma 40:12", u:sc("bofm/alma/40",12) } },
+  resurrection: { title:"The Resurrection", img:"resurrection",
+    q:{ t:"Because of Christ’s Atonement, all of God’s children will be resurrected and our bodies and spirits will be reunited.", r:GT_CITE, u:GT } },
+  home: { title:"Celestial Kingdom", img:"home",
     q:{ t:"For behold, this is my work and my glory—to bring to pass the immortality and eternal life of man.", r:"Moses 1:39", u:sc("pgp/moses/1",39) } },
 };
+const REPENT = { t:"Behold, he who has repented of his sins, the same is forgiven, and I, the Lord, remember them no more.", r:"Doctrine and Covenants 58:42", u:sc("dc-testament/dc/58",42) };
 const SHORT = ["Scriptures","Prayer","Repent","Testimony","Sacrament","Body temple","Lord’s help","Temple","Feelings","Use time","Tithing","Grateful","Serve"];
+const HABITS = [0,1,3,5,6,8,9,10,11,12];   // handout items that appear as spaces (Repent, Sacrament and Temple have their own)
+const NEED_STONES = 6;
 
 /* =====================================================================
    PICTURES — every picture has a slot name. To replace one for everyone,
@@ -454,7 +469,10 @@ const IMAGES = {
   spiritworld:  { label:"Spirit world",            search:"spirit world, paradise" },
   resurrection: { label:"Resurrection",            search:"Resurrection, empty tomb, He Is Risen" },
   home:         { label:"Eternal life (home)",     search:"Jesus Christ, families, heaven" },
-  rock:         { label:"Landmarks (house on the rock)", search:"wise man built his house upon the rock" },
+  rock:         { label:"Foundation spaces (house on the rock)", search:"wise man built his house upon the rock" },
+  christus:     { label:"Christus (Premortal Life circle)", search:"Christus statue" },
+  sealing:      { label:"Temple sealing", search:"temple marriage, sealing" },
+  death:        { label:"Death", search:"sunset" },
   storm:        { label:"Storm",                   search:"storm, Jesus calms the storm" },
   scripture:    { label:"Scripture card",          search:"scriptures, family scripture study" },
   choose:       { label:"Choose the Right card",   search:"CTR, choose the right" },
@@ -463,7 +481,6 @@ const IMAGES = {
   song:         { label:"Song card",               search:"Primary children singing" },
   sabbath:      { label:"Sabbath / sacrament",     search:"sacrament, Sabbath" },
 };
-STONES.forEach((s, i) => { if (!s.img) IMAGES["stone" + (i+1)] = { label:`Landmark ${i+1}: ${s.name}`, search:s.name.toLowerCase(), fallback:"rock" }; });
 Object.entries(IMAGES).forEach(([k, v]) => v.file = `images/${k}.jpg`);
 
 /* ===================== BOARD ===================== */
@@ -474,27 +491,21 @@ const STAGES = [
   { key:"res",   name:"Resurrection" },
   { key:"ck",    name:"Celestial Kingdom" },
 ];
-// S scripture · C choose the right · V service · G song · B Sabbath · Xn storm (strength n) · Ln landmark n · M:name milestone
-// The "earth" spaces make one loop around the board; the "lane" runs from the loop into the Celestial Kingdom at the center.
-const LAYOUT = [
-  ["earth", "M:birth S L1 C L2 X1 L3 M:baptism B L4 C L5 V L6 X2 M:savior G L7 C L8 X2 B L9 S L10 X3 L11 C L12 V L13 S"],
-  ["sw",    "M:spiritworld S"],
-  ["res",   "G M:resurrection"],
-  ["ck",    "M:home"],
-];
-const BOARD = [];
-LAYOUT.forEach(([stage, codes]) => codes.split(" ").forEach(c => {
-  const sp = { stage };
-  if (c.startsWith("M:")) { sp.type = "mile"; sp.mile = c.slice(2); }
-  else if (c[0] === "X") { sp.type = "storm"; sp.power = +c.slice(1); }
-  else if (c[0] === "L") { sp.type = "land"; sp.stone = +c.slice(1) - 1; }
-  else sp.type = { S:"scripture", C:"choose", V:"service", G:"song", B:"sabbath" }[c];
-  BOARD.push(sp);
-}));
-const LAST = BOARD.length - 1;
-const landPos = STONES.map((_, i) => BOARD.findIndex(s => s.type === "land" && s.stone === i));
+// One loop around the board. H habit space (handout item) · R Repent · O ordinance (gives your next one) · S scripture · C choose · V service · G song · B Sabbath · Xn storm · M:name milestone
+const LAYOUT = "M:birth H0 R H1 O X1 C H2 R O H3 G H4 X1 R O S H5 B H6 R O V X2 H7 C R O H8 G X3 H9 R O M:death";
+const BOARD = LAYOUT.split(" ").map(c => {
+  if (c.startsWith("M:")) return { type:"mile", mile:c.slice(2) };
+  if (c === "O") return { type:"ord" };
+  if (c[0] === "X") return { type:"storm", power:+c.slice(1) };
+  if (c[0] === "H") return { type:"habit", topic:HABITS[+c.slice(1)] };
+  return { type:{ S:"scripture", C:"choose", V:"service", G:"song", B:"sabbath", R:"repent" }[c] };
+});
+const LOOP = BOARD.length;
+const DEATH = BOARD.findIndex(b => b.mile === "death");
 const TYPES = {
-  land:{ label:"Landmark", color:"#8A6A48" },
+  habit:{ label:"Foundation", color:"#8A6A48" },
+  ord:{ label:"Ordinance", color:"#D99A12" },
+  repent:{ label:"Repent", color:"#1E9AA8" },
   scripture:{ label:"Scripture", color:"#2C6FB7" },
   choose:{ label:"Choose", color:"#2F8F57" },
   storm:{ label:"Storm", color:"#56637A" },
@@ -513,30 +524,26 @@ const ICONS = {
   song:'<path d="M9 17V6l10-2v11" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="7" cy="17" r="2.6" fill="currentColor"/><circle cx="17" cy="15" r="2.6" fill="currentColor"/>',
   sabbath:'<circle cx="12" cy="12" r="4.5" fill="currentColor"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>',
   bridge:'<path d="M3 18a9 9 0 0 1 18 0M6.5 18a5.5 5.5 0 0 1 11 0" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>',
+  repent:'<path d="M19 12a7 7 0 1 1-2.1-5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/><path d="M17.5 3.5v4h-4" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>',
   mile:'<path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z" fill="currentColor"/>',
 };
 const iconSvg = (k, color, cls="") => `<svg class="${cls}" width="22" height="22" viewBox="0 0 24 24" style="color:${color}" aria-hidden="true">${ICONS[k]}</svg>`;
 
-/* Board geometry (viewBox 1000×1000): the loop runs clockwise around the edge,
-   starting next to the Premortal Life circle (top-left). The lane leaves the loop and heads into the center. */
-const LOOP_N = BOARD.filter(b => b.stage === "earth").length;
-const CK = { x:520, y:520, r:118 };
-const PRE = { x:212, y:218, r:96 };
+/* Board geometry (viewBox 1000×1000). The loop runs clockwise around the edge.
+   Inside: the Premortal Life circle (start), the Spirit World, and the three kingdoms. */
+const PRE = { x:300, y:300, r:94 };
+const SW = { x:236, y:602, r:62 }, RES = { x:398, y:604, r:42 };
+const CK = { x:606, y:604, r:108 }, TER = { x:800, y:468, r:52 }, TEL = { x:800, y:742, r:52 };
 const POS = (() => {
-  const pts = [[330,90],[840,90],[910,160],[910,840],[840,910],[160,910],[90,840],[90,330]];
+  const pts = [[160,90],[840,90],[910,160],[910,840],[840,910],[160,910],[90,840],[90,160],[160,90]];
   const segs = []; let total = 0;
   for (let i=0;i<pts.length-1;i++){ const [ax,ay]=pts[i],[bx,by]=pts[i+1], L=Math.hypot(bx-ax,by-ay); segs.push({ax,ay,bx,by,L,start:total}); total += L; }
-  const out = [];
-  for (let i=0;i<LOOP_N;i++){ const d = i * total / (LOOP_N-1); const sg = segs.find(z => d <= z.start + z.L + .01) || segs[segs.length-1]; const t = (d - sg.start)/sg.L;
-    out.push({ x: sg.ax + (sg.bx-sg.ax)*t, y: sg.ay + (sg.by-sg.ay)*t, r: 40 }); }
-  const A = out[LOOP_N-1], ang = Math.atan2(CK.y - A.y, CK.x - A.x), B = { x: CK.x - Math.cos(ang)*(CK.r+6), y: CK.y - Math.sin(ang)*(CK.r+6) };
-  const laneN = BOARD.length - LOOP_N - 1;
-  const L = Math.hypot(B.x-A.x, B.y-A.y), step = (L - 34) / laneN;
-  for (let k=1;k<=laneN;k++){ const d = step * k; out.push({ x: A.x + (B.x-A.x)*d/L, y: A.y + (B.y-A.y)*d/L, r: 34 }); }
-  out.push({ x: CK.x, y: CK.y, r: CK.r });
-  return out;
+  const step = total / LOOP;
+  return BOARD.map((_, i) => { const d = (2697 + i*step) % total; const sg = segs.find(z => d <= z.start + z.L + .01) || segs[segs.length-1]; const t = (d - sg.start)/sg.L;
+    return { x: sg.ax + (sg.bx-sg.ax)*t, y: sg.ay + (sg.by-sg.ay)*t, r: 39 }; });
 })();
-const START = k => ({ x: PRE.x + [-42,42,-42,42][k], y: PRE.y + [-8,-8,44,44][k] });
+const START = k => ({ x: PRE.x + [-50,50,-50,50][k], y: PRE.y + [20,20,58,58][k] });
+const SWPOS = k => ({ x: SW.x + [-24,24,-24,24][k], y: SW.y + [-4,-4,30,30][k] });
 
 /* ===================== PICTURES ===================== */
 const store = {
@@ -547,7 +554,7 @@ const store = {
 const PALETTE = {
   premortal:["#1C1A55","#5450C8"], council:["#3A3896","#8D89F0"], birth:["#2F8F57","#9ED9B1"], baptism:["#1F6FA8","#8FCBEF"],
   savior:["#7A2E3A","#D9772B"], temple:["#3C6E8F","#E8EEF4"], spiritworld:["#5B3E8E","#C9B2EE"], resurrection:["#D9772B","#FFE2A8"],
-  home:["#D99A12","#FFF3C4"], rock:["#5E6673","#B9A58E"], storm:["#2E3A4E","#7F8EA6"], scripture:["#1E4F86","#7FB0E6"],
+  home:["#D99A12","#FFF3C4"], sealing:["#3C6E8F","#F6E7F0"], death:["#3A2E4E","#E89A6B"], christus:["#1C1A55","#5450C8"], rock:["#5E6673","#B9A58E"], storm:["#2E3A4E","#7F8EA6"], scripture:["#1E4F86","#7FB0E6"],
   choose:["#1F6B41","#7FD1A0"], story:["#6B4A2A","#E3C28F"], service:["#9E2F55","#F3A5BD"], song:["#5A33A0","#C7A9F5"], sabbath:["#A86F00","#FFD77A"],
 };
 const SCENE = {
@@ -592,13 +599,13 @@ function imgSrc(slot){
   if (fileOK[slot]) return IMAGES[slot].file;
   return placeholder(slot);
 }
-const stoneImg = i => STONES[i].img || ("stone" + (i+1));
+const stoneImg = () => "rock";
 function refreshImages(){ if (S && !$("#game").hidden) renderMap(); if (!$("#pictures").hidden) renderPics(); }
 
 /* ===================== STATE ===================== */
 const $ = s => document.querySelector(s);
 const COLORS = ["#D0453A","#2C6FB7","#2F9A57","#8A4FC7"];
-const SAVE = "quest-save-v3";
+const SAVE = "quest-save-v4";
 let S = null, setupCount = 2, mode = "spin"; // mode: spin | hop | wait
 
 function shuffle(a){ a = a.slice(); for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
@@ -609,15 +616,14 @@ function draw(name, n){
 function save(){ if (S) store.set(SAVE, JSON.stringify(S)); }
 function cur(){ return S.players[S.turn]; }
 function stageOf(pos){ return STAGES.find(s => s.key === BOARD[pos].stage); }
-function where(pos){
-  if (pos < 0) return "Premortal Life · pop a 1 or 6 to be born";
-  if (BOARD[pos].stage !== "earth") return stageOf(pos).name;
-  const next = landPos.findIndex(lp => lp >= pos);
-  return next === -1 ? "Earth Life" : `Earth Life · next landmark ${next+1}`;
+function ready(p){ return p.ords.length === 4 && p.stones >= NEED_STONES; }
+function where(p){
+  if (p.inSW) return "Spirit World · help someone on earth";
+  if (p.pos < 0) return "Premortal Life · pop a 1 or 6 to be born";
+  return `Ordinances ${p.ords.length}/4 · Foundation ${Math.min(p.stones, NEED_STONES)}/${NEED_STONES}${ready(p) ? " · Ready! Head for Death" : ""}`;
 }
 function log(msg){ S.log.unshift(msg); S.log = S.log.slice(0, 40); renderLog(); }
-function score(p){ return p.stars + p.stones.length * 2 + p.badges.length; }
-function giveStone(p, i){ if (p.stones.includes(i)) return false; p.stones.push(i); return true; }
+function score(p){ return p.stars + Math.min(p.stones, NEED_STONES) * 2 + p.badges.length; }
 function esc(s){ return String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])); }
 
 /* ===================== SETUP ===================== */
@@ -654,7 +660,7 @@ function startGame(){
   const players = [];
   for (let i=0;i<setupCount;i++){
     const nm = ($("#pname"+i).value || "").trim() || "Player " + (i+1);
-    players.push({ name:nm, color:COLORS[i], pos:-1, stars:0, stones:[], badges:[], hg:false, done:false, place:0 });
+    players.push({ name:nm, color:COLORS[i], pos:-1, stars:0, stones:0, lost:0, ords:[], badges:[], hg:false, inSW:false, place:0 });
   }
   S = { players, turn:0, decks:{}, log:[], finishedCount:0, over:false, remaining:0 };
   log("The quest begins in premortal life.");
@@ -698,60 +704,94 @@ function startJourney(){
 function showGame(){
   ["#setup","#end","#pictures","#intro"].forEach(s => $(s).hidden = true);
   $("#game").hidden = false; $("#turnbar").hidden = false; $("#btnNew").hidden = false;
-  renderAll(); scrollToPawn(true);
+  renderAll(); scrollTo({ top:0 });
 }
 
 /* ===================== BOARD DRAWING ===================== */
 const BIG = sp => sp.type === "mile" || sp.type === "land";
+function christusSvg(x, y){
+  const custom = store.get("quest-img-christus") || (fileOK.christus && IMAGES.christus.file);
+  if (custom) return `<clipPath id="cpChr"><circle cx="${x}" cy="${y-6}" r="46"/></clipPath><image href="${custom}" x="${x-46}" y="${y-52}" width="92" height="92" preserveAspectRatio="xMidYMid slice" clip-path="url(#cpChr)"/>`;
+  return `<circle cx="${x}" cy="${y-10}" r="44" fill="#fff" opacity=".18"/><circle cx="${x}" cy="${y-10}" r="28" fill="#fff" opacity=".2"/>
+    <g fill="#F7F5EE" stroke="#D8D2C2" stroke-width="1.2">
+      <path d="M${x-11} ${y-26} Q${x-30} ${y-14} ${x-40} ${y+4} L${x-34} ${y+8} Q${x-24} ${y-6} ${x-12} ${y-12}z"/>
+      <path d="M${x+11} ${y-26} Q${x+30} ${y-14} ${x+40} ${y+4} L${x+34} ${y+8} Q${x+24} ${y-6} ${x+12} ${y-12}z"/>
+      <path d="M${x-12} ${y-28} L${x+12} ${y-28} L${x+20} ${y+30} L${x-20} ${y+30}z"/>
+      <circle cx="${x}" cy="${y-38}" r="10"/></g>`;
+}
 function renderMap(){
   let g = `<defs>
     <linearGradient id="felt" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#A8DDB0"/><stop offset="1" stop-color="#6DBA83"/></linearGradient>
     <radialGradient id="sky"><stop offset="0" stop-color="#4A46B5"/><stop offset="1" stop-color="#1C1A55"/></radialGradient>
     <radialGradient id="glory"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".55" stop-color="#FFF1C2"/><stop offset="1" stop-color="#F6C453"/></radialGradient>
-    <linearGradient id="laneG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#C9B5EE"/><stop offset="1" stop-color="#FFD98A"/></linearGradient>
+    <radialGradient id="swG"><stop offset="0" stop-color="#F4EEFF"/><stop offset="1" stop-color="#B9A3E3"/></radialGradient>
+    <radialGradient id="terG"><stop offset="0" stop-color="#F3F6FF"/><stop offset="1" stop-color="#AFC0E6"/></radialGradient>
+    <radialGradient id="telG"><stop offset="0" stop-color="#5E6C9E"/><stop offset="1" stop-color="#2D3561"/></radialGradient>
   </defs>
   <rect x="4" y="4" width="992" height="992" rx="60" fill="#2F5E3C"/>
   <rect x="18" y="18" width="964" height="964" rx="48" fill="url(#felt)"/>`;
   let seed = 11; const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
-  for (let i=0;i<14;i++){ const x = 200 + rnd()*620, y = 200 + rnd()*620; if (Math.hypot(x-CK.x,y-CK.y) < CK.r+70 || Math.hypot(x-PRE.x,y-PRE.y) < PRE.r+50) continue;
-    g += `<g transform="translate(${x} ${y})"><rect x="-4" y="0" width="8" height="20" fill="#7A5A3A"/><circle cy="-6" r="20" fill="#3E9B5F"/><circle cx="-8" cy="-14" r="10" fill="#57B474" opacity=".7"/></g>`; }
-  // track groove around the edge, and the lane into the center
-  const loop = POS.slice(0, LOOP_N).map(p => `${p.x},${p.y}`).join(" ");
-  g += `<polyline points="${loop}" fill="none" stroke="#C9A867" stroke-width="100" stroke-linejoin="round" stroke-linecap="round"/>
-    <polyline points="${loop}" fill="none" stroke="#F3E2B8" stroke-width="88" stroke-linejoin="round" stroke-linecap="round"/>`;
-  const lane = POS.slice(LOOP_N-1).map(p => `${p.x},${p.y}`).join(" ");
-  g += `<polyline points="${lane}" fill="none" stroke="#B9A0DE" stroke-width="80" stroke-linecap="round"/><polyline points="${lane}" fill="none" stroke="url(#laneG)" stroke-width="68" stroke-linecap="round"/>`;
-  // Premortal Life circle (the starting area)
+  const clear = (x, y, m) => [PRE, SW, CK, TEL, TER].every(c => Math.hypot(x-c.x, y-c.y) > c.r + m);
+  for (let i=0;i<30;i++){ const x = 170 + rnd()*660, y = 170 + rnd()*660; if (!clear(x, y, 34)) continue;
+    g += `<g transform="translate(${x} ${y})"><rect x="-4" y="0" width="8" height="18" fill="#7A5A3A"/><circle cy="-6" r="17" fill="#3E9B5F"/><circle cx="-7" cy="-12" r="8" fill="#57B474" opacity=".7"/></g>`; }
+  // loop groove
+  const loop = POS.map(p => `${p.x},${p.y}`).join(" ");
+  g += `<polygon points="${loop}" fill="none" stroke="#C9A867" stroke-width="98" stroke-linejoin="round"/><polygon points="${loop}" fill="none" stroke="#F3E2B8" stroke-width="86" stroke-linejoin="round"/>`;
+  // Premortal Life circle with the Christus
   g += `<circle cx="${PRE.x}" cy="${PRE.y}" r="${PRE.r+8}" fill="#FFC94A"/><circle cx="${PRE.x}" cy="${PRE.y}" r="${PRE.r}" fill="url(#sky)"/>`;
   for (let i=0;i<40;i++){ const a = rnd()*6.283, d = Math.sqrt(rnd())*(PRE.r-8); g += `<circle cx="${PRE.x+Math.cos(a)*d}" cy="${PRE.y+Math.sin(a)*d}" r="${rnd()*2+.6}" fill="#fff" opacity="${.4+rnd()*.6}"/>`; }
-  g += `<text x="${PRE.x}" y="${PRE.y-52}" text-anchor="middle" fill="#fff" class="lbl" font-size="21" letter-spacing="1">PREMORTAL LIFE</text>
-    <text x="${PRE.x}" y="${PRE.y+88}" text-anchor="middle" fill="#FFE29A" class="lbl" font-size="18">Roll 1 or 6</text>
-    <path d="M${PRE.x+PRE.r-4} ${PRE.y-58} Q${POS[0].x-30} ${PRE.y-70} ${POS[0].x-34} ${POS[0].y+38}" fill="none" stroke="#FFC94A" stroke-width="7" stroke-dasharray="2 12" stroke-linecap="round"/>`;
-  // Celestial Kingdom (center)
-  g += `<circle cx="${CK.x}" cy="${CK.y}" r="${CK.r+26}" fill="#FFE9A8" opacity=".55"/>`;
-  for (let i=0;i<16;i++){ const a = i*Math.PI/8; g += `<line x1="${CK.x+Math.cos(a)*(CK.r+4)}" y1="${CK.y+Math.sin(a)*(CK.r+4)}" x2="${CK.x+Math.cos(a)*(CK.r+30)}" y2="${CK.y+Math.sin(a)*(CK.r+30)}" stroke="#FFF6D8" stroke-width="6" stroke-linecap="round"/>`; }
+  g += christusSvg(PRE.x, PRE.y - 6);
+  g += `<text x="${PRE.x}" y="${PRE.y-PRE.r+26}" text-anchor="middle" fill="#fff" class="lbl" font-size="15" letter-spacing="1">PREMORTAL LIFE</text>
+    <text x="${PRE.x}" y="${PRE.y+PRE.r+28}" text-anchor="middle" fill="#3A2600" class="lbl" font-size="17">Pop 1 or 6 to be born</text>
+    <path d="M${PRE.x} ${PRE.y-PRE.r-6} L${POS[0].x} ${POS[0].y+44}" stroke="#FFC94A" stroke-width="7" stroke-dasharray="2 12" stroke-linecap="round"/>`;
+  // The lane: Death → Spirit World → Resurrection → Celestial Kingdom (only with all 4 ordinances and 6 stones)
+  const D = POS[DEATH];
+  g += `<polyline points="${D.x},${D.y} ${SW.x},${SW.y} ${RES.x},${RES.y} ${CK.x},${CK.y}" fill="none" stroke="#B9A0DE" stroke-width="84" stroke-linejoin="round" stroke-linecap="round"/>
+    <polyline points="${D.x},${D.y} ${SW.x},${SW.y} ${RES.x},${RES.y} ${CK.x},${CK.y}" fill="none" stroke="#E6DAFA" stroke-width="72" stroke-linejoin="round" stroke-linecap="round"/>
+    <circle cx="${SW.x}" cy="${SW.y}" r="${SW.r+6}" fill="#8A63C4"/><circle cx="${SW.x}" cy="${SW.y}" r="${SW.r}" fill="url(#swG)"/>
+    <g fill="#fff" opacity=".85"><ellipse cx="${SW.x-18}" cy="${SW.y+40}" rx="26" ry="9"/><ellipse cx="${SW.x+20}" cy="${SW.y+44}" rx="28" ry="9"/></g>
+    <text x="${SW.x}" y="${SW.y-30}" text-anchor="middle" fill="#4B2E80" class="lbl" font-size="15">SPIRIT WORLD</text>
+    <clipPath id="cpRes"><circle cx="${RES.x}" cy="${RES.y}" r="${RES.r}"/></clipPath>
+    <circle cx="${RES.x}" cy="${RES.y}" r="${RES.r+6}" fill="#D9772B"/>
+    <image href="${imgSrc("resurrection")}" x="${RES.x-RES.r*1.8}" y="${RES.y-RES.r}" width="${RES.r*3.6}" height="${RES.r*2}" preserveAspectRatio="xMidYMid slice" clip-path="url(#cpRes)"/>
+    <rect x="${RES.x-RES.r}" y="${RES.y+RES.r*.25}" width="${2*RES.r}" height="${RES.r}" fill="rgba(20,16,40,.72)" clip-path="url(#cpRes)"/>
+    <text x="${RES.x}" y="${RES.y+RES.r*.62}" text-anchor="middle" fill="#fff" class="lbl" font-size="10.5">Resurrection</text>
+    <g transform="translate(${SW.x+20} ${SW.y+SW.r+30})"><rect x="-98" y="-15" width="196" height="28" rx="14" fill="#4B2E80"/><text y="5" text-anchor="middle" fill="#fff" class="lbl" font-size="13">Need 4 ordinances + 6 stones</text></g>`;
+  // The three kingdoms
+  g += `<circle cx="${CK.x}" cy="${CK.y}" r="${CK.r+24}" fill="#FFE9A8" opacity=".55"/>`;
+  for (let i=0;i<16;i++){ const a = i*Math.PI/8; g += `<line x1="${CK.x+Math.cos(a)*(CK.r+4)}" y1="${CK.y+Math.sin(a)*(CK.r+4)}" x2="${CK.x+Math.cos(a)*(CK.r+28)}" y2="${CK.y+Math.sin(a)*(CK.r+28)}" stroke="#FFF6D8" stroke-width="6" stroke-linecap="round"/>`; }
   g += `<circle cx="${CK.x}" cy="${CK.y}" r="${CK.r}" fill="url(#glory)" stroke="#D99A12" stroke-width="8"/>
-    <text x="${CK.x}" y="${CK.y-14}" text-anchor="middle" fill="#8A5A00" class="lbl" font-size="27">CELESTIAL</text>
-    <text x="${CK.x}" y="${CK.y+20}" text-anchor="middle" fill="#8A5A00" class="lbl" font-size="27">KINGDOM</text>
-    <text x="${CK.x}" y="${CK.y+52}" text-anchor="middle" fill="#A0700F" class="lbl" font-size="15">Win a challenge to enter</text>`;
+    <text x="${CK.x}" y="${CK.y-6}" text-anchor="middle" fill="#8A5A00" class="lbl" font-size="25">CELESTIAL</text>
+    <text x="${CK.x}" y="${CK.y+24}" text-anchor="middle" fill="#8A5A00" class="lbl" font-size="25">KINGDOM</text>
+    <circle cx="${TER.x}" cy="${TER.y}" r="${TER.r}" fill="url(#terG)" stroke="#8EA2CF" stroke-width="5"/>
+    <path d="M${TER.x+6} ${TER.y-30} a24 24 0 1 0 18 36 a19 19 0 1 1 -18 -36z" fill="#FFFFFF" stroke="#C9D3EC" stroke-width="2"/>
+    <text x="${TER.x}" y="${TER.y+TER.r+22}" text-anchor="middle" fill="#2E3A57" class="lbl" font-size="15">Terrestrial</text>
+    <circle cx="${TEL.x}" cy="${TEL.y}" r="${TEL.r}" fill="url(#telG)" stroke="#5E6C9E" stroke-width="5"/>
+    ${[[-18,-14,7],[14,-20,5],[6,8,8],[-16,18,5],[22,14,4]].map(([dx,dy,r]) => `<path d="M${TEL.x+dx} ${TEL.y+dy-r}l${r*.3} ${r*.7} ${r*.7} ${r*.3}-${r*.7} ${r*.3}-${r*.3} ${r*.7}-${r*.3}-${r*.7}-${r*.7}-${r*.3} ${r*.7}-${r*.3}z" fill="#FFF3B0"/>`).join("")}
+    <text x="${TEL.x}" y="${TEL.y+TEL.r+22}" text-anchor="middle" fill="#2E3A57" class="lbl" font-size="15">Telestial</text>`;
   // spaces
   BOARD.forEach((sp, i) => {
-    if (i === LAST) return;
     const { x, y, r } = POS[i];
-    if (sp.type === "mile"){
+    if (sp.type === "ord"){
+      g += `<circle cx="${x}" cy="${y}" r="${r+9}" fill="#FFE29A" opacity=".7"/><circle cx="${x}" cy="${y}" r="${r}" fill="#D99A12" stroke="#fff" stroke-width="4"/>
+        <g transform="translate(${x-15} ${y-27}) scale(1.25)" style="color:#fff">${ICONS.mile}</g>
+        <text x="${x}" y="${y+23}" text-anchor="middle" fill="#fff" class="lbl" font-size="11">Ordinance</text>`;
+    } else if (sp.type === "mile"){
       const m = MILES[sp.mile];
+      const ring = sp.mile === "death" ? "#5B4A78" : "#2F8F57";
       g += `<clipPath id="cp${i}"><circle cx="${x}" cy="${y}" r="${r}"/></clipPath>
-        <circle cx="${x}" cy="${y}" r="${r+6}" fill="#D99A12"/>
+        <circle cx="${x}" cy="${y}" r="${r+6}" fill="${ring}"/>
         <image href="${imgSrc(m.img)}" x="${x-r*1.8}" y="${y-r}" width="${r*3.6}" height="${r*2}" preserveAspectRatio="xMidYMid slice" clip-path="url(#cp${i})"/>
-        <rect x="${x-r}" y="${y+r*.28}" width="${2*r}" height="${r}" fill="rgba(20,16,40,.7)" clip-path="url(#cp${i})"/>
-        <text x="${x}" y="${y+r*.62}" text-anchor="middle" fill="#fff" class="lbl" font-size="${m.short.length > 8 ? 11.5 : 14}">${m.short}</text>`;
-    } else if (sp.type === "land"){
-      g += `<circle cx="${x}" cy="${y}" r="${r}" fill="#F7EBD3" stroke="#8A6A48" stroke-width="6"/>
-        <text x="${x}" y="${y+4}" text-anchor="middle" fill="#8A6A48" class="lbl" font-size="30">${sp.stone+1}</text>
-        <text x="${x}" y="${y+25}" text-anchor="middle" fill="#5A4026" class="lbl" font-size="${SHORT[sp.stone].length > 9 ? 10.5 : 12}">${SHORT[sp.stone]}</text>`;
+        <rect x="${x-r}" y="${y+r*.25}" width="${2*r}" height="${r}" fill="rgba(20,16,40,.72)" clip-path="url(#cp${i})"/>
+        <text x="${x}" y="${y+r*.62}" text-anchor="middle" fill="#fff" class="lbl" font-size="${m.short.length > 8 ? 11.5 : 13.5}">${m.short}</text>`;
+    } else if (sp.type === "habit"){
+      g += `<circle cx="${x}" cy="${y}" r="${r}" fill="#F7EBD3" stroke="#8A6A48" stroke-width="5"/>
+        <g transform="translate(${x-15} ${y-27}) scale(1.25)" style="color:#8A6A48">${ICONS.land}</g>
+        <text x="${x}" y="${y+22}" text-anchor="middle" fill="#5A4026" class="lbl" font-size="${SHORT[sp.topic].length > 9 ? 10.5 : 12}">${SHORT[sp.topic]}</text>`;
     } else {
       const t = TYPES[sp.type];
       const lbl = sp.type === "storm" ? `Storm ${sp.power}` : t.label;
+      if (sp.type === "repent") g += `<circle cx="${x}" cy="${y}" r="${r+9}" fill="#7FE0E8" opacity=".6"/>`;
       g += `<circle cx="${x}" cy="${y}" r="${r}" fill="${t.color}" stroke="#fff" stroke-width="4"/>
         <g transform="translate(${x-15} ${y-25}) scale(1.25)" style="color:#fff">${ICONS[sp.type]}</g>
         <text x="${x}" y="${y+24}" text-anchor="middle" fill="#fff" class="lbl" font-size="${lbl.length > 7 ? 11 : 12.5}">${lbl}</text>`;
@@ -766,36 +806,40 @@ function renderMap(){
   $("#map").innerHTML = `<svg class="board" viewBox="0 0 1000 1000" role="img" aria-label="The Quest game board">${g}</svg>`;
   if (S) { S.players.forEach((_, k) => placePawn(k)); showNextRing(); }
 }
-function pawnXY(k, pos){
-  if (pos < 0) return START(k);
-  if (pos === LAST) return { x: CK.x + [-60,60,-60,60][k], y: CK.y + [70,70,92,92][k] - 160 + (k>1?0:-10) };
-  const p = POS[pos], off = [[-17,-14],[17,-14],[-17,16],[17,16]][k];
+function pawnXY(k, pl){
+  if (S && S.over) return { x: CK.x + [-44,44,-44,44][k], y: CK.y + [44,44,72,72][k] };
+  if (pl.atRes) return { x: RES.x + [-14,14,-14,14][k], y: RES.y + [-12,-12,12,12][k] };
+  if (pl.inSW) return SWPOS(k);
+  if (pl.pos < 0) return START(k);
+  const p = POS[pl.pos], off = [[-17,-14],[17,-14],[-17,16],[17,16]][k];
   return { x: p.x + off[0], y: p.y + off[1] };
 }
 function placePawn(k){
   const el = $("#pawn"+k); if (!el) return;
-  const { x, y } = pawnXY(k, S.players[k].pos);
+  const { x, y } = pawnXY(k, S.players[k]);
   el.style.transform = `translate(${x}px, ${y}px)`;
 }
 function scrollToPawn(){}
 function houseSvg(p){
-  // 13 stones: 7 on the bottom row, 6 above; house sits on top
+  // 6 foundation stones under the house: 3 on the bottom row, 3 above
   let s = `<path d="M2 62l10-8 18 2 14-6 22 3 16-5 20 4 16-2v12z" fill="var(--rock)"/>`;
-  for (let i=0;i<13;i++){
-    const row = i < 7 ? 0 : 1, col = row ? i-7 : i;
-    const x = row ? 15 + col*15 : 7 + col*15, y = row ? 38 : 47;
-    const on = p.stones.includes(i);
-    s += `<rect x="${x}" y="${y}" width="13" height="8" rx="1.5" fill="${on?"var(--t-land)":"var(--surface-2)"}" stroke="${on?"var(--t-land)":"var(--line)"}"><title>${i+1}. ${STONES[i].name}${on?" ✓":""}</title></rect>`;
+  for (let i=0;i<NEED_STONES;i++){
+    const row = i < 3 ? 0 : 1, col = i % 3, x = 22 + col*27 + (row ? 0 : 0), y = row ? 37 : 47;
+    const on = i < p.stones;
+    s += `<rect x="${x}" y="${y}" width="24" height="9" rx="2" fill="${on?"var(--t-land)":"var(--surface-2)"}" stroke="${on?"var(--t-land)":"var(--line)"}"/>`;
   }
-  const full = p.stones.length === 13;
-  s += `<rect x="36" y="22" width="48" height="16" fill="${p.stones.length?"var(--surface)":"none"}" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="${p.stones.length?"":"3 3"}"/><path d="M30 23L60 6l30 17" fill="${full?"var(--gold)":"none"}" stroke="var(--ink)" stroke-width="1.5" stroke-linejoin="round"/><rect x="55" y="28" width="10" height="10" fill="var(--t-land)" opacity="${p.stones.length?1:.3}"/>`;
-  return `<svg viewBox="0 0 122 64" aria-label="${p.stones.length} of 13 foundation stones">${s}</svg>`;
+  const full = ready(p);
+  s += `<rect x="36" y="21" width="48" height="16" fill="${p.stones?"var(--surface)":"none"}" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="${p.stones?"":"3 3"}"/><path d="M30 22L60 5l30 17" fill="${full?"var(--gold)":"none"}" stroke="var(--ink)" stroke-width="1.5" stroke-linejoin="round"/><rect x="55" y="27" width="10" height="10" fill="var(--t-land)" opacity="${p.stones?1:.3}"/>`;
+  return `<svg viewBox="0 0 122 64" aria-label="${p.stones} of ${NEED_STONES} foundation stones">${s}</svg>`;
 }
 function renderPlayers(){
   $("#players").innerHTML = S.players.map((p,k) => `
     <div class="pcard ${k===S.turn && !S.over?"turn":""}">
       <div class="row"><span class="token" style="background:${p.color}">${k+1}</span><span class="nm">${esc(p.name)}</span><span class="stars" title="Blessings">★ ${p.stars}</span></div>
-      <div class="house">${houseSvg(p)}<div class="pmeta"><span>Stones <b>${p.stones.length}/13</b></span><span>Storms overcome <b>${p.badges.length}</b></span>${p.hg?"<span><b>Holy Ghost</b> +1</span>":""}${p.done?"<span><b>Home!</b></span>":""}</div></div>
+      <div class="house">${houseSvg(p)}<div class="pmeta">
+        <span>Foundation <b>${Math.min(p.stones, NEED_STONES)}/${NEED_STONES}</b>${p.lost?` · ${p.lost} loose`:""}</span>
+        <span class="ords">${ORDS.map(o => `<b class="${p.ords.includes(o.key)?"on":""}" title="${o.title}">${p.ords.includes(o.key)?"✓":"○"} ${o.short}</b>`).join(" ")}</span>
+        ${p.inSW?"<span><b>In the Spirit World</b></span>":""}</div></div>
     </div>`).join("");
 }
 function renderLog(){ $("#log").innerHTML = S.log.map(m => `<p>${m}</p>`).join(""); }
@@ -804,16 +848,17 @@ function renderTurnbar(){
   $("#tbToken").style.background = p.color; $("#tbToken").textContent = S.turn + 1;
   $("#tbName").textContent = p.name + "’s turn";
   const b = $("#btnSpin");
-  if (mode === "hop"){ $("#tbStage").textContent = `Tap your piece to move · ${S.remaining} left`; b.textContent = `Hop (${S.remaining})`; }
-  else { $("#tbStage").textContent = where(p.pos); b.textContent = "Pop!"; }
+  if (p.inSW){ $("#tbStage").textContent = where(p); b.textContent = "Help"; }
+  else if (mode === "hop"){ $("#tbStage").textContent = `Tap your piece to move · ${S.remaining} left`; b.textContent = `Hop (${S.remaining})`; }
+  else { $("#tbStage").textContent = where(p); b.textContent = "Pop!"; }
   b.disabled = mode === "wait" || S.over || !$("#scrim").hidden;
   showNextRing();
 }
 function showNextRing(){
   const r = $("#nextRing"); if (!r || !S) return;
-  const p = cur(), nxt = p.pos >= 0 && POS[p.pos + 1];
-  if (mode !== "hop" || !nxt) r.style.display = "none";
-  else { r.style.display = ""; r.setAttribute("cx", nxt.x); r.setAttribute("cy", nxt.y); }
+  const p = cur();
+  if (mode !== "hop" || p.pos < 0 || p.inSW) r.style.display = "none";
+  else { const nxt = POS[(p.pos + 1) % LOOP]; r.style.display = ""; r.setAttribute("cx", nxt.x); r.setAttribute("cy", nxt.y); }
   S.players.forEach((_, k) => { const el = $("#pawn"+k); if (el) el.classList.toggle("go", mode === "hop" && k === S.turn); });
 }
 function renderAll(){ renderMap(); renderPlayers(); renderLog(); renderTurnbar(); }
@@ -827,9 +872,9 @@ function dieFace(n){
 function drawSpinner(){ $("#die").innerHTML = dieFace(6); }
 const reduced = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 function setMode(m){ mode = m; renderTurnbar(); }
-function onTurnButton(){ if (mode === "spin") spin(); else if (mode === "hop") hop(); }
+function onTurnButton(){ if (cur().inSW) { if (mode === "spin") cardHelp(); } else if (mode === "spin") spin(); else if (mode === "hop") hop(); }
 function spin(){
-  if (mode !== "spin" || S.over) return;
+  if (mode !== "spin" || S.over || cur().inSW) return;
   setMode("wait");
   const n = 1 + Math.floor(Math.random()*SPIN_N);
   const pop = $("#popper"); pop.classList.remove("pop"); void pop.offsetWidth; pop.classList.add("pop");
@@ -841,7 +886,7 @@ function spin(){
       if (n === 1 || n === 6){
         toast(`${p.name} popped a ${n}. Born on earth!`); log(`${esc(p.name)} was born on earth.`);
         p.pos = 0; placePawn(S.turn);
-        return setTimeout(() => cardMile(BOARD[0], endTurn), reduced() ? 20 : 800);
+        return setTimeout(() => cardMile("birth", endTurn), reduced() ? 20 : 800);
       }
       toast(`${p.name} popped a ${n}. You need a 1 or 6 to be born.`);
       return setTimeout(endTurn, reduced() ? 20 : 1600);
@@ -852,53 +897,48 @@ function spin(){
 function hop(){
   if (mode !== "hop") return;
   const k = S.turn, p = S.players[k];
-  if (S.remaining <= 0 || p.pos >= LAST) return;
-  if (p.pos + 1 === LAST) { setMode("wait"); return cardGate(); }   // the Celestial Kingdom needs a challenge
+  if (S.remaining <= 0) return;
   setMode("wait");
-  p.pos++; S.remaining--;
+  p.pos = (p.pos + 1) % LOOP; S.remaining--;
   placePawn(k); renderTurnbar();
   const sp = BOARD[p.pos], wait = reduced() ? 20 : 700;
+  if (p.pos === DEATH && ready(p)) { S.remaining = 0; return setTimeout(cardDeath, wait); }   // ready players stop at Death
   if (sp.type === "sabbath" && S.remaining > 0){ p.stars += 1; toast("Passed the Sabbath: +1 ★"); renderPlayers(); }
-  if (BIG(sp)) return setTimeout(() => pauseAt(sp), wait);   // landmarks & milestones pause the move
+  if (sp.type === "ord" && S.remaining > 0 && !S.ordThisTurn && p.ords.length < 4)   // passing an Ordinance space counts too (one per turn)
+    return setTimeout(() => cardOrd(sp, () => { closeCard(); save(); toast(`${S.remaining} more ${S.remaining===1?"move":"moves"}. Tap your piece!`); setMode("hop"); }), wait);
   if (S.remaining > 0) return setTimeout(() => setMode("hop"), reduced() ? 10 : 350);
   setTimeout(land, wait);
-}
-function pauseAt(sp){
-  renderPlayers();
-  const resume = () => { closeCard(); save(); renderPlayers(); if (S.remaining > 0) { toast(`${S.remaining} more ${S.remaining===1?"move":"moves"}. Tap your piece!`); setMode("hop"); } else endTurn(); };
-  if (sp.type === "land") cardLand(sp, resume); else cardMile(sp, resume);
 }
 function land(){
   renderPlayers();
   const p = cur(), sp = BOARD[p.pos];
-  if (p.pos >= LAST) return finishPlayer();
-  const other = S.players.find((o, j) => j !== S.turn && !o.done && o.pos === p.pos);
-  if (other) return cardChallenge(other, endTurn);
-  ({ scripture:cardScripture, choose:cardChoose, storm:cardStorm, service:cardService, song:cardSong, sabbath:cardSabbath })[sp.type](sp, endTurn);
+  const other = S.players.find((o, j) => j !== S.turn && !o.inSW && o.pos === p.pos);
+  if (other && sp.type !== "mile") return cardChallenge(other, endTurn);
+  ({ habit:cardHabit, ord:cardOrd, repent:cardRepent, scripture:cardScripture, choose:cardChoose, storm:cardStorm, service:cardService, song:cardSong, sabbath:cardSabbath,
+     mile: () => { if (sp.mile === "death") toast(`Not yet: you need all 4 ordinances and ${NEED_STONES} foundation stones.`); setTimeout(endTurn, reduced() ? 20 : 1400); } })[sp.type](sp, endTurn);
 }
-/* Move the current player forward on their own (after a good choice). Landmarks and milestones still stop them. */
+/* Move the current player forward on their own (after a good choice). */
 function autoHop(n, done){
   const k = S.turn, p = S.players[k];
-  if (n <= 0 || p.pos + 1 >= LAST) return done();
-  p.pos++; placePawn(k);
-  const sp = BOARD[p.pos], wait = reduced() ? 20 : 600;
-  if (BIG(sp)) return setTimeout(() => (sp.type === "land" ? cardLand : cardMile)(sp, () => { closeCard(); done(); }), wait);
+  if (n <= 0) return done();
+  p.pos = (p.pos + 1) % LOOP; placePawn(k);
+  if (p.pos === DEATH && ready(p)) return setTimeout(cardDeath, reduced() ? 20 : 600);
   setTimeout(() => autoHop(n - 1, done), reduced() ? 10 : 450);
 }
-function slideBack(k, n, done){
-  const p = S.players[k];
-  if (n <= 0 || p.pos <= 0) { renderPlayers(); return done(); }
-  p.pos--; placePawn(k);
-  setTimeout(() => slideBack(k, n - 1, done), reduced() ? 10 : 320);
+/* Hop forward to the next Ordinance space and receive the ordinance there. */
+function hopToOrd(done){
+  const k = S.turn, p = S.players[k];
+  p.pos = (p.pos + 1) % LOOP; placePawn(k);
+  if (p.pos === DEATH && ready(p)) return setTimeout(cardDeath, reduced() ? 20 : 600);
+  if (BOARD[p.pos].type === "ord") return setTimeout(() => cardOrd(BOARD[p.pos], done), reduced() ? 20 : 600);
+  setTimeout(() => hopToOrd(done), reduced() ? 10 : 380);
 }
 function endTurn(){
   closeCard(); save();
-  if (S.players.every(p => p.done)) return endGame();
-  let t = S.turn;
-  if (S.again && !S.players[S.turn].done){ S.again = false; S.remaining = 0; mode = "spin"; save(); renderAll(); return toast(`${cur().name} popped a 6. Go again!`); }
+  if (S.players.every(p => p.inSW)) return finale();
+  if (S.again && !cur().inSW){ S.again = false; S.ordThisTurn = false; S.remaining = 0; mode = "spin"; save(); renderAll(); return toast(`${cur().name} popped a 6. Go again!`); }
   S.again = false;
-  do { t = (t + 1) % S.players.length; } while (S.players[t].done);
-  S.turn = t; S.remaining = 0; mode = "spin"; save(); renderAll();
+  S.turn = (S.turn + 1) % S.players.length; S.ordThisTurn = false; S.remaining = 0; mode = "spin"; save(); renderAll();
 }
 
 /* ===================== CARDS ===================== */
@@ -929,8 +969,10 @@ function blankQuiz(text, answer, wrong, ref, url, onDone){
   const html = `<div class="verse">“${shown}”<span class="ref">${ref}</span></div>
     <div class="choices">${opts.map(o => `<button class="choice" type="button" data-act="pick" data-v="${esc(o)}">${esc(o)}</button>`).join("")}</div><div id="out"></div>`;
   const speak = `${text.replace(answer, "blank")} ${ref}. Is it: ${opts.join(", or ")}?`;
+  let tries = 0;
   const wireIt = () => wire({ pick: b => {
-    const right = b.dataset.v === answer;
+    const right = b.dataset.v === answer; tries++;
+    if (!right && tries === 1){ b.classList.add("wrong"); b.disabled = true; $("#out").innerHTML = `<p class="result bad">Repent and try again!</p>`; return; }
     $("#card").querySelectorAll(".choice").forEach(x => { x.disabled = true; if (x.dataset.v === answer) x.classList.add("right"); else if (x === b) x.classList.add("wrong"); });
     lastSpeech = text + " " + ref;
     onDone(right, verseHTML({ t:text, r:ref, u:url }, answer));
@@ -938,44 +980,59 @@ function blankQuiz(text, answer, wrong, ref, url, onDone){
   return { html, speak, wireIt };
 }
 
-function cardMile(sp, next){
-  const m = MILES[sp.mile], p = cur();
-  if (m.gift === "hg") p.hg = true;
-  p.stars += m.reward;
-  log(`${esc(p.name)} reached <b>${m.title}</b>${m.reward?` (+${m.reward} ★)`:""}.`);
-  openCard({ kind:"mile", title:m.title, img:m.img, speak: `${m.title}. ${m.q.t} ${m.q.r}. ${m.rule||""}`,
-    html: verseHTML(m.q) + (m.rule ? `<p><b>${m.rule}</b></p>` : "") + (m.reward ? `<p class="result good">+${m.reward} ★</p>` : "") + btn("done", contLabel()) });
+function cardMile(key, next){
+  const m = MILES[key];
+  openCard({ kind:"mile", title:m.title, img:m.img, speak:`${m.title}. ${m.q.t} ${m.q.r}`, html: verseHTML(m.q) + btn("done","Done") });
   wire({ done: next });
 }
-
-function cardLand(sp, next){
-  const i = sp.stone, s = STONES[i], p = cur();
+function cardOrd(sp, next){
+  const p = cur(), o = ORDS[p.ords.length];   // the next ordinance this player needs
+  if (!o || S.ordThisTurn){ p.stars += 1; toast(o ? "One ordinance per turn. +1 ★" : "You have all 4 ordinances. +1 ★"); renderPlayers(); return setTimeout(next, reduced() ? 20 : 1300); }
+  S.ordThisTurn = true;
+  p.ords.push(o.key); p.stars += 3; if (o.key === "baptism") p.hg = true;
+  log(`${esc(p.name)} received <b>${o.title}</b> (+3 ★).`); renderPlayers();
+  openCard({ kind:"ord", label:"Ordinance", title:o.title, img:o.img, speak:`${o.title}. ${o.q.t} ${o.q.r}. ${o.rule||""}`,
+    html: verseHTML(o.q) + (o.rule ? `<p><b>${o.rule}</b></p>` : "") + `<p class="result good">Ordinance received! +3 ★ <span class="small-note">(${p.ords.length} of 4)</span></p>` + btn("done","Done") });
+  wire({ done: next });
+}
+/* Sometimes a win is a surprise trip to the next Ordinance space. */
+function surprise(p){ return p.ords.length < 4 && Math.random() < 0.25; }
+function addStone(p){ if (p.stones >= NEED_STONES) { p.stars += 2; return false; } p.stones++; return true; }
+function cardHabit(sp, next){
+  const i = sp.topic, s = STONES[i], p = cur();
   const pool = CHOICES.map((c, j) => j).filter(j => CHOICES[j].stone === i);
-  const finish = (won, extraHtml) => {
+  const finish = (won) => {
     let msg;
-    if (won){ const got = giveStone(p, i); p.stars += 2; msg = `<p class="result good">${got ? "You earned a stone! +2 ★" : "+2 ★"}</p>`; log(`${esc(p.name)} earned landmark ${i+1}: <b>${s.name}</b>.`); renderPlayers(); }
-    else { msg = `<p class="result bad">No stone this time.</p><p class="small-note">Win it back on a Choose space later.</p>`; log(`${esc(p.name)} passed landmark ${i+1} without the stone.`); }
-    $("#out").innerHTML = msg + (extraHtml || "") + btn("done", contLabel());
-    wire({ done: next });
+    if (won){ const got = addStone(p); p.stars += 1; msg = `<p class="result good">${got ? `A stone for your foundation! (${p.stones} of ${NEED_STONES})` : "Your foundation is full. +2 ★"} +1 ★</p>`; log(`${esc(p.name)} earned a stone: <b>${s.name}</b>.`); renderPlayers(); }
+    else msg = `<p class="result bad">No stone this time.</p>`;
+    $("#out").innerHTML = msg + btn("done","Done"); wire({ done: next });
   };
-  const head = `<span class="tag">Landmark ${i+1} of 13</span>`;
+  const head = `<span class="tag">Foundation · ${s.name}</span>`;
   if (pool.length && Math.random() < 0.5){
     const c = CHOICES[pool[Math.floor(Math.random()*pool.length)]];
-    const opts = shuffle([{t:c.good, ok:true},{t:c.bad, ok:false}]);
-    openCard({ kind:"land", label:`Landmark ${i+1}`, title:s.name, img:stoneImg(i),
-      speak: `${s.name}. ${c.s} ${opts[0].t}? Or ${opts[1].t}?`,
+    const opts = shuffle([{t:c.good, ok:true},{t:c.bad, ok:false}]); let tries = 0;
+    openCard({ kind:"habit", label:"Foundation", title:s.name, img:"rock", speak:`${s.name}. ${c.s} ${opts[0].t}? Or ${opts[1].t}?`,
       html: head + `<p style="font-size:1.08rem">${c.s}</p><div class="choices">${opts.map((o,k) => `<button class="choice" type="button" data-act="pick" data-k="${k}">${esc(o.t)}</button>`).join("")}</div><div id="out"></div>` });
     wire({ pick: b => {
-      const o = opts[+b.dataset.k];
-      $("#card").querySelectorAll(".choice").forEach((x,k) => { x.disabled = true; if (opts[k].ok) x.classList.add("right"); else if (x === b) x.classList.add("wrong"); });
-      finish(o.ok, c.v ? verseHTML(c.v) : "");
+      const o = opts[+b.dataset.k]; tries++;
+      if (!o.ok && tries === 1){ b.classList.add("wrong"); b.disabled = true; $("#out").innerHTML = `<p class="result bad">Repent and try again!</p>`; return; }
+      $("#card").querySelectorAll(".choice").forEach(x => x.disabled = true); if (o.ok) b.classList.add("right");
+      finish(o.ok);
     }});
   } else {
-    const q = blankQuiz(s.v.t, s.blank, s.w, s.v.r, s.v.u, (right) => finish(right, ""));
-    openCard({ kind:"land", label:`Landmark ${i+1}`, title:s.name, img:stoneImg(i), speak: `${s.name}. Finish the scripture. ${q.speak}`,
-      html: head + `<p><b>Pick the missing word.</b></p>` + q.html });
+    const q = blankQuiz(s.v.t, s.blank, s.w, s.v.r, s.v.u, (right) => finish(right));
+    openCard({ kind:"habit", label:"Foundation", title:s.name, img:"rock", speak:`${s.name}. Pick the missing word. ${q.speak}`, html: head + q.html });
     q.wireIt();
   }
+}
+function cardRepent(sp, next){
+  const p = cur();
+  let msg;
+  if (p.lost > 0){ p.lost--; p.stones++; msg = `A loose stone goes back in your foundation! (${p.stones} of ${NEED_STONES})`; log(`${esc(p.name)} repented and restored a stone.`); }
+  else { p.stars += 2; msg = "A fresh start! +2 ★"; log(`${esc(p.name)} repented (+2 ★).`); }
+  renderPlayers();
+  openCard({ kind:"repent", title:"Repent", speak:`Repent. ${REPENT.t} ${REPENT.r}. ${msg}`, html: verseHTML(REPENT) + `<p class="result good">${msg}</p>` + btn("done","Done") });
+  wire({ done: next });
 }
 
 function cardScripture(sp, next){
@@ -983,8 +1040,9 @@ function cardScripture(sp, next){
   const text = c.t.replace("___", c.a);
   const q = blankQuiz(text, c.a, c.w, c.r, c.u, (right) => {
     const pts = right ? 2 : 1; p.stars += pts; log(`${esc(p.name)} read ${c.r} (+${pts} ★).`);
-    $("#out").innerHTML = `<p class="result ${right?"good":"bad"}">${right ? "That’s right! +2 ★" : "Good try! +1 ★"}</p>${btn("done","Done")}`;
-    wire({ done: next });
+    const go = right && surprise(p);
+    $("#out").innerHTML = `<p class="result ${right?"good":"bad"}">${right ? "That’s right! +2 ★" : "Good try! +1 ★"}</p>${go ? `<p class="result good">Surprise! Go to the next Ordinance space!</p>${btn("jump","Go ➜")}` : btn("done","Done")}`;
+    wire({ done: next, jump: () => { closeCard(); hopToOrd(next); } });
   });
   openCard({ kind:"scripture", title:"Pick the missing word", img:"scripture", speak:"Pick the missing word. " + q.speak, html:q.html });
   q.wireIt();
@@ -999,33 +1057,34 @@ function cardChoose(sp, next){
     html: `<p style="font-size:1.1rem">${c.s}</p><div class="choices">${opts.map((o,i) => `<button class="choice" type="button" data-act="pick" data-i="${i}">${esc(o.t)}</button>`).join("")}</div><div id="out"></div>` });
   wire({ pick: b => {
     const o = opts[+b.dataset.i]; tries++;
-    if (!o.ok){ b.classList.add("wrong"); b.disabled = true; $("#out").innerHTML = `<p class="result bad">Try again.</p>`; return; }
+    if (!o.ok){ b.classList.add("wrong"); b.disabled = true; $("#out").innerHTML = `<p class="result bad">Repent and try again!</p>`; return; }
     b.classList.add("right"); $("#card").querySelectorAll(".choice").forEach(x => x.disabled = true);
     if (tries > 1){ p.stars += 1; log(`${esc(p.name)} chose again (+1 ★).`); $("#out").innerHTML = `<p class="result good">+1 ★</p>${btn("done","Done")}`; return wire({ done: next }); }
     p.stars += 3;
-    const got = p.pos > landPos[c.stone] && giveStone(p, c.stone);   // win back a stone you missed
-    log(`${esc(p.name)} chose the right${got?` and won back <b>${STONES[c.stone].name}</b>`:""} (+3 ★, jump ahead 2).`);
-    $("#out").innerHTML = `<p class="result good">${c.story ? "That’s what happened!" : "Great choice!"} +3 ★</p>${got?`<p>You won back the stone <b>${STONES[c.stone].name}</b>!</p>`:""}${c.v ? verseHTML(c.v) : ""}${btn("jump","Jump ahead 2 ➜")}`;
+    const got = addStone(p);
+    log(`${esc(p.name)} chose the right${got?" and earned a stone":""} (+3 ★).`);
+    const toOrd = surprise(p);
+    $("#out").innerHTML = `<p class="result good">${c.story ? "That’s what happened!" : "Great choice!"} +3 ★${got?` and a stone (${p.stones} of ${NEED_STONES})`:""}</p>${c.v ? verseHTML(c.v) : ""}${toOrd ? `<p class="result good">Surprise! Go to the next Ordinance space!</p>${btn("jump","Go ➜")}` : btn("jump","Jump ahead 2 ➜")}`;
     renderPlayers();
-    wire({ jump: () => { closeCard(); autoHop(2, next); } });
+    wire({ jump: () => { closeCard(); toOrd ? hopToOrd(next) : autoHop(2, next); } });
   }});
 }
 
 function cardStorm(sp, next){
-  const p = cur(), k = S.turn, st = STORMS[draw("storm", STORMS.length)];
-  const strength = p.stones.length + (p.hg ? 1 : 0), stands = strength >= sp.power;
-  log(`${esc(p.name)} faced the storm of ${st.name}: ${stands?"the house stood":"slid back 3"}.`);
-  openCard({ kind:"storm", title:`Storm of ${st.name}`, img:"storm",
-    speak: `Storm of ${st.name}. ${st.d} ${stands ? "Your house stands!" : "Slide back 3 spaces."}`,
-    html: `<p style="font-size:1.1rem">${st.d}</p><p>Storm <b>${sp.power}</b> · Your foundation <b>${strength}</b></p>` +
-      (stands ? `<p class="result good">Your house stands! +2 ★</p>${btn("done","Done")}` : `<p class="result bad">Too strong! Slide back 3.</p>${btn("back","Slide back")}`) });
-  if (stands){ p.stars += 2; p.badges.push(st.name); renderPlayers(); wire({ done: next }); }
-  else wire({ back: () => { closeCard(); slideBack(k, 3, next); } });
+  const p = cur(), st = STORMS[draw("storm", STORMS.length)];
+  const strength = p.stones + (p.hg ? 1 : 0), stands = strength >= sp.power;
+  let res;
+  if (stands){ p.stars += 2; p.badges.push(st.name); res = `<p class="result good">Your house stands! +2 ★</p>`; }
+  else if (p.stones > 0){ p.stones--; p.lost++; res = `<p class="result bad">A stone was knocked loose!</p><p>Land on a <b>Repent</b> space to put it back.</p>`; }
+  else res = `<p class="result bad">The storm blows past. Build your foundation!</p>`;
+  log(`${esc(p.name)} faced the storm of ${st.name}: ${stands?"the house stood":"a stone came loose"}.`); renderPlayers();
+  openCard({ kind:"storm", title:`Storm of ${st.name}`, img:"storm", speak:`Storm of ${st.name}. ${st.d}`,
+    html: `<p style="font-size:1.1rem">${st.d}</p><p>Storm <b>${sp.power}</b> · Your foundation <b>${strength}</b></p>` + res + btn("done","Done") });
+  wire({ done: next });
 }
-
 function cardService(sp, next){
-  const p = cur(), others = S.players.filter(x => x !== p && !x.done);
-  const stepFwd = pl => { if (pl.pos < 0 || pl.pos + 1 >= LAST || BIG(BOARD[pl.pos + 1])) { pl.stars += 1; return false; } pl.pos++; placePawn(S.players.indexOf(pl)); return true; };
+  const p = cur(), others = S.players.filter(x => x !== p && !x.inSW && x.pos >= 0);
+  const stepFwd = pl => { if (pl.pos < 0 || pl.inSW || (pl.pos + 1) % LOOP === DEATH) { pl.stars += 1; return false; } pl.pos = (pl.pos + 1) % LOOP; placePawn(S.players.indexOf(pl)); return true; };
   const body = others.length
     ? `<p>Choose someone to help. You both move ahead 1.</p><div class="choices">${others.map(o => { const n = S.players.indexOf(o); return `<button class="choice" type="button" data-act="pick" data-n="${n}"><span class="token" style="display:inline-grid;width:24px;height:24px;margin-right:8px;background:${o.color}">${n+1}</span>${esc(o.name)}</button>`; }).join("")}</div>`
     : `<p>Do something kind for someone in your family right now.</p>${btn("solo","I helped someone")}`;
@@ -1065,28 +1124,49 @@ function cardChallenge(other, next){
     html:`<p>You landed on ${esc(other.name)}’s space. Work it out together!</p>` + q.html });
   q.wireIt();
 }
-/* The way into the Celestial Kingdom: win a challenge to enter; otherwise try again next turn. */
-function cardGate(){
-  const p = cur(), c = SCRIPTURES[draw("scripture", SCRIPTURES.length)];
-  const text = c.t.replace("___", c.a);
-  const q = blankQuiz(text, c.a, c.w, c.r, c.u, (right) => {
-    if (right){ $("#out").innerHTML = `<p class="result good">You may enter!</p>${btn("go","Enter the Celestial Kingdom")}`;
-      wire({ go: () => { closeCard(); p.pos = LAST; S.remaining = 0; placePawn(S.turn); setTimeout(finishPlayer, reduced() ? 20 : 700); } }); }
-    else { S.remaining = 0; $("#out").innerHTML = `<p class="result bad">Not yet. Try again on your next turn.</p>${btn("done","OK")}`; wire({ done: endTurn }); }
-  });
-  openCard({ kind:"mile", label:"Celestial Kingdom", title:"Win a challenge to enter", img:"home", speak:"Win a challenge to enter the Celestial Kingdom. " + q.speak, html:q.html });
-  q.wireIt();
+function cardDeath(){
+  const p = cur(), m = MILES.death;
+  S.arrived = (S.arrived || 0) + 1; p.place = S.arrived;
+  const bonus = [0,5,3,2,1][p.place] || 0; p.stars += bonus;
+  log(`<b>${esc(p.name)}</b> passed through death into the Spirit World (+${bonus} ★).`);
+  openCard({ kind:"mile", title:"Death", img:"death", speak:`Death. ${m.q.t} ${m.q.r}. Then the spirit world. ${MILES.spiritworld.q.t}`,
+    html: verseHTML(m.q) + verseHTML(MILES.spiritworld.q) + `<p>Wait in the Spirit World. On your turns, help players still on earth.</p><p class="result good">+${bonus} ★</p>` + btn("go","Go to the Spirit World") });
+  wire({ go: () => { closeCard(); p.inSW = true; placePawn(S.turn); renderPlayers(); setTimeout(endTurn, reduced() ? 20 : 700); } });
 }
-
-function finishPlayer(){
-  const p = cur(); S.finishedCount++; p.done = true; p.place = S.finishedCount;
-  const bonus = [0,5,3,2,1][p.place]; p.stars += bonus;
-  const m = MILES.home;
-  log(`<b>${esc(p.name)} made it home!</b> Arrival bonus +${bonus} ★.`);
-  openCard({ kind:"mile", title:`${esc(p.name)} made it home!`, img:"home",
-    speak: `${p.name} made it home! ${m.q.t} ${m.q.r}`,
-    html: verseHTML(m.q) + `<p class="result good">Arrival bonus: +${bonus} ★</p>` + btn("done","Done") });
-  wire({ done: endTurn });
+/* From the Spirit World: help someone still on earth. Win the challenge and they gain a foundation stone (or are born, if still in the premortal life). */
+function cardHelp(){
+  const p = cur(), earth = S.players.filter(x => !x.inSW);
+  if (!earth.length) return endTurn();
+  setMode("wait");
+  openCard({ kind:"service", label:"Spirit World", title:"Help someone on earth", img:"spiritworld", speak:"Choose someone on earth to help.",
+    html:`<p>Choose a player to help. Win the challenge and they get a foundation stone.</p><div class="choices">${earth.map(o => { const n = S.players.indexOf(o); return `<button class="choice" type="button" data-act="pick" data-n="${n}"><span class="token" style="display:inline-grid;width:24px;height:24px;margin-right:8px;background:${o.color}">${n+1}</span>${esc(o.name)}</button>`; }).join("")}</div>` });
+  wire({ pick: b => {
+    const o = S.players[+b.dataset.n], c = SCRIPTURES[draw("scripture", SCRIPTURES.length)];
+    const q = blankQuiz(c.t.replace("___", c.a), c.a, c.w, c.r, c.u, (right) => {
+      let msg = "Not this time. Try again next turn.";
+      if (right){ p.stars += 1;
+        if (o.pos < 0){ o.pos = 0; placePawn(S.players.indexOf(o)); msg = `${esc(o.name)} is born on earth! +1 ★ for you.`; }
+        else if (addStone(o)) msg = `${esc(o.name)} gets a foundation stone! +1 ★ for you.`;
+        else msg = `${esc(o.name)} gets +2 ★! +1 ★ for you.`;
+        log(`${esc(p.name)} helped ${esc(o.name)} from the Spirit World.`); }
+      renderPlayers();
+      $("#out").innerHTML = `<p class="result ${right?"good":"bad"}">${msg}</p>${btn("done","Done")}`; wire({ done: endTurn });
+    });
+    openCard({ kind:"service", label:"Spirit World", title:`Helping ${esc(o.name)}`, img:"spiritworld", speak:q.speak, html:q.html });
+    q.wireIt();
+  }});
+}
+/* Everyone is in the Spirit World: resurrected together, then the Celestial Kingdom. */
+function finale(){
+  mode = "wait"; renderTurnbar();
+  const r = MILES.resurrection, h = MILES.home;
+  openCard({ kind:"mile", title:r.title, img:"resurrection", speak:`${r.q.t} ${r.q.r}`, html: verseHTML(r.q) + `<p>Everyone is resurrected together!</p>` + btn("go","Enter the Celestial Kingdom") });
+  S.players.forEach((pl, k) => { pl.atRes = true; placePawn(k); });
+  wire({ go: () => {
+    S.over = true; S.players.forEach((_, k) => placePawn(k));
+    openCard({ kind:"mile", title:h.title, img:"home", speak:`${h.q.t} ${h.q.r}`, html: verseHTML(h.q) + btn("done","See the scores") });
+    wire({ done: () => { closeCard(); endGame(); } });
+  }});
 }
 function endGame(){
   S.over = true; mode = "spin"; store.del(SAVE);
@@ -1095,7 +1175,7 @@ function endGame(){
   $("#podium").innerHTML = ranked.map((p,i) => `
     <div class="place"><span class="rank" style="color:${p.color}">${i+1}</span>
       <div><b style="font-family:var(--display);font-size:1.15rem">${esc(p.name)}</b>
-        <div class="detail">★ ${p.stars} blessings · ${p.stones.length} stones × 2 = ${p.stones.length*2} · ${p.badges.length} storms overcome</div></div>
+        <div class="detail">★ ${p.stars} blessings · ${Math.min(p.stones, NEED_STONES)} stones × 2 = ${Math.min(p.stones, NEED_STONES)*2} · ${p.badges.length} storms overcome</div></div>
       <span class="stars">${score(p)}</span></div>`).join("");
   scrollTo({ top:0 });
 }
@@ -1165,7 +1245,7 @@ $("#mosesLink").href = sc("pgp/moses/1",39); $("#nelsonLink").href = `${C}genera
 $("#btnStart").onclick = startGame;
 $("#btnResume").onclick = () => { try { S = JSON.parse(store.get(SAVE)); mode = "spin"; S.remaining = 0; showGame(); } catch(e){ toast("The saved game could not be opened."); store.del(SAVE); renderSetup(); } };
 $("#btnSpin").onclick = onTurnButton;
-$("#popper").addEventListener("click", () => { if (mode === "spin") spin(); });
+$("#popper").addEventListener("click", () => { if (mode === "spin" && !cur().inSW) spin(); });
 $("#map").addEventListener("click", e => { if (e.target.closest("#nextRing") || e.target.closest(".pawnG.go")) hop(); });
 $("#btnJourney").onclick = startJourney;
 $("#btnSong").onclick = () => song().paused ? playSong() : stopSong();

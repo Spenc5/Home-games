@@ -6,26 +6,30 @@ The trail is a map of the handout *The Quest*. Players start in the premortal li
 
 ## Playing
 
-Open `index.html` in a web browser. It's one file with nothing to install. The whole board fits on the screen. It plays like *Trouble*.
+Open `index.html` in a web browser. It's one file with nothing to install. The whole board fits on the screen.
 
 1. **Start menu.** Choose 1 to 4 players, type names, and tap **Play**. Each player has one piece.
 2. **Premortal life.** The opening scene shows (with "I Lived in Heaven"). Tap **Start the journey**.
-3. **Premortal Life circle.** Everyone starts here. Tap **Pop!** to roll the die. You need a **1 or 6** to be born onto earth. **Pop a 6 any time and you go again.**
-4. **Move** by tapping your own piece (or the glowing space, or **Hop**) one space at a time.
-5. **Go around the board.** The loop is earth life: Born, Baptism, Jesus Christ Our Savior, and the **13 landmarks** from the handout, in its order. At each landmark, win a quick challenge (pick the missing word, or make a choice) to add it to your house on the rock (+2 ★).
-6. **Finish lane.** After one loop, head through the **Spirit World** and the **Resurrection** toward the center. To enter the **Celestial Kingdom**, win a challenge. You don't need an exact roll. If you miss, try again next turn.
+3. **Born on earth.** Everyone starts in the Premortal Life circle with the Christus. Tap **Pop!** to roll the die. You need a **1 or 6** to be born. Pop a 6 any time and you go again.
+4. **Go around the board** as many times as you need, tapping your piece one hop at a time. To leave earth you need:
+   - **All 4 ordinances**, in order: Baptism and Confirmation, Sacrament, Temple Endowment, Temple Sealing. Land on or pass a gold **Ordinance** space to receive the next one you need (one per turn).
+   - **A foundation of 6 stones.** Win the challenge on a brown foundation space (the ideas from the handout: prayer, scriptures, tithing, service and more) or a green Choose space.
+5. **Daily repentance.** Teal **Repent** spaces are all around the board. Storms can knock a stone loose; landing on Repent puts it back. Miss a challenge? Repent and try again.
+6. **Death and the lane.** With all 4 ordinances and 6 stones, turn off at **Death** onto the lane into the **Spirit World**. Wait there; on your turns, help players still on earth (win a challenge and they get a stone).
+7. **The end.** When everyone is in the Spirit World, all are resurrected together and enter the **Celestial Kingdom** in the center. The Terrestrial and Telestial kingdoms are shown beside it.
 
 | Space | What happens |
 |---|---|
-| Landing on someone | **Team challenge.** Work it out together: +2 ★ each if right, +1 ★ each for trying. |
-| Scripture | Pick the missing word in a verse. +2 ★ if right, +1 ★ for trying. |
-| Choose | A modern situation or a scripture story. Right the first time: +3 ★ and **jump ahead 2**, and you win back a landmark you missed. |
-| Storm | If your landmarks earned (+1 Holy Ghost after baptism) are at least the storm's number, your house stands: +2 ★. If not, **slide back 3**. |
-| Service | Pick another player. You **both move ahead 1**. |
-| Song | Sing a Primary song together: +2 ★. |
-| Sabbath | +2 ★ for landing on it, +1 ★ for passing it. |
+| Ordinance (gold) | Receive your next ordinance (+3 ★). |
+| Foundation (brown) | A challenge about one of the handout's ideas. Win a stone (+1 ★). |
+| Repent (teal) | Put back a loose stone, or get +2 ★. |
+| Choose (green) | A modern situation or scripture story. Right the first time: +3 ★, a stone, and jump ahead. |
+| Scripture (blue) | Pick the missing word. +2 ★. |
+| Storm | If your stones (+1 Holy Ghost) are at least the storm's number, your house stands (+2 ★). If not, a stone comes loose. |
+| Landing on someone | **Team challenge.** Work it out together: +2 ★ each if right. |
+| Service, Song, Sabbath | Move ahead with a friend, sing a Primary song, or collect ★. |
 
-7. **Winning.** Arrival bonuses: first +5 ★, second +3, third +2, fourth +1. When everyone is in the Celestial Kingdom, **score = blessings + 2 for each landmark earned + 1 for each storm overcome.** Highest score wins.
+Sometimes a win is a surprise trip to the next Ordinance space. **Score = blessings + 2 for each stone + 1 for each storm overcome.** First into the Spirit World gets +5 ★, second +3, third +2, fourth +1.
 
 Every card has a **Read aloud** button. A game in progress is saved on the device.
 
@@ -36,7 +40,8 @@ Every picture has a slot name. To change one for everyone, put a picture in `ima
 | Slot | Picture |
 |---|---|
 | `premortal` | The opening Premortal Life scene |
-| `birth`, `baptism`, `savior`, `spiritworld`, `resurrection`, `home` | Milestones (`home` is the Celestial Kingdom) |
+| `birth`, `death`, `baptism`, `sabbath` (Sacrament), `temple` (Temple Endowment), `sealing`, `spiritworld`, `resurrection`, `home` | Milestones and ordinances (`home` is the Celestial Kingdom) |
+| `christus` | The Christus in the Premortal Life circle |
 | `stone1` … `stone13` | Landmarks 1–13 (landmark 8 uses `temple`) |
 | `temple` | Landmark 8, Go to the temple |
 | `rock` | Default picture for any landmark without its own |
