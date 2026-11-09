@@ -11,12 +11,12 @@ Open `index.html` in a web browser. It's one file with nothing to install. The w
 1. **Start menu.** Choose 1 to 4 players, type names, and tap **Play**. Each player has one piece.
 2. **Premortal life.** The opening scene shows (with "I Lived in Heaven"). Tap **Start the journey**.
 3. **Born on earth.** Everyone starts in the Premortal Life circle with the Christus. Tap **Pop!** to roll the die. You need a **1 or 6** to be born. Pop a 6 any time and you go again.
-4. **Go around the board** as many times as you need, tapping your piece one hop at a time. To leave earth you need:
+4. **Move your own piece.** Tap the glowing space (or your piece) once for each space and count out loud; a number pops up on each space. Go around the board as many times as you need. To leave earth you need:
    - **All 4 ordinances**, in order: Baptism and Confirmation, Sacrament, Temple Endowment, Temple Sealing. Land on or pass a gold **Ordinance** space to receive the next one you need (one per turn).
    - **A foundation of 6 stones.** Win the challenge on a brown foundation space (the ideas from the handout: prayer, scriptures, tithing, service and more) or a green Choose space.
 5. **Daily repentance.** Teal **Repent** spaces are all around the board. Storms can knock a stone loose; landing on Repent puts it back. Miss a challenge? Repent and try again.
-6. **Death and the lane.** With all 4 ordinances and 6 stones, turn off at **Death** onto the lane into the **Spirit World**. Wait there; on your turns, help players still on earth (win a challenge and they get a stone).
-7. **The end.** When everyone is in the Spirit World, all are resurrected together and enter the **Celestial Kingdom** in the center. The Terrestrial and Telestial kingdoms are shown beside it.
+6. **Death and the road home.** With all 4 ordinances and 6 stones, turn off at **Death** onto the road into the **Spirit World**. Wait there; on your turns, help players still on earth (win a challenge and they get a stone).
+7. **The Celestial Kingdom.** When everyone is in the Spirit World, keep popping and moving along the road (Scripture, Song, Risen). Win a challenge to enter the **Celestial Kingdom** in the center. The Terrestrial and Telestial kingdoms are shown beside it.
 
 | Space | What happens |
 |---|---|
@@ -29,7 +29,7 @@ Open `index.html` in a web browser. It's one file with nothing to install. The w
 | Landing on someone | **Team challenge.** Work it out together: +2 ★ each if right. |
 | Service, Song, Sabbath | Move ahead with a friend, sing a Primary song, or collect ★. |
 
-Sometimes a win is a surprise trip to the next Ordinance space. **Score = blessings + 2 for each stone + 1 for each storm overcome.** First into the Spirit World gets +5 ★, second +3, third +2, fourth +1.
+Sometimes a win is a surprise trip to the next Ordinance space. **Score = blessings + 2 for each stone + 1 for each storm overcome.** First into the Celestial Kingdom gets +5 ★, second +3, third +2, fourth +1.
 
 Every card has a **Read aloud** button. A game in progress is saved on the device.
 
@@ -41,7 +41,6 @@ Every picture has a slot name. To change one for everyone, put a picture in `ima
 |---|---|
 | `premortal` | The opening Premortal Life scene |
 | `birth`, `death`, `baptism`, `sabbath` (Sacrament), `temple` (Temple Endowment), `sealing`, `spiritworld`, `resurrection`, `home` | Milestones and ordinances (`home` is the Celestial Kingdom) |
-| `christus` | The Christus in the Premortal Life circle |
 | `temple` | Landmark 8, Go to the temple |
 | `rock` | Foundation cards (house on the rock) |
 | `storm`, `scripture`, `choose`, `story`, `service`, `song`, `sabbath` | Card pictures |
