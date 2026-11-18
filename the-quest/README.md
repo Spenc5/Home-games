@@ -33,6 +33,39 @@ Sometimes a win is a surprise trip to the next Ordinance space. **Score = blessi
 
 Every card has a **Read aloud** button. The game has sound effects (die pop, counting ticks, chimes, thunder for storms, fanfares for ordinances); turn them off with **Sound** at the top. A game in progress is saved on the device.
 
+## Printed version (black and white, for coloring)
+
+The `print/` folder has a paper version of the game. Print it in black and white and let the kids color it.
+
+| File | What it is | How to print |
+|---|---|---|
+| [`print/board.pdf`](print/board.pdf) | The board on 2 sheets (about 16 × 10½ inches together) | Print at **100% / actual size**. Trim sheet 1 along the dotted line, lay it over the gray strip on sheet 2, glue, then mount on cardboard. |
+| [`print/cards.pdf`](print/cards.pdf) | 97 cards, 9 per sheet, with backs | Print **double-sided, flip on the long edge**, at 100%. Cut along the thin gray lines. |
+| [`print/mats.pdf`](print/mats.pdf) | 4 player mats and 60 stone tokens | Print single-sided. Cut out. |
+
+Use a die from another game (a Trouble Pop-O-Matic works great) and any game pieces.
+
+**Card decks:** Choose the Right (true stories from the *Friend* and scripture stories), Scripture (missing word), Foundation, Something to Do, Storm and Song. Answers are printed upside down at the bottom of each card, so the player reading the card can't see them.
+
+**Playing on paper.** The rules are the same as the app, with a few things done by hand:
+- **Starting:** Start in the Premortal Life circle. Pop a **1 or 6** to move onto Born. Pop a 6 and go again.
+- **Moving:** Count the spaces out loud as you move.
+- **Card spaces:** The person to your left draws the matching card and reads it to you.
+  - **Foundation and Choose:** Right = take a stone token for your mat.
+  - **Scripture:** Missing-word verse.
+  - **Something to Do:** Do it together.
+  - **Storm:** Compare your stones (+1 after Baptism and Confirmation) with the number on the space. Too weak? Set one stone aside until you land on **Repent**.
+  - **Song:** Sing or hum it together.
+- **Ordinance spaces:** Check off the next ordinance on your mat.
+- **Other spaces:** **Repent** puts back a loose stone (or ★★). **Sabbath** = ★★. **Service** = you and a friend each move ahead 1.
+- **Blessings:** Mark ★ blessings as tally marks on your mat.
+- **Landing on someone:** Draw a Scripture card and answer it together. Both get ★★ if right.
+- **The road home:** With all 4 ordinances and your stones (4 short game, 6 long game), turn onto the **Road home** at the signpost. Wait in the **Spirit World**. On your turn, draw a Scripture card for someone still on earth; if you answer right, they take a stone.
+- **The Celestial Kingdom:** When everyone is in the Spirit World, keep moving along the road. Answer a Scripture card to enter the **Celestial Kingdom**.
+- **Winning:** Most points wins: blessings + 2 per stone + 1 per storm overcome. First in gets +5, then +3, +2, +1.
+
+To rebuild the PDFs after changing the game (for example new cards in `index.html`), run `node print/build.js` (needs [Playwright](https://playwright.dev)).
+
 ## Changing the pictures
 
 Every picture has a slot name. To change one for everyone, put a picture in `images/` named after the slot, for example `images/baptism.jpg`. To change one only on a single device, tap **Pictures** in the game and upload or paste a link.
