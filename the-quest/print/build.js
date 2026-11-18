@@ -34,6 +34,7 @@ const star5 = (x, y, r) => { let d = ""; for (let i = 0; i < 10; i++){ const a =
   await page.goto(GAME);
   const D = await page.evaluate(() => ({
     CHOICES, SCRIPTURES, STONES, HABITS, SHORT, ACTIVITIES, STORMS, SONGS, ORDS: ORDS.map(o => ({ title:o.title, short:o.short })),
+    TALKS, COVENANT, TOGETHER, CFM_FOUND: CFM_CARDS.filter(c => c.deck === "foundation"),
     BOARD, LOOP, FORK, LANE0, LAST, ICONS, HEL512, REPENT,
   }));
 
@@ -149,78 +150,96 @@ const star5 = (x, y, r) => { let d = ""; for (let i = 0; i < 10; i++){ const a =
   /* ======================================================================
      CARDS: 2.5 × 3.5 inches, 9 per sheet; each sheet of fronts is followed by its backs
      ====================================================================== */
+  // One shuffled stack: every card has the same back. The front says what kind of card it is.
+  // No links or sources on printed cards (credits are in SOURCES.md).
   const cards = [];
   const letters = ["A", "B", "C"];
-  // Choose the Right: Friend stories and scripture stories
+  const QUIZ = "Answer right (you may try twice): take a stone.";
+  const SHARE = "Share or do it: take a stone.";
+  const opt = (o, k) => `<p class="opt"><b>${letters[k]}.</b> ${esc(o)}</p>`;
+  // Choose the Right (quiz): true stories and scripture stories
   D.CHOICES.forEach((c, i) => {
     const goodFirst = i % 2 === 0, opts = goodFirst ? [c.good, c.bad] : [c.bad, c.good], ans = goodFirst ? "A" : "B";
-    if (c.friend) cards.push({ deck:"choose", head:"Choose the Right", icon:"choose",
-      body:`<p class="src">From a true story in the <i>Friend</i>: “${esc(c.friend)}”</p><p>${esc(c.s)}</p><p class="q">What would you do?</p>${opts.map((o,k) => `<p class="opt"><b>${letters[k]}.</b> ${esc(o)}</p>`).join("")}`,
-      foot:`<b>Answer: ${ans}.</b> What really happened: ${esc(c.did)} <span class="src">(${esc(c.issue)})</span>`,
-      reward:"Right: ★★★ and a stone" });
-    else cards.push({ deck:"choose", head:"Scripture Story", icon:"choose",
-      body:`<p>${esc(c.s)}</p>${opts.map((o,k) => `<p class="opt"><b>${letters[k]}.</b> ${esc(o)}</p>`).join("")}`,
-      foot:`<b>Answer: ${ans}.</b> “${esc(c.v.t)}” <b>${esc(c.v.r)}</b>`,
-      reward:"Right: ★★★ and a stone" });
+    cards.push({ head: c.friend ? "Choose the Right" : "Scripture Story", icon:"choose",
+      body: `${c.friend ? `<p class="src">A true story</p>` : ""}<p>${esc(c.s)}</p><p class="q">${c.friend ? "What would you do?" : "What did they do?"}</p>${opts.map(opt).join("")}`,
+      foot: c.friend ? `<b>Answer: ${ans}.</b> What really happened: ${esc(c.did)}` : `<b>Answer: ${ans}.</b> “${esc(c.v.t)}” <b>${esc(c.v.r)}</b>`,
+      reward: QUIZ });
   });
-  // Scripture: pick the missing word
-  const blankCard = (deck, head, iconK, title, text, answer, wrong, ref, i, reward) => {
-    const opts = [answer, ...wrong]; const order = [[0,1,2],[1,0,2],[1,2,0]][i % 3].map(k => opts[k]); const ans = letters[order.indexOf(answer)];
-    cards.push({ deck, head, icon:iconK,
-      body:`${title ? `<p class="big">${esc(title)}</p>` : ""}<p class="q">Pick the missing word:</p><p class="verse">“${esc(text).replace("___", "<span class='blank'></span>")}”<br><b>${esc(ref)}</b></p>${order.map((o,k) => `<p class="opt"><b>${letters[k]}.</b> ${esc(o)}</p>`).join("")}`,
-      foot:`<b>Answer: ${ans}. ${esc(answer)}</b>`, reward });
+  // Missing-word quizzes
+  const blankCard = (head, iconK, title, text, answer, wrong, ref, i) => {
+    const opts = [answer, ...wrong], order = [[0,1,2],[1,0,2],[1,2,0]][i % 3].map(k => opts[k]), ans = letters[order.indexOf(answer)];
+    cards.push({ head, icon:iconK,
+      body: `${title ? `<p class="big">${esc(title)}</p>` : ""}<p class="q">Pick the missing word:</p><p class="verse">“${esc(text).replace("___", "<span class='blank'></span>")}”<br><b>${esc(ref)}</b></p>${order.map(opt).join("")}`,
+      foot: `<b>Answer: ${ans}. ${esc(answer)}</b>`, reward: QUIZ });
   };
-  D.SCRIPTURES.forEach((c, i) => blankCard("scripture", "Scripture", "scripture", "", c.t, c.a, c.w, c.r, i, "Right: ★★ · Tried: ★"));
-  // Foundation: one per handout idea on the board
-  D.HABITS.forEach((t, i) => { const s = D.STONES[t]; blankCard("habit", "Foundation", "land", s.name, s.v.t.replace(s.blank, "___"), s.blank, s.w, s.v.r, i + 1, "Right: ★ and a stone"); });
-  // Something to do
-  D.ACTIVITIES.forEach(a => cards.push({ deck:"act", head:"Something to Do", icon:"service",
-    body:`<p class="big">${esc(a.title)}</p><p>${esc(a.t)}</p><p class="src">${esc(a.src)}</p>`, foot:"", reward:"Do it together: ★★" }));
-  // Storms
-  D.STORMS.forEach(s => cards.push({ deck:"storm", head:"Storm", icon:"storm",
-    body:`<p class="big">Storm of ${esc(s.name)}</p><p>${esc(s.d)}</p><p class="small">Count your stones. Add 1 if you have Baptism and Confirmation. If that is at least the number on the storm space, your house stands: ★★. If not, one stone comes loose. Set it aside until you land on Repent.</p>`,
-    foot:"", reward:"" }));
-  // Songs
-  D.SONGS.forEach(s => cards.push({ deck:"song", head:"Song", icon:"song",
-    body:`<p class="big">${esc(s.t)}</p><p class="src"><i>Children’s Songbook</i>, ${esc(s.p)}</p><p>Sing or hum a verse together!</p>`, foot:"", reward:"★★" }));
+  D.SCRIPTURES.slice(0, 22).forEach((c, i) => blankCard("Scripture", "scripture", "", c.t, c.a, c.w, c.r, i));
+  D.HABITS.forEach((t, i) => { const s = D.STONES[t]; blankCard("Foundation", "land", s.name, s.v.t.replace(s.blank, "___"), s.blank, s.w, s.v.r, i + 1); });
+  // Deeper cards: stories to talk about, questions to share, things to do, a few covenant quizzes
+  const deep = (c, head) => {
+    if (c.kind === "mc"){
+      deep.n = (deep.n || 0) + 1;
+      const opts = [[c.a, c.w[0], c.w[1]], [c.w[0], c.a, c.w[1]], [c.w[0], c.w[1], c.a]][deep.n % 3], ans = letters[opts.indexOf(c.a)];
+      cards.push({ head, icon:"mile", body: `<p class="big">${esc(c.q)}</p>${opts.map(opt).join("")}`,
+        foot: `<b>Answer: ${ans}.</b> ${c.note ? esc(c.note) : ""}`, reward: QUIZ });
+    } else if (c.kind === "talk"){
+      cards.push({ head:"Story", icon:"scripture", body: `<p class="src">A true story</p><p>${esc(c.s)}</p><ul class="qs">${c.qs.map(q => `<li>${esc(q)}</li>`).join("")}</ul>`,
+        foot: c.did ? `What really happened: ${esc(c.did)}` : "", reward: SHARE });
+    } else if (c.kind === "think"){
+      cards.push({ head: head || "Think About It", icon:"service", body: `<p class="think">${esc(c.t)}</p>`, foot: c.note ? `${esc(c.note)}` : "", reward: SHARE });
+    } else {
+      cards.push({ head: head || "Something to Do", icon:"choose", body: `<p class="big">${esc(c.title)}</p><p class="think">${esc(c.t)}</p>`, foot:"", reward: SHARE });
+    }
+  };
+  D.TALKS.forEach(c => deep(c));
+  D.COVENANT.forEach(c => deep(c, c.kind === "mc" ? "Covenants" : c.kind === "talk" ? null : c.kind === "think" ? "Covenants · Think" : "Covenants · Do"));
+  D.TOGETHER.forEach(c => deep(c));
+  D.CFM_FOUND.forEach(c => deep(c));
+  D.ACTIVITIES.forEach(a => deep({ kind:"do", title:a.title, t:a.t }));
+  D.SONGS.filter(s => /Baptism|Child of God|Sacrament|Temple|Families|Wise Man|Choose/.test(s.t)).forEach(s =>
+    cards.push({ head:"Sing Together", icon:"song", body:`<p class="big">${esc(s.t)}</p><p class="think">Sing or hum a verse together!</p>`, foot:"", reward: SHARE }));
+  // mix the deck order a little so the printed sheets aren't all one kind (the stack gets shuffled anyway)
+  let seed = 7; const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+  for (let i = cards.length - 1; i > 0; i--){ const j = Math.floor(rnd() * (i + 1)); [cards[i], cards[j]] = [cards[j], cards[i]]; }
 
-  const DECK_BACK = { choose:["Choose","choose"], scripture:["Scripture","scripture"], habit:["Foundation","land"], act:["Something to Do","service"], storm:["Storm","storm"], song:["Song","song"] };
-  const cardFront = c => `<div class="card"><div class="hd">${`<svg viewBox="0 0 24 24" class="ic">${ICON(c.icon)}</svg>`}<span>${esc(c.head)}</span></div>
+  const cardFront = c => `<div class="card"><div class="hd"><svg viewBox="0 0 24 24" class="ic">${ICON(c.icon)}</svg><span>${esc(c.head)}</span></div>
       <div class="bd">${c.body}</div>${c.reward ? `<div class="rw">${c.reward}</div>` : ""}${c.foot ? `<div class="ft">${c.foot}</div>` : ""}</div>`;
-  const cardBack = c => { const [name, ik] = DECK_BACK[c.deck]; return `<div class="card back"><div class="frame"><div class="bk-title">THE QUEST</div><svg viewBox="0 0 24 24" class="bk-ic">${ICON(ik)}</svg><div class="bk-name">${esc(name)}</div>${[[0.08,0.1],[1.8,0.1],[0.08,2.82],[1.8,2.82]].map(([x,y]) => `<svg class="bk-star" style="left:${x}in;top:${y}in" viewBox="0 0 40 40"><path d="${star5(20,20,16)}" fill="none" stroke="#000" stroke-width="2"/></svg>`).join("")}</div></div>`; };
+  const cardBack = () => `<div class="card back"><div class="frame"><div class="bk-title">THE QUEST</div>
+      <svg viewBox="0 0 120 100" class="bk-ic"><path d="M8 92l18-14 22 4 16-10 24 6 18-8 8 22z" fill="#fff" stroke="#000" stroke-width="2.5"/><g fill="#fff" stroke="#000" stroke-width="2.2">${[0,1,2].map(i => `<rect x="${28+i*22}" y="66" width="20" height="9" rx="2"/>`).join("")}<rect x="34" y="40" width="52" height="26"/><path d="M26 41L60 14l34 27z"/><rect x="54" y="50" width="12" height="16"/></g></svg>
+      <div class="bk-name">Build on the rock</div>${[[0.08,0.1],[1.8,0.1],[0.08,2.82],[1.8,2.82]].map(([x,y]) => `<svg class="bk-star" style="left:${x}in;top:${y}in" viewBox="0 0 40 40"><path d="${star5(20,20,16)}" fill="none" stroke="#000" stroke-width="2"/></svg>`).join("")}</div></div>`;
   const CARD_CSS = `
     .grid { position:absolute; left:0.5in; top:0.25in; width:7.5in; height:10.5in; display:grid; grid-template-columns:repeat(3,2.5in); grid-template-rows:repeat(3,3.5in) }
     .card { width:2.5in; height:3.5in; border:0.5pt solid #999; position:relative; padding:0.13in; display:flex; flex-direction:column; overflow:hidden }
-    .hd { display:flex; align-items:center; gap:0.06in; border-bottom:1.2pt solid #000; padding-bottom:0.04in; font-weight:700; font-size:11pt; text-transform:uppercase; letter-spacing:.06em }
+    .hd { display:flex; align-items:center; gap:0.06in; border-bottom:1.2pt solid #000; padding-bottom:0.04in; font-weight:700; font-size:10.5pt; text-transform:uppercase; letter-spacing:.05em }
     .ic { width:0.26in; height:0.26in; flex:none }
-    .bd { font-size:9.2pt; line-height:1.22; padding-top:0.05in; flex:1; min-height:0 }
+    .bd { font-size:9.4pt; line-height:1.22; padding-top:0.05in; flex:1; min-height:0 }
     .bd p { margin:0 0 0.045in }
-    .bd .big { font-size:12.5pt; font-weight:700; line-height:1.1 }
-    .bd .src { font-size:7.5pt; color:#333 }
+    .bd .big { font-size:12pt; font-weight:700; line-height:1.12 }
+    .bd .think { font-size:10.6pt; line-height:1.25 }
+    .bd .src { font-size:7.5pt; color:#333; font-style:italic }
     .bd .q { font-weight:700 }
     .bd .opt { padding-left:0.05in }
     .bd .verse { font-style:italic }
-    .bd .small { font-size:8pt }
+    .bd .qs { margin:0.02in 0 0; padding-left:0.16in }
+    .bd .qs li { margin-bottom:0.03in }
     .blank { display:inline-block; width:0.55in; border-bottom:1pt solid #000 }
-    .rw { font-size:8.5pt; font-weight:700; text-align:right; margin-bottom:0.03in }
+    .rw { font-size:8.2pt; font-weight:700; text-align:right; margin-bottom:0.03in }
     .ft { transform:rotate(180deg); border-bottom:0.8pt dashed #000; padding-bottom:0.04in; font-size:7.6pt; line-height:1.18 }
-    .ft .src { font-size:7pt }
     .back { padding:0.12in }
     .frame { flex:1; border:2pt solid #000; border-radius:0.14in; position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.1in }
     .bk-title { font-size:20pt; font-weight:700; letter-spacing:.08em }
-    .bk-ic { width:1in; height:1in }
-    .bk-name { font-size:15pt; font-weight:700; text-transform:uppercase; letter-spacing:.06em; text-align:center }
+    .bk-ic { width:1.35in; height:1.1in }
+    .bk-name { font-size:12pt; font-weight:700; text-transform:uppercase; letter-spacing:.06em; text-align:center }
     .bk-star { position:absolute; width:0.3in; height:0.3in }
   `;
   let cardPages = "";
   for (let i = 0; i < cards.length; i += 9){
     const sheet = cards.slice(i, i + 9);
-    while (sheet.length < 9) sheet.push(null);
     const sheetNo = i/9 + 1, of = Math.ceil(cards.length/9);
-    cardPages += `<div class="page"><div class="grid">${sheet.map(c => c ? cardFront(c) : `<div></div>`).join("")}</div><div class="note" style="bottom:0.06in">Card sheet ${sheetNo} of ${of} · fronts</div></div>`;
+    const fronts = [...sheet]; while (fronts.length < 9) fronts.push(null);
+    cardPages += `<div class="page"><div class="grid">${fronts.map(c => c ? cardFront(c) : `<div></div>`).join("")}</div><div class="note" style="bottom:0.06in">Card sheet ${sheetNo} of ${of} · fronts</div></div>`;
     // backs: mirror each row left-to-right so they line up when flipped on the long edge
-    const backs = []; for (let r = 0; r < 3; r++) backs.push(...sheet.slice(r*3, r*3+3).reverse());
-    cardPages += `<div class="page"><div class="grid">${backs.map(c => c ? cardBack(c) : `<div></div>`).join("")}</div><div class="note" style="bottom:0.06in">Card sheet ${sheetNo} of ${of} · backs</div></div>`;
+    const backs = []; for (let r = 0; r < 3; r++) backs.push(...fronts.slice(r*3, r*3+3).reverse());
+    cardPages += `<div class="page"><div class="grid">${backs.map(c => c ? cardBack() : `<div></div>`).join("")}</div><div class="note" style="bottom:0.06in">Card sheet ${sheetNo} of ${of} · backs</div></div>`;
   }
   const cardsHtml = `<!doctype html><html><head><meta charset="utf-8"><style>${BASE_CSS}${CARD_CSS}</style></head><body>${cardPages}</body></html>`;
 

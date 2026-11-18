@@ -95,7 +95,6 @@ Kid situations come from true stories in the *Friend* magazine. Each card shows 
 - “Bug Bites and Blessings,” Friend, Feb. 2024: https://www.churchofjesuschrist.org/study/friend/2024/02/07-bug-bites-and-blessings?lang=eng
 - “The Shiny Purple Stone,” Friend, Mar. 2024: https://www.churchofjesuschrist.org/study/friend/2024/03/07-the-shiny-purple-stone?lang=eng
 - “Pencil Peacemaker,” Friend, Mar. 2024: https://www.churchofjesuschrist.org/study/friend/2024/03/13-pencil-peacemaker?lang=eng
-- “Janeelyn Stops Scrolling,” Friend, Mar. 2024: https://www.churchofjesuschrist.org/study/friend/2024/03/for-older-kids/25-janeelyn-stops-scrolling?lang=eng
 - “Road-Trip Trouble,” Friend, Apr. 2024: https://www.churchofjesuschrist.org/study/friend/2024/04/04-road-trip-trouble?lang=eng
 - “Louie, Nephi, and the Piano,” Friend, Apr. 2024: https://www.churchofjesuschrist.org/study/friend/2024/04/20-louie-nephi-and-the-piano?lang=eng
 - “Shine On,” Friend, Apr. 2024: https://www.churchofjesuschrist.org/study/friend/2024/04/13-shine-on?lang=eng
@@ -106,6 +105,39 @@ Kid situations come from true stories in the *Friend* magazine. Each card shows 
 - “Papa’s Perfect Party,” Friend, Jan. 2024: https://www.churchofjesuschrist.org/study/friend/2024/01/13-papas-perfect-party?lang=eng
 
 The things to do come from the *Friend*'s “Come, Follow Me Activities” pages, January–June 2024 (for example https://www.churchofjesuschrist.org/study/friend/2024/02/19-come-follow-me-activities?lang=eng).
+
+## Friend magazine, Dec. 2025–Nov. 2026
+
+Story, Think About It and Something to Do cards come from these articles. On the cards they are summarized for children, and every quotation was checked word for word.
+
+- “A New Start,” Friend, Jan. 2026: https://www.churchofjesuschrist.org/study/friend/2026/01/24-a-new-start?lang=eng
+- “Adam Is Reverent,” Friend, July 2026: https://www.churchofjesuschrist.org/study/friend/2026/07/04-adam-is-reverent?lang=eng
+- “Choosing Kindness,” Friend, May 2026: https://www.churchofjesuschrist.org/study/friend/2026/05/20-choosing-kindness?lang=eng
+- “How Prayer Helps Us,” Friend, July 2026: https://www.churchofjesuschrist.org/study/friend/2026/07/16-how-prayer-helps-us?lang=eng
+- “Pedro’s Testimony,” Friend, Oct. 2026: https://www.churchofjesuschrist.org/study/friend/2026/10/13-pedros-testimony?lang=eng
+- “Phoebe’s Big Feelings,” Friend, July 2026: https://www.churchofjesuschrist.org/study/friend/2026/07/19-phoebes-big-feelings?lang=eng
+- “Sacrament in the Sahara,” Friend, Feb. 2026: https://www.churchofjesuschrist.org/study/friend/2026/02/14-sacrament-in-the-sahara?lang=eng
+- “Scared to Say Sorry,” Friend, Aug. 2026: https://www.churchofjesuschrist.org/study/friend/2026/08/21-scared-to-say-sorry?lang=eng
+- “The Kindness Bench,” Friend, Oct. 2026: https://www.churchofjesuschrist.org/study/friend/2026/10/04-the-kindness-bench?lang=eng
+- “The Thinking Couch,” Friend, Feb. 2026: https://www.churchofjesuschrist.org/study/friend/2026/02/04-the-thinking-couch?lang=eng
+- “A Chat with Emily about Baptism,” Friend, Jan. 2026: https://www.churchofjesuschrist.org/study/friend/2026/01/22-a-chat-with-emily-about-baptism?lang=eng
+- “Activity Time,” Friend, Aug. 2026: https://www.churchofjesuschrist.org/study/friend/2026/08/18-activity-time?lang=eng
+- “Activity Time,” Friend, July 2026: https://www.churchofjesuschrist.org/study/friend/2026/07/18-activity-time?lang=eng
+- “Baptism Is a Joyful Gift,” Friend, Jan. 2026: https://www.churchofjesuschrist.org/study/friend/2026/01/03-baptism-is-a-joyful-gift?lang=eng
+- “Be a Peacemaker,” Friend, Oct. 2026: https://www.churchofjesuschrist.org/study/friend/2026/10/10-be-a-peacemaker?lang=eng
+- “Bristol the Baptism Witness,” Friend, Feb. 2026: https://www.churchofjesuschrist.org/study/friend/2026/02/17-bristol-the-baptism-witness?lang=eng
+- “Jesus Went to Church,” Friend, Feb. 2026: https://www.churchofjesuschrist.org/study/friend/2026/02/05-jesus-went-to-church?lang=eng
+- “Making and Keeping Covenants,” Friend, Feb. 2026: https://www.churchofjesuschrist.org/study/friend/2026/02/22-making-and-keeping-covenants?lang=eng
+- “My Baptism,” Friend, Feb. 2026: https://www.churchofjesuschrist.org/study/friend/2026/02/12-my-baptism?lang=eng
+- “Repentance Is About Love,” Friend, Apr. 2026: https://www.churchofjesuschrist.org/study/friend/2026/04/13-repentance-is-about-love?lang=eng
+- “So You’ve Been Baptized. Now What?,” Friend, Jan. 2026: https://www.churchofjesuschrist.org/study/friend/2026/01/23-so-youve-been-baptized-now-what?lang=eng
+- “Soon I Will Be Eight,” Friend, Jan. 2026: https://www.churchofjesuschrist.org/study/friend/2026/01/14-soon-i-will-be-eight?lang=eng
+- “Time to Pray!,” Friend, June 2026: https://www.churchofjesuschrist.org/study/friend/2026/06/17-time-to-pray?lang=eng
+
+## Come, Follow Me
+
+Many Think About It and Something to Do cards are adapted from *Come, Follow Me—For Home and Church: Old Testament 2026*: the weekly “Ideas for Teaching Children” and the appendix “For Primary—Preparing Children for a Lifetime on God’s Covenant Path.”
+https://www.churchofjesuschrist.org/study/manual/come-follow-me-for-home-and-church-old-testament-2026?lang=eng
 
 ## Written for the game
 

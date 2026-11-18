@@ -153,6 +153,8 @@ a{color:var(--t-scripture)}
 .choice:hover:not(:disabled){border-color:var(--ink)}
 .choice.right{border-color:var(--good);background:color-mix(in srgb, var(--good) 15%, var(--surface))}
 .choice.wrong{border-color:var(--bad);opacity:.7}
+.qs{margin:0;padding-left:1.2em;display:grid;gap:6px;font-size:1.05rem}
+.big-do{font-family:var(--display);font-weight:700;font-size:1.3rem}
 .result{font-family:var(--display);font-weight:700;font-size:1.15rem}
 .result.good{color:var(--good)} .result.bad{color:var(--bad)}
 .actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
@@ -390,10 +392,6 @@ const CHOICES = [
     s:"A girl took Aryah’s pencil. Aryah was so mad!",
     good:"Remember that Jesus said to forgive", bad:"Grab it back and fight",
     did:"The girl said she was sorry, and Aryah said, “It’s OK. I forgive you.”" },
-  { friend:"Janeelyn Stops Scrolling", issue:"Friend, Mar. 2024", u:FR("2024/03/for-older-kids/25-janeelyn-stops-scrolling"), stone:9,
-    s:"Janeelyn kept scrolling videos, even some with bad language. Her little sister asked her to come draw.",
-    good:"Put the phone down and talk to Mom", bad:"Keep scrolling",
-    did:"Janeelyn talked with Mom, and they made a plan to watch videos together. After dinner, she drew with her sister." },
   { friend:"Road-Trip Trouble", issue:"Friend, Apr. 2024", u:FR("2024/04/04-road-trip-trouble"), stone:1,
     s:"Emma’s family got a flat tire on a busy road, far from home.",
     good:"Pray for help", bad:"Give up on the trip",
@@ -469,6 +467,111 @@ const ACTIVITIES = [
   { title:"Baptism Song", t:"Sing “Baptism.” Every time you hear the words “baptism” or “Jesus,” stand up!", ...ACT("June 2024") },
   { title:"Speedy Actions", t:"Do an action like jumping, touching your toes or spinning around, faster and faster. Talk about how we can be speedy to follow God.", ...ACT("June 2024") },
 ];
+
+/* ===== Deeper cards (Friend magazine, Dec. 2025–Nov. 2026). No single right answer: sharing or doing earns the reward. =====
+   kind "talk": a true story + questions · "think": a question to share · "do": something to do · "mc": a quiz with one answer */
+const TALKS = [   // used on Foundation and Choose spaces
+  { kind:"talk", deck:"foundation", friend:"Phoebe’s Big Feelings", issue:"Friend, July 2026", u:FR("2026/07/19-phoebes-big-feelings"),
+    s:"Phoebe’s little brothers were bothering her, and she couldn’t have something she really wanted. She was so angry that she threw her toys across the room.",
+    qs:["What does your body feel like when you are really angry?", "What could Phoebe do to calm down before she makes a choice?", "Her mom said we can pray to Heavenly Father to know what to do with big feelings. How can Jesus help us?"] },
+  { kind:"talk", deck:"foundation", friend:"Scared to Say Sorry", issue:"Friend, Aug. 2026", u:FR("2026/08/21-scared-to-say-sorry"),
+    s:"Bryce and his friend said some words that his friend’s dad didn’t like. Bryce ran home and didn’t want to go back.",
+    qs:["Why can saying sorry feel scary?", "Bryce said a prayer and felt a little braver. Then he went back to say sorry. What helps you be brave?"] },
+  { kind:"talk", deck:"foundation", friend:"Pedro’s Testimony", issue:"Friend, Oct. 2026", u:FR("2026/10/13-pedros-testimony"),
+    s:"Pedro has autism, and it is hard for him to speak. On fast Sunday he shared his testimony of Jesus with sounds instead of words. Many people felt the Holy Ghost.",
+    qs:["What are some ways we can show we love Jesus, even without words?", "What is something you know or believe about Jesus Christ?"] },
+  { kind:"talk", deck:"foundation", friend:"How Prayer Helps Us", issue:"Friend, July 2026", u:FR("2026/07/16-how-prayer-helps-us"),
+    s:"A child was scared of the dark and couldn’t sleep, so they prayed for help. A little while later, Mom came in. She said, “I just felt like I should come check on you.”",
+    qs:["When has Heavenly Father answered your prayers?", "What are some times you can pray?"] },
+  { kind:"talk", deck:"choose", friend:"The Thinking Couch", issue:"Friend, Feb. 2026", u:FR("2026/02/04-the-thinking-couch"),
+    s:"June told a mean lie to her sister, Kelly. Mom sat with them by a picture of Jesus Christ and asked, “What would He do if He were here? What would He want you to do?”",
+    qs:["What do you think Jesus would want June to do?", "June said sorry, and Kelly forgave her. How does it feel when someone forgives you?"] },
+  { kind:"talk", deck:"choose", friend:"Choosing Kindness", issue:"Friend, May 2026", u:FR("2026/05/20-choosing-kindness"),
+    s:"Shay was often unkind to Leah. One day at recess, Leah saw Shay sitting all alone by the swings.",
+    qs:["Why do you think someone might act unkind?", "What could Leah do? What would Jesus do?"],
+    did:"Leah remembered how Jesus reached out to people who were alone. She invited Shay to jump rope, and Shay smiled brightly." },
+  { kind:"talk", deck:"choose", friend:"The Kindness Bench", issue:"Friend, Oct. 2026", u:FR("2026/10/04-the-kindness-bench"),
+    s:"Rose’s best friends kept arguing at recess. Rose asked everyone to say something nice about each other. Soon they were laughing together again.",
+    qs:["How can kind words help when friends disagree?", "Try it! Say something nice about each person playing."] },
+];
+const COVENANT = [   // drawn after you receive an ordinance (baptism and the sacrament)
+  { kind:"talk", friend:"A New Start", issue:"Friend, Jan. 2026", u:FR("2026/01/24-a-new-start"),
+    s:"Alexandre was about to be baptized. He liked the idea of being clean and new, but he worried: how would he stay clean after baptism?",
+    qs:["What would you tell Alexandre?", "At the sacrament, Alexandre asked Heavenly Father to help him do better next week. How does the sacrament help us each week?"] },
+  { kind:"talk", friend:"Adam Is Reverent", issue:"Friend, July 2026", u:FR("2026/07/04-adam-is-reverent"),
+    s:"It was hard for Adam to sit still during the sacrament. Holding his stepdad’s hand helped him be reverent.",
+    qs:["What helps you be reverent during the sacrament?", "What can you think about while the bread and water are passed?"] },
+  { kind:"talk", friend:"Sacrament in the Sahara", issue:"Friend, Feb. 2026", u:FR("2026/02/14-sacrament-in-the-sahara"),
+    s:"Isabelle’s family lived in the Sahara Desert, far from other Church members. Every Sunday they had the sacrament at home, sang hymns and gave talks.",
+    qs:["No one would have known if they stopped having church. Why do you think they kept doing it?", "How can you make Sunday a special day?"] },
+  { kind:"think", t:"At baptism we make a covenant, a two-way promise. What do we promise Heavenly Father? What does He promise us?",
+    note:"“When I was baptized, I made a covenant, or a two-way promise, with Heavenly Father that I would follow Him and keep His commandments. He promised to help me and guide me with the gift of the Holy Ghost.”", src:"“My Baptism,” Friend, Feb. 2026", u:FR("2026/02/12-my-baptism") },
+  { kind:"think", t:"When was a time you felt the Holy Ghost? It can be a big experience or a small one!", src:"“So You’ve Been Baptized. Now What?,” Friend, Jan. 2026", u:FR("2026/01/23-so-youve-been-baptized-now-what") },
+  { kind:"think", t:"“President Nelson taught that when you are baptized and make a covenant with God, He will never give up on helping you.” How does that make you feel?", src:"“Baptism Is a Joyful Gift,” Friend, Jan. 2026", u:FR("2026/01/03-baptism-is-a-joyful-gift") },
+  { kind:"think", t:"Emily practiced with her dad how to stand in the font before her baptism. How can you get ready to be baptized, or remember your baptism?", src:"“A Chat with Emily about Baptism,” Friend, Jan. 2026", u:FR("2026/01/22-a-chat-with-emily-about-baptism") },
+  { kind:"mc", q:"When you take the sacrament, what do you promise?", a:"To always remember Jesus Christ", w:["To never make a mistake again", "To sit still for a whole hour"],
+    note:"“When you take the sacrament, you promise to always remember Jesus Christ.”", src:"“Soon I Will Be Eight,” Friend, Jan. 2026", u:FR("2026/01/14-soon-i-will-be-eight") },
+  { kind:"mc", q:"What does a witness do at a baptism?", a:"Watches to make sure the baptism is done the way Jesus taught", w:["Holds the towels", "Picks the songs"],
+    note:"“A witness is someone who stands by the font to make sure the baptism is done the way Jesus Christ taught.”", src:"“Bristol the Baptism Witness,” Friend, Feb. 2026", u:FR("2026/02/17-bristol-the-baptism-witness") },
+  { kind:"mc", q:"What gift can you receive when you are confirmed, after baptism?", a:"The gift of the Holy Ghost", w:["A new name", "A new set of scriptures"],
+    note:"“Heavenly Father invites you to receive the gift of the Holy Ghost to guide you when you are confirmed.”", src:"“Baptism Is a Joyful Gift,” Friend, Jan. 2026", u:FR("2026/01/03-baptism-is-a-joyful-gift") },
+  { kind:"do", title:"Keep Your Covenant", t:"Pick one and tell which you will do this week: share something you love about Jesus Christ, make a card for someone, comfort someone who is sad, or say hi to someone you don’t know well.", src:"“Making and Keeping Covenants,” Friend, Feb. 2026", u:FR("2026/02/22-making-and-keeping-covenants") },
+  { kind:"do", title:"Sabbath Ideas", t:"Share one thing you can do on Sunday to think about Jesus: share your testimony, read the scriptures, make a card for someone, visit a neighbor, or sing Primary songs.", src:"“Jesus Went to Church,” Friend, Feb. 2026", u:FR("2026/02/05-jesus-went-to-church") },
+  { kind:"do", title:"Baptism Songs", t:"Sing “Baptism” or “When I Am Baptized” together.", src:"Children’s Songbook, 100 and 103", u:`${C}manual/childrens-songbook/when-i-am-baptized?lang=eng` },
+];
+const TOGETHER = [   // team challenges, helping from the Spirit World
+  { kind:"do", title:"Kind Words", t:"Say something kind and true about the player on your left.", src:"Idea from “The Kindness Bench,” Friend, Oct. 2026", u:FR("2026/10/04-the-kindness-bench") },
+  { kind:"do", title:"Calm Down", t:"Show how you can calm down when you feel angry: take three slow breaths, count to ten, or think about Jesus. Then tell what good choice you would make next.", src:"Idea from “Phoebe’s Big Feelings,” Friend, July 2026", u:FR("2026/07/19-phoebes-big-feelings") },
+  { kind:"do", title:"Testimony", t:"Share one thing you know or believe about Jesus Christ. One sentence is enough!", src:"Idea from “Pedro’s Testimony,” Friend, Oct. 2026", u:FR("2026/10/13-pedros-testimony") },
+  { kind:"do", title:"Sing Together", t:"What songs about Jesus do you like? Pick one and sing it together!", src:"“Come, Follow Me Activities,” Friend, Mar. 2024", u:FR("2024/03/come-follow-me/19-come-follow-me-activities") },
+  { kind:"do", title:"Thank You", t:"Each player says one thing they are thankful to Heavenly Father for.", src:"Idea from “Time to Pray!,” Friend, June 2026", u:FR("2026/06/17-time-to-pray") },
+  { kind:"do", title:"Peacemaker", t:"What does peacemaking look like to you? Act out a way to be a peacemaker, and let everyone guess.", src:"“Be a Peacemaker,” Friend, Oct. 2026", u:FR("2026/10/10-be-a-peacemaker") },
+  { kind:"do", title:"Helping Hands", t:"What are some ways you use your hands to follow Him? Act out a way to serve someone. Everyone guesses what you are doing!", src:"“Activity Time,” Friend, July 2026", u:FR("2026/07/18-activity-time") },
+  { kind:"do", title:"Comfort a Friend", t:"Act out how you would comfort someone who is sad.", src:"“Making and Keeping Covenants,” Friend, Feb. 2026", u:FR("2026/02/22-making-and-keeping-covenants") },
+  { kind:"do", title:"Hearts Knit Together", t:"Give a high five to everyone playing and tell each one something you love about them.", src:"“Come, Follow Me Activities,” Friend, May 2024", u:FR("2024/05/come-follow-me/20-come-follow-me-activities") },
+  { kind:"think", t:"When do you pray?", src:"“Time to Pray!,” Friend, June 2026", u:FR("2026/06/17-time-to-pray") },
+  { kind:"think", t:"What helps you remember to make good choices?", src:"“Activity Time,” Friend, Aug. 2026", u:FR("2026/08/18-activity-time") },
+  { kind:"think", t:"Think of a hard day. What would Jesus do if He were here?", src:"Idea from “The Thinking Couch,” Friend, Feb. 2026", u:FR("2026/02/04-the-thinking-couch") },
+  { kind:"think", t:"“The Savior loves us always but especially when we repent.” How does it feel to know Jesus is happy when we repent?", src:"“Repentance Is About Love,” Friend, Apr. 2026", u:FR("2026/04/13-repentance-is-about-love") },
+];
+
+/* ===== From Come, Follow Me—For Home and Church: Old Testament 2026, “Ideas for Teaching Children” and
+   “Preparing Children for a Lifetime on God’s Covenant Path.” deck: where the card is used. ===== */
+const CFMW = (w, title) => ({ src:`Come, Follow Me 2026, ${title}`, u:`${C}manual/come-follow-me-for-home-and-church-old-testament-2026/${w}?lang=eng` });
+const CFM_CARDS = [
+  // baptism, the sacrament, and the temple
+  { deck:"covenant", kind:"do", title:"Two Kinds of Promises", t:"Make two lists out loud: “My promises to God” and “God’s promises to me.” What do we promise at baptism? What does Heavenly Father promise us?", ...CFMW("54-appendix-b", "Preparing Children for a Lifetime on God’s Covenant Path") },
+  { deck:"covenant", kind:"think", t:"Name some things you always remember to do, like tying your shoes or washing your hands. Why is it important to always remember Jesus Christ?", ...CFMW("54-appendix-b", "The Sacrament") },
+  { deck:"covenant", kind:"think", t:"We put our names on things that belong to us. What does it mean to take upon ourselves the name of Jesus Christ?", ...CFMW("54-appendix-b", "The Sacrament") },
+  { deck:"covenant", kind:"do", title:"Waters of Mormon", t:"The people baptized at the Waters of Mormon were willing to help carry each other’s burdens, mourn with those who mourn, and comfort those who need comfort. Make up an action for each one and do them together.", ...CFMW("54-appendix-b", "Confirmation") },
+  { deck:"covenant", kind:"think", t:"What helps a seed grow into a big tree? Faith in Jesus, repenting each day, keeping our baptism covenant, the sacrament, and the Holy Ghost help us grow closer to God. Which one will you work on this week?", ...CFMW("54-appendix-b", "Principles and Ordinances") },
+  { deck:"covenant", kind:"think", t:"Talk about a time someone did something for you that you couldn’t do for yourself. What has Jesus done for us that we couldn’t do for ourselves?", ...CFMW("54-appendix-b", "The Temple") },
+  { deck:"covenant", kind:"think", t:"How have your parents, grandparents, or other family members helped you? In the temple, families can be together forever.", ...CFMW("54-appendix-b", "The Temple") },
+  { deck:"covenant", kind:"do", title:"Peaceful Feeling", t:"Hum or sing a song about the sacrament or about Jesus. Notice the peaceful feeling you have when you think about Him.", ...CFMW("15", "Exodus 7–13") },
+  { deck:"covenant", kind:"think", t:"If you were bringing a friend to church for the first time, how would you explain what it means to be reverent?", ...CFMW("13", "Exodus 1–6") },
+  // feelings, kindness, forgiveness, peacemaking
+  { deck:"together", kind:"do", title:"Soft Answers", t:"Think of a time you might feel angry. Practice a “soft answer,” a calm and kind way to answer. (Proverbs 15:1)", ...CFMW("37", "Proverbs; Ecclesiastes") },
+  { deck:"foundation", kind:"think", t:"When we are slow to anger, we can be quick to think about Jesus, ask Heavenly Father for help, think of a Primary song, or walk away. Which one will you try next time you feel angry?", ...CFMW("37", "Proverbs; Ecclesiastes") },
+  { deck:"foundation", kind:"think", t:"Joseph forgave his brothers. Who in your life might need to be forgiven? How can you show love and forgiveness?", ...CFMW("12", "Genesis 42–50") },
+  { deck:"together", kind:"do", title:"Peacemakers", t:"Abraham and Lot solved an argument peacefully. Two players act out wanting the same toy, then show a peaceful way to solve it.", ...CFMW("08", "Genesis 12–17") },
+  { deck:"foundation", kind:"think", t:"How do you feel when others are kind to you? How has the Savior been kind to us?", ...CFMW("23", "Ruth; 1 Samuel 1–7") },
+  { deck:"together", kind:"do", title:"Help at Home", t:"Think of someone in your family who might need help. Make a plan to help them, and tell everyone your plan.", ...CFMW("32", "Esther") },
+  { deck:"foundation", kind:"think", t:"Bravery means doing what is right even when you are afraid. Share a time when you were brave.", ...CFMW("32", "Esther") },
+  { deck:"together", kind:"do", title:"Honor Your Parents", t:"Act out something you can do to honor your parents or show them respect. Everyone guesses what you are doing!", ...CFMW("17", "Exodus 18–20") },
+  // prayer, choices, gratitude, repentance, the Sabbath, tithing
+  { deck:"foundation", kind:"think", t:"What are some things we can say to Heavenly Father in our prayers?", ...CFMW("04", "Moses 4–5") },
+  { deck:"foundation", kind:"think", t:"Tell about a time you made a good choice. How did you feel afterward?", ...CFMW("04", "Moses 4–5") },
+  { deck:"together", kind:"think", t:"Share a time when you felt that Heavenly Father heard your prayer.", ...CFMW("08", "Genesis 12–17") },
+  { deck:"foundation", kind:"think", t:"What blessings do we sometimes forget? Name three blessings Heavenly Father has given you.", ...CFMW("19", "Numbers 11–14; 20–24") },
+  { deck:"together", kind:"do", title:"Choose to Follow Jesus", t:"Role-play: a friend asks you to do something wrong. Show how you can choose to follow Jesus.", ...CFMW("21", "Joshua 1–8; 23–24") },
+  { deck:"together", kind:"do", title:"Pass the Picture", t:"Pass a picture of Jesus (or any small object) around. Whoever holds it says one thing they know about Him.", ...CFMW("35", "Psalms 49–51; 61–66; 69–72; 77–78; 85–86") },
+  { deck:"foundation", kind:"think", t:"When we wash something, it becomes clean. How does Jesus help us become clean when we repent?", ...CFMW("38", "Isaiah 1–12") },
+  { deck:"covenant", kind:"think", t:"Isaiah called the Sabbath “a delight.” Share one way you can make Sunday a delight.", ...CFMW("42", "Isaiah 58–66") },
+  { deck:"foundation", kind:"do", title:"One Out of Ten", t:"Count 10 small things, like coins, buttons, or fingers. Set one aside: that is how much we give the Lord as tithing. Why do you think the Lord wants us to pay tithing?", ...CFMW("51", "Malachi") },
+  { deck:"foundation", kind:"think", t:"Daniel kept praying even when it was dangerous. Why is praying important to you?", ...CFMW("46", "Daniel") },
+];
+COVENANT.push(...CFM_CARDS.filter(c => c.deck === "covenant"));
+TOGETHER.push(...CFM_CARDS.filter(c => c.deck === "together"));
 
 /* Storms: the “plagues of the world” named on the handout. */
 const STORMS = [
@@ -731,7 +834,7 @@ const SFX = (() => {
 /* ===================== STATE ===================== */
 const $ = s => document.querySelector(s);
 const COLORS = ["#D0453A","#2C6FB7","#2F9A57","#8A4FC7"];
-const SAVE = "quest-save-v6";
+const SAVE = "quest-save-v7";
 let S = null, setupCount = 2, mode = "spin"; // mode: spin | hop | wait
 
 function shuffle(a){ a = a.slice(); for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
@@ -1122,14 +1225,51 @@ function cardMile(key, next){
 }
 function cardOrd(sp, next){
   const p = cur(), o = ORDS[p.ords.length];   // the next ordinance this player needs
-  if (!o || S.ordThisTurn){ p.stars += 1; toast(o ? "One ordinance per turn. +1 ★" : "You have all 4 ordinances. +1 ★"); renderPlayers(); return setTimeout(next, reduced() ? 20 : 1300); }
+  if (!o || S.ordThisTurn) return cardCovenant(next);
   S.ordThisTurn = true;
   p.ords.push(o.key); p.stars += 3; SFX.play("ord"); if (o.key === "baptism") p.hg = true;
   log(`${esc(p.name)} received <b>${o.title}</b> (+3 ★).`); renderPlayers();
   openCard({ kind:"ord", label:"Ordinance", title:o.title, img:o.img, speak:`${o.title}. ${o.q.t} ${o.q.r}. ${o.rule||""}`,
-    html: verseHTML(o.q) + (o.rule ? `<p><b>${o.rule}</b></p>` : "") + `<p class="result good">Ordinance received! +3 ★ <span class="small-note">(${p.ords.length} of 4)</span></p>` + btn("done","Done") });
-  wire({ done: next });
+    html: verseHTML(o.q) + (o.rule ? `<p><b>${o.rule}</b></p>` : "") + `<p class="result good">Ordinance received! +3 ★ <span class="small-note">(${p.ords.length} of 4)</span></p>` + btn("cov","Draw a Covenant card ➜") });
+  wire({ cov: () => cardCovenant(next) });
 }
+/* Covenant cards: baptism and the sacrament. */
+function cardCovenant(next){
+  const p = cur(), c = COVENANT[draw("cov", COVENANT.length)];
+  deepCard(c, { kind:"ord", label:"Covenant", img:"baptism" }, (ok, extra) => {
+    const pts = ok ? 2 : 1; p.stars += pts; SFX.play("coin"); renderPlayers();
+    log(`${esc(p.name)} did a Covenant card (+${pts} ★).`);
+    $("#out").innerHTML = `<p class="result good">+${pts} ★</p>${extra}${btn("done","Done")}`; wire({ done: next });
+  });
+}
+/* Deeper cards: talk (story + questions), think (share), do (an action), mc (a quiz).
+   finish(ok, extraHtml) is called when the player is done; it fills #out. */
+function deepCard(c, o, finish){
+  const head = o.head || "";
+  const src = c.u ? `<p class="small-note"><a href="${c.u}" target="_blank" rel="noopener">${c.src || (c.friend ? `“${c.friend},” ${c.issue}` : "")}</a></p>` : "";
+  if (c.kind === "mc"){
+    const opts = shuffle([c.a, ...c.w]); let tries = 0;
+    openCard({ kind:o.kind, label:o.label, title:c.q, img:o.img, speak:`${c.q} ${opts.join(", or ")}?`,
+      html: head + `<div class="choices">${opts.map(x => `<button class="choice" type="button" data-act="pick" data-v="${esc(x)}">${esc(x)}</button>`).join("")}</div><div id="out"></div>` });
+    wire({ pick: b => {
+      const right = b.dataset.v === c.a; tries++; SFX.play(right ? "good" : "bad");
+      if (!right && tries === 1){ b.classList.add("wrong"); b.disabled = true; $("#out").innerHTML = `<p class="result bad">Repent and try again!</p>`; return; }
+      $("#card").querySelectorAll(".choice").forEach(x => { x.disabled = true; if (x.dataset.v === c.a) x.classList.add("right"); });
+      finish(right, c.note ? `<div class="verse">${c.note}<a class="ref" href="${c.u}" target="_blank" rel="noopener">${c.src}</a></div>` : "");
+    }});
+    return;
+  }
+  let body, speak, title;
+  if (c.kind === "talk"){ title = "Let’s talk"; body = storyHead(c) + `<p style="font-size:1.08rem">${c.s}</p><ul class="qs">${c.qs.map(q => `<li>${q}</li>`).join("")}</ul>`; speak = `${c.s} ${c.qs.join(" ")}`; }
+  else if (c.kind === "think"){ title = "Think about it"; body = `<p style="font-size:1.18rem">${c.t}</p>`; speak = c.t; }
+  else { title = "Something to do"; body = `<p class="big-do">${c.title}</p><p style="font-size:1.1rem">${c.t}</p>`; speak = `${c.title}. ${c.t}`; }
+  const label = c.kind === "do" ? "We did it!" : c.kind === "talk" ? "We talked about it" : "We shared";
+  openCard({ kind:o.kind, label:o.label, title: o.title || title, img:o.img, speak, html: head + body + src + `<div id="out">${btn("ok", label)}</div>` });
+  wire({ ok: () => { SFX.play("good");
+    finish(true, c.did ? `<div class="verse"><b>What really happened:</b> ${c.did}</div>` : c.note ? `<div class="verse">${c.note}<span class="ref">${c.src}</span></div>` : ""); } });
+}
+const FOUND_DEEP = [...TALKS.filter(c => c.deck === "foundation"), ...CFM_CARDS.filter(c => c.deck === "foundation"), ...TOGETHER.filter(c => c.kind === "think")];
+const CHOOSE_DEEP = TALKS.filter(c => c.deck === "choose");
 /* Friend stories: name the story, then tell what really happened. */
 const storyHead = c => c.friend ? `<p class="small-note">From a true story in the <i>Friend</i>: “${c.friend}”</p>` : "";
 const storyEnd = c => c.friend ? `<div class="verse"><b>What really happened:</b> ${c.did}<a class="ref" href="${c.u}" target="_blank" rel="noopener">Read “${c.friend}” (${c.issue})</a></div>` : (c.v ? verseHTML(c.v) : "");
@@ -1153,6 +1293,10 @@ function cardHabit(sp, next){
     $("#out").innerHTML = msg + extra + btn("done","Done"); wire({ done: next });
   };
   const head = `<span class="tag">Foundation · ${s.name}</span>`;
+  if (Math.random() < 0.4){
+    const c = FOUND_DEEP[draw("fdeep", FOUND_DEEP.length)];   // about 4 in 10 foundation cards are deeper cards
+    return deepCard(c, { kind:"habit", label:"Foundation", img:"rock", head:`<span class="tag">Foundation</span>` }, (ok, extra) => finish(ok, extra));
+  }
   if (pool.length && Math.random() < 0.5){
     const c = CHOICES[pool[Math.floor(Math.random()*pool.length)]];
     const opts = shuffle([{t:c.good, ok:true},{t:c.bad, ok:false}]); let tries = 0;
@@ -1195,6 +1339,15 @@ function cardScripture(sp, next){
 }
 
 function cardChoose(sp, next){
+  if (Math.random() < 0.3){
+    const p = cur(), c = CHOOSE_DEEP[draw("cdeep", CHOOSE_DEEP.length)];
+    return deepCard(c, { kind:"choose", label:"Choose the Right", img:"choose" }, (ok, extra) => {
+      p.stars += 3; const got = addStone(p), toOrd = surprise(p);
+      log(`${esc(p.name)} talked about “${c.friend}”${got?" and earned a stone":""} (+3 ★).`); renderPlayers();
+      $("#out").innerHTML = `<p class="result good">Thanks for sharing! +3 ★${got?` and a stone (${p.stones} of ${NEED_STONES})`:""}</p>${extra}${toOrd ? `<p class="result good">Surprise! Go to the next Ordinance space!</p>${btn("jump","Go ➜")}` : btn("jump","Jump ahead 2 ➜")}`;
+      wire({ jump: () => { closeCard(); toOrd ? hopToOrd(next) : autoHop(2, next); } });
+    });
+  }
   const c = CHOICES[draw("choose", CHOICES.length)], p = cur();
   const opts = shuffle([{t:c.good, ok:true},{t:c.bad, ok:false}]);
   let tries = 0;
@@ -1225,8 +1378,8 @@ function cardStorm(sp, next){
   else res = `<p class="result bad">The storm blows past. Build your foundation!</p>`;
   log(`${esc(p.name)} faced the storm of ${st.name}: ${stands?"the house stood":"a stone came loose"}.`); renderPlayers();
   openCard({ kind:"storm", title:`Storm of ${st.name}`, img:"storm", speak:`Storm of ${st.name}. ${st.d}`,
-    html: `<p style="font-size:1.1rem">${st.d}</p><p>Storm <b>${sp.power}</b> · Your foundation <b>${strength}</b></p>` + res + btn("done","Done") });
-  wire({ done: next });
+    html: `<p style="font-size:1.1rem">${st.d}</p><p>Storm <b>${sp.power}</b> · Your foundation <b>${strength}</b></p>` + res + `<p><b>Show or tell how you could handle this storm.</b></p><div class="actions"><button class="btn" type="button" data-act="done">Done</button><button class="btn primary" type="button" data-act="show">We showed it! +1 ★</button></div>` });
+  wire({ done: next, show: () => { p.stars += 1; SFX.play("coin"); renderPlayers(); next(); } });
 }
 function cardService(sp, next){
   const p = cur(), others = S.players.filter(x => x !== p && x.pos >= 0 && x.pos < LOOP);
@@ -1257,6 +1410,14 @@ function cardSabbath(sp, next){
 /* Landing on another player's space: a team challenge. Work it out together; both earn blessings. */
 function cardChallenge(other, next){
   const p = cur();
+  if (Math.random() < 0.65){
+    const c = TOGETHER[draw("tog", TOGETHER.length)];
+    return deepCard(c, { kind:"challenge", label:"Team challenge", img:"service", head:`<p><b>${esc(p.name)} + ${esc(other.name)}:</b> do this one together!</p>` }, (ok, extra) => {
+      p.stars += 2; other.stars += 2; SFX.play("coin"); renderPlayers();
+      log(`${esc(p.name)} and ${esc(other.name)} did a team challenge (+2 ★ each).`);
+      $("#out").innerHTML = `<p class="result good">Great teamwork! +2 ★ each.</p>${extra}${btn("done","Done")}`; wire({ done: next });
+    });
+  }
   const c = SCRIPTURES[draw("scripture", SCRIPTURES.length)];
   const text = c.t.replace("___", c.a);
   const q = blankQuiz(text, c.a, c.w, c.r, c.u, (right) => {
@@ -1284,10 +1445,10 @@ function cardHelp(){
   if (!earth.length) return endTurn();
   setMode("wait");
   openCard({ kind:"service", label:"Spirit World", title:"Help someone on earth", img:"spiritworld", speak:"Choose someone on earth to help.",
-    html:`<p>Choose a player to help. Win the challenge and they get a foundation stone.</p><div class="choices">${earth.map(o => { const n = S.players.indexOf(o); return `<button class="choice" type="button" data-act="pick" data-n="${n}"><span class="token" style="display:inline-grid;width:24px;height:24px;margin-right:8px;background:${o.color}">${n+1}</span>${esc(o.name)}</button>`; }).join("")}</div>` });
+    html:`<p>Choose a player to help. Finish the card and they get a foundation stone.</p><div class="choices">${earth.map(o => { const n = S.players.indexOf(o); return `<button class="choice" type="button" data-act="pick" data-n="${n}"><span class="token" style="display:inline-grid;width:24px;height:24px;margin-right:8px;background:${o.color}">${n+1}</span>${esc(o.name)}</button>`; }).join("")}</div>` });
   wire({ pick: b => {
     const o = S.players[+b.dataset.n], c = SCRIPTURES[draw("scripture", SCRIPTURES.length)];
-    const q = blankQuiz(c.t.replace("___", c.a), c.a, c.w, c.r, c.u, (right) => {
+    const result = (right) => {
       let msg = "Not this time. Try again next turn.";
       if (right){ p.stars += 1;
         if (o.pos < 0){ o.pos = 0; placePawn(S.players.indexOf(o)); msg = `${esc(o.name)} is born on earth! +1 ★ for you.`; }
@@ -1296,7 +1457,9 @@ function cardHelp(){
         log(`${esc(p.name)} helped ${esc(o.name)} from the Spirit World.`); }
       renderPlayers();
       $("#out").innerHTML = `<p class="result ${right?"good":"bad"}">${msg}</p>${btn("done","Done")}`; wire({ done: endTurn });
-    });
+    };
+    if (Math.random() < 0.5) return deepCard(TOGETHER[draw("tog", TOGETHER.length)], { kind:"service", label:"Spirit World", img:"spiritworld", head:`<p>Helping <b>${esc(o.name)}</b>:</p>` }, (ok) => result(ok));
+    const q = blankQuiz(c.t.replace("___", c.a), c.a, c.w, c.r, c.u, result);
     openCard({ kind:"service", label:"Spirit World", title:`Helping ${esc(o.name)}`, img:"spiritworld", speak:q.speak, html:q.html });
     q.wireIt();
   }});
