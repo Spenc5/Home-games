@@ -147,6 +147,7 @@ input,select,textarea{font:inherit;color:var(--ink);background:var(--surface);bo
 .size-3 .cell .pic .emo{font-size:clamp(2rem,6vw,3.8rem)}
 .cell.in-line{background:var(--surface-2)}
 .cell.target{box-shadow:0 0 0 4px var(--gold),0 0 0 8px var(--blue);animation:glow 1s ease-in-out infinite alternate}
+.cell.placing{box-shadow:0 0 0 4px var(--good);outline:4px dashed var(--good);outline-offset:-12px;animation:glow 1s ease-in-out infinite alternate}
 .cell.pickable{box-shadow:0 0 0 4px var(--good);animation:glow 1s ease-in-out infinite alternate}
 .cell.covered .pic,.cell.covered .nm{opacity:.35}
 .cell .token{position:absolute;inset:12%;display:grid;place-items:center;filter:drop-shadow(0 4px 4px rgba(0,0,0,.25))}
@@ -812,7 +813,6 @@ function renderGame(){
   markWins(); renderBuddy(); applyRollMarks();
   if(g.pending) setMsg(`🎉 Bingo! Time to pick a prize. <button class="btn small go prize" data-act="closet-earn">Open the closet</button>`);
   else if(g.cells.every(c=>c.covered)) setMsg(`🌟 Blackout! The whole card is covered. <button class="btn small go" data-act="newcard-yes">New card</button>`);
-  else if(!g.roll) setMsg(`Press the bubble to pop! The <span class="rc r">gold</span> die is the row and the <span class="rc c">blue</span> die is the column.`);
   else rollMessage();
   drawDice(g.roll ? g.roll.r : 1, g.roll ? g.roll.c : 1);
 }
@@ -845,8 +845,9 @@ let rolling = false;
 function roll(){
   const st = cur(), g = st.game; if(rolling || !g) return;
   if(g.pending){ openCloset('earn'); return; }
+  if(g.place!=null){ SFX.miss(); rollMessage(); return; }
   if(g.cells.every(c=>c.covered)) return;
-  rolling = true; g.pick = null; g.roll = null; clearRollMarks();
+  rolling = true; g.pick = null; g.roll = null; g.full = false; g.hint = false; g.tries = 0; clearRollMarks();
   const dome = $('#dome'); dome.classList.remove('squish'); void dome.offsetWidth; dome.classList.add('squish');
   SFX.pop(); setTimeout(SFX.rattle, 120);
   const n = g.size, dr = $('#dieR'), dc = $('#dieC');
@@ -870,33 +871,50 @@ function roll(){
   step();
 }
 function afterRoll(){
-  const g = cur().game, {r,c} = g.roll, n = g.size, i = (r-1)*n + (c-1);
-  applyRollMarks();
-  const cell = g.cells[i];
-  if(!cell.covered){ SFX.chime(); rollMessage(); setTimeout(()=>openStrat(i), 750); return; }
+  const g = cur().game; g.tries = 0; g.hint = false; g.pick = null;
+  SFX.chime(); save(); applyRollMarks(); rollMessage();
+}
+const RC = `the <span class="rc r">gold</span> die is the row and the <span class="rc c">blue</span> die is the column`;
+function rollMessage(){
+  const g = cur().game;
+  $('#rollOut').innerHTML = g.roll ? `<span class="note">Read the dice!</span>` : `<span class="note">Gold = row · Blue = column</span>`;
+  if(g.place!=null) return setMsg(`🎉 Great job! Now tap your square to place your token.`);
+  if(!g.roll) return setMsg(`Press the bubble to pop! Then ${RC}.`);
+  if(g.pick && g.pick.length) return setMsg(`That square is already covered! Pick any <b style="color:var(--good)">green</b> square in the same row or column.`);
+  if(g.full) return setMsg(`That row and column are full. Pop again!`);
+  if(g.tries>=2) return setMsg(`Not quite! Look at the lit-up numbers: ${RC}.`);
+  if(g.tries===1) return setMsg(`Not quite! Look at the dice again: ${RC}.`);
+  setMsg(`Read the dice! ${RC[0].toUpperCase()+RC.slice(1)}. Tap your square.`);
+}
+function cellClick(i){
+  const g = cur().game, cell = g.cells[i];
+  if(g.pending){ openCloset('earn'); return; }
+  if(g.place!=null){ if(i===g.place) placeToken(i); else { SFX.miss(); rollMessage(); } return; }
+  if(cell.free) return;
+  if(g.pick && g.pick.length){
+    if(g.pick.includes(i)){ SFX.chime(); openStrat(i); }
+    else { SFX.miss(); rollMessage(); }
+    return;
+  }
+  if(!g.roll){ if(cell.covered) openStrat(i); else setMsg(`Press the bubble first! Then ${RC}.`); return; }
+  const {r,c} = g.roll, n = g.size, t = (r-1)*n + (c-1);
+  if(i!==t){ if(g.full) return; g.tries = (g.tries||0)+1; if(g.tries>=2) g.hint = true; SFX.miss(); save(); applyRollMarks(); rollMessage(); return; }
+  if(!cell.covered){ SFX.chime(); openStrat(i); return; }
   const open = [];
   for(let k=0;k<n;k++){ const a=(r-1)*n+k, b=k*n+(c-1); if(!g.cells[a].covered) open.push(a); if(!g.cells[b].covered && !open.includes(b)) open.push(b); }
-  if(open.length){ g.pick = open; SFX.miss(); } else { SFX.miss(); }
-  save(); applyRollMarks(); rollMessage();
+  if(open.length) g.pick = open; else g.full = true;
+  SFX.miss(); save(); applyRollMarks(); rollMessage();
 }
-function rollMessage(){
-  const g = cur().game; if(!g.roll) return;
-  const {r,c} = g.roll, n = g.size, i=(r-1)*n+(c-1), cell = g.cells[i];
-  $('#rollOut').innerHTML = `<span class="rc r">Row ${r}</span><span class="rc c">Column ${c}</span>`;
-  if(!cell.covered) setMsg(`<span class="rc r">${r}</span><span class="rc c">${c}</span> ${esc(S(cell.id).name)}! Show it on camera.`);
-  else if(g.pick && g.pick.length) setMsg(`<span class="rc r">${r}</span><span class="rc c">${c}</span> is already covered. Pick any open square in gold row ${r} or blue column ${c}.`);
-  else setMsg(`<span class="rc r">${r}</span><span class="rc c">${c}</span> Row ${r} and column ${c} are full. Pop again!`);
-}
-function clearRollMarks(){ document.querySelectorAll('.lit,.target,.pickable,.in-line').forEach(e=>e.classList.remove('lit','target','pickable','in-line')); }
+function clearRollMarks(){ document.querySelectorAll('.lit,.target,.pickable,.in-line,.placing').forEach(e=>e.classList.remove('lit','target','pickable','in-line','placing')); }
 function applyRollMarks(){
-  clearRollMarks(); const g = cur().game; if(!g.roll) return;
+  clearRollMarks(); const g = cur().game, els = document.querySelectorAll('#grid .cell');
+  if(g.place!=null){ els[g.place] && els[g.place].classList.add('placing'); return; }
+  if(!g.roll) return;
   const {r,c} = g.roll, n = g.size;
-  const rh = document.querySelector(`.hd.row[data-row="${r}"]`), ch = document.querySelector(`.hd.col[data-col="${c}"]`);
-  rh && rh.classList.add('lit'); ch && ch.classList.add('lit');
-  const els = document.querySelectorAll('#grid .cell');
-  for(let k=0;k<n;k++){ els[(r-1)*n+k].classList.add('in-line'); els[k*n+(c-1)].classList.add('in-line'); }
-  const i = (r-1)*n+(c-1);
-  if(!g.cells[i].covered) els[i].classList.add('target');
+  if(g.hint || (g.pick && g.pick.length) || g.full){
+    const rh = document.querySelector(`.hd.row[data-row="${r}"]`), ch = document.querySelector(`.hd.col[data-col="${c}"]`);
+    rh && rh.classList.add('lit'); ch && ch.classList.add('lit');
+  }
   (g.pick||[]).forEach(j => els[j].classList.add('pickable'));
 }
 
@@ -915,7 +933,7 @@ function openStrat(i){
     <ol class="steps">${s.steps.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>
     ${t ? `<div class="timer" id="timer"><button class="btn" data-act="timer">${tLabel}</button></div>` : ''}
     <div class="actions">
-      ${cell.covered ? `<span class="covered-note">✓ Already done on this card</span>` : `<button class="btn go did" data-act="did" data-i="${i}">✓ They did it!</button>`}
+      ${cell.covered ? `<span class="covered-note">✓ Already done on this card</span>` : `<button class="btn go did" data-act="did" data-i="${i}">✓ I did it!</button>`}
       <button class="btn" data-act="read">🔊 Read aloud</button>
       <button class="btn" data-act="close">${cell.covered?'Close':'Not now'}</button>
     </div></div>`;
@@ -949,7 +967,12 @@ async function runTimer(){
 function did(i){
   const st = cur(), g = st.game; i = +i;
   closeOverlay();
-  g.cells[i].covered = true; g.pick = null; g.roll = null; save();
+  g.place = i; g.pick = null; g.roll = null; g.full = false; g.hint = false; save();
+  SFX.chime(); renderGame();
+}
+function placeToken(i){
+  const g = cur().game;
+  g.cells[i].covered = true; g.place = null; save();
   renderGame();
   const el = document.querySelectorAll('#grid .cell')[i];
   const tk = el.querySelector('.token'); tk && tk.classList.add('drop');
@@ -1084,7 +1107,7 @@ document.addEventListener('click', e => {
   if(act==='did'){ did(b.dataset.i); return; }
   if(act==='closet-earn'){ openCloset('earn'); return; }
   if(b.id==='dome'){ roll(); return; }
-  if(b.dataset.i!==undefined && b.classList.contains('cell')){ openStrat(+b.dataset.i); return; }
+  if(b.dataset.i!==undefined && b.classList.contains('cell')){ cellClick(+b.dataset.i); return; }
   if(b.dataset.stu){ store.cur = b.dataset.stu; confirmDel=false; save(); renderHome(); return; }
   if(b.dataset.buddy){ stuBuddy = b.dataset.buddy; renderBuddyPick(); return; }
   if(b.dataset.deck && b.closest('#deckOpts')){ store.setup.deck = b.dataset.deck; save(); renderHome(); return; }

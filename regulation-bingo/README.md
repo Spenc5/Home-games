@@ -1,6 +1,6 @@
 # Regulation Bingo
 
-A bingo game for practicing self-regulation strategies, made for one-on-one social skills sessions over Zoom. Each square is a strategy. The student shows it on camera to cover the square. Each bingo earns a new accessory for their buddy.
+A bingo game for practicing self-regulation strategies, made for one-on-one social skills sessions over Zoom. Each square is a strategy. The student reads the dice, finds the square, shows the strategy on camera, and places their own token. Each bingo earns a new accessory for their buddy.
 
 ## Playing
 
@@ -13,10 +13,11 @@ Open `index.html` in a web browser and share your screen. It's one file with not
    - **Size:** 3 × 3 (quick), 4 × 4, or 5 × 5 (free space in the middle).
    - **Token:** an animal, a shape in any color, or a nature or fun picture.
    Each card is dealt at random from about 40 strategies per deck, so it's different every time.
-3. **Pop the bubble.** The **gold die** is the row and the **blue die** is the column. That square lights up and its card opens.
-   - If the square is already covered, the student picks any open square in that row or column. If both are full, pop again.
-   - You can also click any square to open it.
-4. **Show it.** The card has a picture, simple steps, a **Read aloud** button, and for many strategies a breathing guide, hold timer or counter. When the student shows the strategy, click **They did it!** and the token drops onto the square.
+3. **Pop the bubble.** The **gold die** is the row and the **blue die** is the column. Nothing lights up: the student reads the dice and taps that square.
+   - Wrong square? They get "Not quite!" After 2 misses, the row and column numbers light up as a hint.
+   - If the square is already covered, the open squares in that row and column turn green and the student picks one. If both are full, pop again.
+   - Before popping, tapping a covered square shows what was done there.
+4. **Show it.** The card has a picture, simple steps, a **Read aloud** button, and for many strategies a breathing guide, hold timer or counter. When the student has shown the strategy, they tap **I did it!**, then tap their square to place the token.
 5. **Bingo!** Any row, column, diagonal or the four corners wins (four corners doesn't count on 3 × 3). The student picks **1 new accessory** per bingo and **3** for a blackout. Accessories stay with the student, and they can change what their buddy wears any time with **Dress up**.
 
 There are 26 accessories: hats, glasses, things for the neck, capes and wings, things to hold, and backgrounds.
