@@ -27,11 +27,13 @@ There are 26 accessories: hats, glasses, things for the neck, capes and wings, t
 Every strategy is tagged ⚡ **Wake up**, 🌙 **Calm down**, or both.
 
 - **Move & Stretch** includes the Forest Animals yoga poses (Porcupine, Bear, Owl, Rabbit, Frog, Snake, Chipmunk, Woodpecker in a Tree, Skunk, Raccoon), more animal poses (Flamingo, Cat and Cow, Puppy Dog, Butterfly, Turtle Shell, Lion's Breath, Crab Walk and more), and movement such as wall push-ups, jumping jacks and cross crawls.
-- **Calm & Think** includes breathing (Smell the Flower, Balloon Belly, Square Breathing, Bumble Bee Hum and more), grounding (5-4-3-2-1, Listen for 3 Sounds), and thinking tools: Size of the Problem, Name It to Tame It, End of the Rainbow, What's Ahead, Make a Plan, Kind Words to Myself and more.
+- **Calm & Think** includes breathing (Smell the Flower, Balloon Belly, Square Breathing, Bumble Bee Hum and more), grounding (5-4-3-2-1, Listen for 3 Sounds), and thinking tools: Size of the Problem, Name It to Tame It, End of the Rainbow (thinking about how you'll feel, or what you'll get to do, when the work is done), What's Ahead (steps still to come), Make a Plan, Kind Words to Myself and more.
 
 **Strategies** on the home screen lets you:
 - **Star** a strategy for a student, so it's always on their card (good for IEP goals or favorites).
-- **Edit** the name, steps or wake-up/calm-down tag. Edits are saved in this browser. **End of the Rainbow** and **What's Ahead** have placeholder steps for you to change.
+- **Edit** the name, steps or wake-up/calm-down tag. Edits are saved in this browser.
+
+**What's Ahead** has no steps yet, so it stays off the cards until steps are added (under Strategies, or in `STRATS`).
 
 To change the strategies for everyone, edit `STRATS` near the top of the script in `index.html`. The pose drawings are in `POSE`.
 

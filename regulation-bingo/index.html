@@ -430,8 +430,8 @@ const STRATS = [
   {id:'bodycheck', deck:'calm', tag:'calm', e:'🔍', name:'Body Check', steps:['Close your eyes or look down.','Notice your feet, legs, tummy, hands, shoulders and face.','Where does your body feel tight? Where does it feel calm?']},
   {id:'sizeprob',  deck:'calm', tag:'calm', e:'📏', name:'Size of the Problem', steps:['Think of a problem, real or pretend.','Is it a tiny, medium or big problem?','Does your reaction match the size of the problem? Show a reaction that fits.']},
   {id:'nametame',  deck:'calm', tag:'calm', e:'🏷️', name:'Name It to Tame It', steps:['Notice the feeling in your body.','Name it out loud: “I feel ___.”','Naming a feeling helps it get smaller. Take one slow breath.']},
-  {id:'rainbow',   deck:'calm', tag:'calm', e:'🌈', name:'End of the Rainbow', steps:['Picture a rainbow.','Follow it with your eyes, color by color, all the way to the end.','What is waiting for you at the end of the rainbow?']},
-  {id:'ahead',     deck:'calm', tag:'calm', e:'🔭', name:'What’s Ahead', steps:['Think about what comes next today.','Name one thing that is coming up.','What will help you be ready for it?']},
+  {id:'rainbow',   deck:'calm', tag:'calm', e:'🌈', name:'End of the Rainbow', steps:['Think about the work you have to do.','Picture the end of the rainbow: the work is done!','How will you feel when it’s done? What will you get to do after?']},
+  {id:'ahead',     deck:'calm', tag:'calm', e:'🔭', name:'What’s Ahead', todo:true, steps:[]},
   {id:'kind',      deck:'calm', tag:'calm', e:'💬', name:'Kind Words to Myself', steps:['Put your hand on your heart.','Say something kind to yourself, like “I can do hard things.”','Say it 3 times.']},
   {id:'calmplace', deck:'calm', tag:'calm', e:'🏝️', name:'My Calm Place', t:['breath',3], steps:['Close your eyes or look down.','Picture a place where you feel calm and safe.','What do you see, hear and smell there?']},
   {id:'count10',   deck:'calm', tag:'calm', e:'🔢', name:'Slow Count to 10', t:['count',10], steps:['Breathe slowly.','Count from 1 to 10, nice and slow.','Notice how your body feels at 10.']},
@@ -771,7 +771,7 @@ function pickFrom(list, k, energy){
 function deal(){
   const su = store.setup, st = cur(), n = su.size, free = n===5;
   const count = n*n - (free?1:0);
-  const pool = STRATS.map(s=>S(s.id)).filter(s => su.deck==='mixed' || s.deck===su.deck);
+  const pool = STRATS.map(s=>S(s.id)).filter(s => s.steps.length && (su.deck==='mixed' || s.deck===su.deck));
   const starred = shuffle(pool.filter(s => (st.stars||[]).includes(s.id))).slice(0,count);
   const rest = pool.filter(s => !starred.includes(s));
   const need = count - starred.length;
@@ -1069,7 +1069,7 @@ function renderStrats(){
   $('#slist').innerHTML = STRATS.filter(s=>s.deck===stratTab).map(b => {
     const s = S(b.id), on = st && (st.stars||[]).includes(s.id);
     return `<div class="srow"><div class="mini">${pic(s)}</div>
-      <div style="min-width:0"><b>${esc(s.name)}</b> <span class="sub">${TAG[s.tag][0]} ${TAG[s.tag][1]}${store.edits[s.id]?' · edited':''}</span><div class="sub">${esc(s.steps[0])}</div></div>
+      <div style="min-width:0"><b>${esc(s.name)}</b> <span class="sub">${TAG[s.tag][0]} ${TAG[s.tag][1]}${store.edits[s.id]?' · edited':''}</span><div class="sub">${s.steps.length ? esc(s.steps[0]) : '<b style="color:var(--wake)">Needs steps. Tap Edit to add them. It won’t go on cards until then.</b>'}</div></div>
       <div class="actions" style="gap:4px"><button class="star" data-star="${s.id}" aria-pressed="${!!on}" ${st?'':'disabled'} aria-label="Star ${esc(s.name)}">${on?'★':'☆'}</button><button class="btn small" data-edit="${s.id}">Edit</button></div>
       ${editing===s.id ? `<form class="edit-form" data-form="${s.id}">
         <label class="label" for="eName">Name</label><input id="eName" value="${esc(s.name)}">
@@ -1126,7 +1126,7 @@ document.addEventListener('click', e => {
 document.addEventListener('submit', e => {
   const f = e.target.closest('[data-form]'); if(!f) return; e.preventDefault();
   const id = f.dataset.form, name = $('#eName').value.trim(), steps = $('#eSteps').value.split('\n').map(x=>x.trim()).filter(Boolean);
-  if(!name || !steps.length) return;
+  if(!name || !steps.length){ $('#eSteps').focus(); return; }
   store.edits[id] = {name, steps, tag:$('#eTag').value}; editing=null; save(); renderStrats();
 });
 document.addEventListener('keydown', e => {
