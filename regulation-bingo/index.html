@@ -122,7 +122,7 @@ input,select,textarea{font:inherit;color:var(--ink);background:var(--surface);bo
 /* bingo card */
 .card{--deck:var(--move);--deck-soft:var(--move-soft);background:var(--surface);border-radius:24px;border:4px solid var(--deck);box-shadow:var(--shadow);overflow:hidden}
 .card[data-deck="calm"]{--deck:var(--calm);--deck-soft:var(--calm-soft)}
-.card[data-deck="mixed"]{--deck:var(--mixed);--deck-soft:var(--mixed-soft)}
+.card[data-deck="mixed"],.card[data-deck="custom"]{--deck:var(--mixed);--deck-soft:var(--mixed-soft)}
 .card-head{background:var(--deck);color:#fff;padding:10px 18px;display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
 .card-head h2{font-size:clamp(1.4rem,3.4vw,2rem);letter-spacing:.02em}
 .card-head span{font-weight:800;opacity:.92}
@@ -149,13 +149,17 @@ input,select,textarea{font:inherit;color:var(--ink);background:var(--surface);bo
 .cell.target{box-shadow:0 0 0 4px var(--gold),0 0 0 8px var(--blue);animation:glow 1s ease-in-out infinite alternate}
 .cell.placing{box-shadow:0 0 0 4px var(--good);outline:4px dashed var(--good);outline-offset:-12px;animation:glow 1s ease-in-out infinite alternate}
 .cell.pickable{box-shadow:0 0 0 4px var(--good);animation:glow 1s ease-in-out infinite alternate}
-.cell.covered .pic,.cell.covered .nm{opacity:.35}
-.cell .token{position:absolute;inset:12%;display:grid;place-items:center;filter:drop-shadow(0 4px 4px rgba(0,0,0,.25))}
-.cell .token .emo{font-size:clamp(1.8rem,6vw,3.6rem)}
-.size-5 .cell .token .emo{font-size:clamp(1.4rem,4.4vw,2.6rem)}
+.cell.covered{background:var(--deck);border-color:var(--deck)}
+.cell.covered .pic{opacity:.16}
+.cell.covered .nm{color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.35)}
+.cell.covered .tg,.cell.covered .badge{opacity:.35}
+.cell{container-type:inline-size}
+.cell .token{position:absolute;inset:3% 9% 21% 9%;border-radius:50%;background:#fff;display:grid;place-items:center;
+  box-shadow:0 0 0 3px rgba(0,0,0,.12),0 5px 10px rgba(0,0,0,.3)}
+.cell .token .tok{width:88%;height:88%}
+.cell .token .emo{font-size:clamp(1.5rem,4.6vw,3rem);font-size:52cqi}
 .cell .token.drop{animation:drop .55s cubic-bezier(.3,1.5,.5,1)}
-.cell.win{box-shadow:0 0 0 4px var(--good);background:var(--surface)}
-.cell.free .nm{opacity:1}
+.cell.win{box-shadow:0 0 0 3px var(--surface),0 0 0 7px var(--good)}
 @keyframes glow{from{filter:brightness(1)}to{filter:brightness(1.08)}}
 @keyframes drop{0%{transform:translateY(-140%) scale(1.4);opacity:0}60%{opacity:1}100%{transform:none}}
 
@@ -224,6 +228,24 @@ input,select,textarea{font:inherit;color:var(--ink);background:var(--surface);bo
 .acc.wearing{border-color:var(--blue)}
 .acc.locked svg{opacity:.3;filter:grayscale(1)}
 .bingo-word{font-size:clamp(3rem,12vw,5.5rem);text-align:center;color:var(--good);letter-spacing:.04em}
+
+/* make-your-own builder */
+.build-grid{display:grid;gap:18px;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);align-items:start}
+@media (max-width:900px){.build-grid{grid-template-columns:minmax(0,1fr)}}
+.cell.empty{border:3px dashed var(--line);background:var(--surface-2);color:var(--muted);display:grid;place-items:center;grid-template-rows:1fr;font-size:clamp(1.4rem,4vw,2.4rem);font-weight:800}
+.cell.sel{box-shadow:0 0 0 4px var(--blue);border-color:var(--blue)}
+.cell .x{position:absolute;top:3px;right:5px;font-size:.8rem;font-weight:800;color:var(--muted)}
+.blist{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:8px;max-height:62vh;overflow:auto;padding:4px}
+.bitem{position:relative;border:2px solid var(--line);border-radius:14px;background:var(--surface-2);padding:6px;display:grid;justify-items:center;align-content:start;gap:2px;font-weight:800;font-size:.85rem;line-height:1.15;text-align:center}
+.bitem .mini{width:64px;height:64px;position:relative;display:grid;place-items:center}
+.bitem .mini svg{width:100%;height:100%} .bitem .mini .emo{font-size:2.3rem} .bitem .mini .badge{display:none}
+.bitem[aria-pressed="true"]{border-color:var(--good);background:var(--surface)}
+.bitem .chk{position:absolute;top:4px;right:7px;color:var(--good);font-size:1.1rem}
+.bitem.write{border-style:dashed;color:var(--muted);align-content:center;min-height:104px}
+.bitem.write span{font-size:2rem;line-height:1}
+.emoji-pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(48px,1fr));gap:6px}
+.emoji-pick button{font-size:1.6rem;aspect-ratio:1;border-radius:12px;border:2px solid var(--line);background:var(--surface-2)}
+.emoji-pick button[aria-pressed="true"]{border-color:var(--ink);background:var(--surface)}
 
 /* strategies screen */
 .tabs{display:flex;gap:8px;flex-wrap:wrap}
@@ -341,6 +363,35 @@ input,select,textarea{font:inherit;color:var(--ink);background:var(--surface);bo
     </div>
   </main>
 
+  <!-- MAKE MY OWN CARD -->
+  <main id="build" hidden>
+    <div class="build-grid">
+      <section class="panel">
+        <h2 id="bHead">Make your own card</h2>
+        <div class="opt-row" id="bSize">
+          <button class="opt" data-bs="3">3 × 3</button>
+          <button class="opt" data-bs="4">4 × 4</button>
+          <button class="opt" data-bs="5">5 × 5</button>
+        </div>
+        <div class="msg" id="bMsg" aria-live="polite" style="margin:0"></div>
+        <section class="card" data-deck="custom">
+          <div class="card-head"><h2 id="bTitle">My Card</h2><span id="bCount"></span></div>
+          <div class="grid" id="bGrid"></div>
+        </section>
+        <div class="actions" id="bActions"></div>
+      </section>
+      <section class="panel">
+        <h2>Pick your strategies</h2>
+        <div class="tabs" id="bTabs">
+          <button class="opt" data-bt="move">Move &amp; Stretch</button>
+          <button class="opt" data-bt="calm">Calm &amp; Think</button>
+          <button class="opt" data-bt="mine">My own</button>
+        </div>
+        <div class="blist" id="bList"></div>
+      </section>
+    </div>
+  </main>
+
   <!-- STRATEGIES -->
   <main id="strats" hidden>
     <section class="panel">
@@ -349,6 +400,7 @@ input,select,textarea{font:inherit;color:var(--ink);background:var(--surface);bo
       <div class="tabs" id="stratTabs">
         <button class="opt" data-st="move">Move &amp; Stretch</button>
         <button class="opt" data-st="calm">Calm &amp; Think</button>
+        <button class="opt" data-st="mine">Made by students</button>
       </div>
       <div class="slist" id="slist"></div>
     </section>
@@ -564,11 +616,13 @@ const SHAPES = {
    ============================================================ */
 const KEY = 'regulation-bingo-v1';
 let store = load();
-function blank(){return {students:{}, order:[], cur:null, sound:true, edits:{}, setup:{deck:'move', energy:'mix', size:4, tab:'animals', token:{k:'emoji', v:'🐸'}, color:COLORS[4]}}}
+function blank(){return {students:{}, order:[], cur:null, sound:true, edits:{}, custom:[], setup:{deck:'move', energy:'mix', size:4, tab:'animals', token:{k:'emoji', v:'🐸'}, color:COLORS[4]}}}
 function load(){try{const s=JSON.parse(localStorage.getItem(KEY)); if(s&&s.students){const b=blank(); return {...b,...s,setup:{...b.setup,...(s.setup||{})}}}}catch(e){} return blank()}
 function save(){try{localStorage.setItem(KEY, JSON.stringify(store))}catch(e){}}
 const cur = () => store.students[store.cur] || null;
-const S = id => { const b = STRATS.find(s=>s.id===id); if(!b) return null; const e = store.edits[id]; return e ? {...b, ...e} : b; };
+store.custom = store.custom || [];
+const S = id => { const b = STRATS.find(s=>s.id===id) || store.custom.find(s=>s.id===id); if(!b) return {id, deck:'calm', tag:'calm', e:'❓', name:'(deleted)', steps:[]}; const e = store.edits[id]; return e ? {...b, ...e} : b; };
+const EMOJIS = ['🐶','🐱','🐻','🐸','🦁','🐢','🦋','🐝','🐬','🦄','🌈','⭐','☀️','🌙','🌸','🌳','🌊','🎈','⚽','🏀','🎵','🎨','📚','🧸','🍎','💧','❤️','💪','🙌','👣','😊','😌','🤔','💭','🚀','🏠','🎮','🛝'];
 
 /* ============================================================
    HELPERS
@@ -577,7 +631,7 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const shuffle = a => { a=[...a]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]} return a; };
 const TAG = {up:['⚡','Wake up'], calm:['🌙','Calm down'], both:['⚡🌙','Wake up or calm down']};
-const DECKNAME = {move:'Move & Stretch', calm:'Calm & Think', mixed:'Mixed'};
+const DECKNAME = {move:'Move & Stretch', calm:'Calm & Think', mixed:'Mixed', custom:'My Own'};
 
 function fig(id){
   const P = POSE[id]; if(!P) return '';
@@ -691,11 +745,12 @@ function say(text){ try{ speechSynthesis.cancel(); const u = new SpeechSynthesis
 let screen = 'home';
 function show(name){
   screen = name;
-  ['home','game','strats'].forEach(s => $('#'+s).hidden = s!==name);
+  ['home','game','strats','build'].forEach(s => $('#'+s).hidden = s!==name);
   renderTop();
   if(name==='home') renderHome();
   if(name==='game') renderGame();
   if(name==='strats') renderStrats();
+  if(name==='build') renderBuild();
   window.scrollTo(0,0);
 }
 function renderTop(){
@@ -735,7 +790,8 @@ function renderHome(){
   $('#swatches').innerHTML = COLORS.map(c => `<button data-color="${c}" style="background:${c}" aria-label="Color" aria-pressed="${c===su.color}"></button>`).join('');
   const g = st && st.game;
   $('#startActions').innerHTML = (g && !gameDone(g) ? `<button class="btn go big" data-act="resume">Keep playing ${esc(DECKNAME[g.deck])} card</button>` : '')
-    + `<button class="btn ${g && !gameDone(g) ? '' : 'go big'}" data-act="start">${g && !gameDone(g) ? 'Make a new card' : 'Make my card!'}</button>`;
+    + `<button class="btn ${g && !gameDone(g) ? '' : 'go big'}" data-act="start">${g && !gameDone(g) ? 'Make a new card' : 'Make my card!'}</button>`
+    + `<button class="btn" data-act="build">✏️ Make my own card</button>`;
 }
 function openStuForm(editing){
   stuEditing = editing ? store.cur : null;
@@ -793,8 +849,8 @@ function setMsg(html){ $('#msg').innerHTML = html; }
 function renderGame(){
   const st = cur(), g = st.game, n = g.size;
   const card = $('#card'); card.dataset.deck = g.deck; card.className = 'card size-'+n;
-  $('#cardTitle').textContent = DECKNAME[g.deck];
-  $('#cardSub').textContent = {mix:'⚡🌙 Wake up + calm down', calm:'🌙 Mostly calming', up:'⚡ Mostly waking up'}[g.energy] || '';
+  $('#cardTitle').textContent = g.deck==='custom' ? `${st.name}’s Own Card` : DECKNAME[g.deck];
+  $('#cardSub').textContent = g.deck==='custom' ? `✏️ Made by ${st.name}` : ({mix:'⚡🌙 Wake up + calm down', calm:'🌙 Mostly calming', up:'⚡ Mostly waking up'}[g.energy] || '');
   const grid = $('#grid'); grid.style.setProperty('--n', n);
   let h = `<span class="hd blank"></span>`;
   for(let c=1;c<=n;c++) h += `<span class="hd col" data-col="${c}">${c}</span>`;
@@ -804,7 +860,7 @@ function renderGame(){
       const i = (r-1)*n + (c-1), cell = g.cells[i];
       if(cell.free){ h += `<button class="cell covered free" data-i="${i}" aria-label="Free space"><span class="pic"></span><span class="nm">Free: Calm Body</span><span class="token">${tokenHTML({k:'shape',v:'star',c:'#E5B800'})}</span></button>`; continue; }
       const s = S(cell.id);
-      h += `<button class="cell ${cell.covered?'covered':''}" data-i="${i}" ${g.deck==='mixed'?`data-d="${s.deck}"`:''} aria-label="Row ${r} column ${c}: ${esc(s.name)}${cell.covered?', covered':''}">
+      h += `<button class="cell ${cell.covered?'covered':''}" data-i="${i}" ${g.deck==='mixed'||g.deck==='custom'?`data-d="${s.deck}"`:''} aria-label="Row ${r} column ${c}: ${esc(s.name)}${cell.covered?', covered':''}">
         <span class="pic">${pic(s)}</span><span class="nm">${esc(s.name)}</span><span class="tg" title="${TAG[s.tag][1]}">${TAG[s.tag][0]}</span>
         ${cell.covered?`<span class="token">${tokenHTML(g.token)}</span>`:''}</button>`;
     }
@@ -930,7 +986,7 @@ function openStrat(i){
   sheet.innerHTML = `<div class="sheet-in">
     <div class="strat-top"><div class="bigpic">${pic(s)}</div>
       <div style="display:grid;gap:8px"><span class="tagpill ${s.tag}">${TAG[s.tag][0]} ${TAG[s.tag][1]}</span><h2 class="strat-name" id="sTitle">${esc(s.name)}</h2></div></div>
-    <ol class="steps">${s.steps.map(x=>`<li>${esc(x)}</li>`).join('')}</ol>
+    <ol class="steps">${(s.steps.length ? s.steps : ['Show how you do it!']).map(x=>`<li>${esc(x)}</li>`).join('')}</ol>
     ${t ? `<div class="timer" id="timer"><button class="btn" data-act="timer">${tLabel}</button></div>` : ''}
     <div class="actions">
       ${cell.covered ? `<span class="covered-note">✓ Already done on this card</span>` : `<button class="btn go did" data-act="did" data-i="${i}">✓ I did it!</button>`}
@@ -1066,11 +1122,13 @@ function renderStrats(){
   const st = cur();
   $('#stratNote').textContent = st ? `Tap ☆ to star a strategy for ${st.name}. Starred strategies always go on their card. Tap Edit to change the words for everyone.` : 'Choose a student on the home screen to star their favorites. Tap Edit to change the words.';
   document.querySelectorAll('#stratTabs .opt').forEach(b => b.setAttribute('aria-pressed', b.dataset.st===stratTab));
-  $('#slist').innerHTML = STRATS.filter(s=>s.deck===stratTab).map(b => {
+  const listSrc = stratTab==='mine' ? store.custom : STRATS.filter(s=>s.deck===stratTab);
+  if(stratTab==='mine' && !listSrc.length){ $('#slist').innerHTML = `<p class="note">Nothing yet. Strategies students write on “Make my own card” show up here.</p>`; return; }
+  $('#slist').innerHTML = listSrc.map(b => {
     const s = S(b.id), on = st && (st.stars||[]).includes(s.id);
     return `<div class="srow"><div class="mini">${pic(s)}</div>
-      <div style="min-width:0"><b>${esc(s.name)}</b> <span class="sub">${TAG[s.tag][0]} ${TAG[s.tag][1]}${store.edits[s.id]?' · edited':''}</span><div class="sub">${s.steps.length ? esc(s.steps[0]) : '<b style="color:var(--wake)">Needs steps. Tap Edit to add them. It won’t go on cards until then.</b>'}</div></div>
-      <div class="actions" style="gap:4px"><button class="star" data-star="${s.id}" aria-pressed="${!!on}" ${st?'':'disabled'} aria-label="Star ${esc(s.name)}">${on?'★':'☆'}</button><button class="btn small" data-edit="${s.id}">Edit</button></div>
+      <div style="min-width:0"><b>${esc(s.name)}</b> <span class="sub">${TAG[s.tag][0]} ${TAG[s.tag][1]}${store.edits[s.id]?' · edited':''}${b.by!==undefined?` · by ${esc((store.students[b.by]||{}).name||'a student')}`:''}</span><div class="sub">${s.steps.length ? esc(s.steps[0]) : b.by!==undefined ? 'No steps (the card says “Show how you do it!”)' : '<b style="color:var(--wake)">Needs steps. Tap Edit to add them. It won’t go on cards until then.</b>'}</div></div>
+      <div class="actions" style="gap:4px"><button class="star" data-star="${s.id}" aria-pressed="${!!on}" ${st?'':'disabled'} aria-label="Star ${esc(s.name)}">${on?'★':'☆'}</button><button class="btn small" data-edit="${s.id}">Edit</button>${b.by!==undefined?`<button class="btn small" data-delcustom="${s.id}">Delete</button>`:''}</div>
       ${editing===s.id ? `<form class="edit-form" data-form="${s.id}">
         <label class="label" for="eName">Name</label><input id="eName" value="${esc(s.name)}">
         <label class="label" for="eSteps">Steps (one per line)</label><textarea id="eSteps" rows="4">${esc(s.steps.join('\n'))}</textarea>
@@ -1079,6 +1137,88 @@ function renderStrats(){
     </div>`;
   }).join('');
 }
+
+/* ---------- MAKE MY OWN CARD ---------- */
+let bTab = 'move', bSel = null, newEmoji = '⭐';
+function myCard(){
+  const st = cur();
+  if(!st.myCard){ const n = 4; st.myCard = {size:n, ids:Array(n*n).fill(null)}; }
+  return st.myCard;
+}
+function resizeMyCard(n){
+  const mc = myCard(), keep = mc.ids.filter(x => x && x!=='free');
+  const ids = Array(n*n).fill(null); if(n===5) ids[12] = 'free';
+  let k = 0; for(let i=0;i<ids.length && k<keep.length;i++) if(ids[i]===null) ids[i] = keep[k++];
+  mc.size = n; mc.ids = ids; bSel = null; save();
+}
+function renderBuild(){
+  const st = cur(), mc = myCard(), n = mc.size;
+  if(n===5 && mc.ids[12]!=='free') resizeMyCard(5);
+  $('#bHead').textContent = `${st.name}, make your own card!`;
+  $('#bTitle').textContent = `${st.name}’s Own Card`;
+  document.querySelectorAll('#bSize .opt').forEach(b => b.setAttribute('aria-pressed', +b.dataset.bs===n));
+  document.querySelectorAll('#bTabs .opt').forEach(b => b.setAttribute('aria-pressed', b.dataset.bt===bTab));
+  const empty = mc.ids.filter(x=>x===null).length;
+  $('#bCount').textContent = empty ? `${empty} to go` : 'Ready!';
+  const grid = $('#bGrid'); grid.style.setProperty('--n', n);
+  let h = `<span class="hd blank"></span>`;
+  for(let c=1;c<=n;c++) h += `<span class="hd col">${c}</span>`;
+  for(let r=1;r<=n;r++){
+    h += `<span class="hd row">${r}</span>`;
+    for(let c=1;c<=n;c++){
+      const i=(r-1)*n+(c-1), id = mc.ids[i];
+      if(id==='free'){ h += `<span class="cell covered free"><span class="pic"></span><span class="nm">Free: Calm Body</span><span class="token">${tokenHTML({k:'shape',v:'star',c:'#E5B800'})}</span></span>`; continue; }
+      if(!id){ h += `<button class="cell empty ${bSel===i?'sel':''}" data-bslot="${i}" aria-label="Empty square, row ${r} column ${c}">＋</button>`; continue; }
+      const s = S(id);
+      h += `<button class="cell ${bSel===i?'sel':''}" data-bslot="${i}" data-d="${s.deck}" aria-label="${esc(s.name)}. Tap to take it off."><span class="pic">${pic(s)}</span><span class="nm">${esc(s.name)}</span><span class="x" aria-hidden="true">✕</span></button>`;
+    }
+  }
+  grid.innerHTML = h;
+  // library
+  const onCard = new Set(mc.ids);
+  const src = bTab==='mine' ? store.custom.filter(x=>x.by===st.id) : STRATS.filter(x=>x.deck===bTab);
+  let L = bTab==='mine' ? `<button class="bitem write" data-act="writeown"><span>✏️</span>Write my own</button>` : '';
+  L += src.map(b => S(b.id)).filter(s => s.steps.length || b_isCustom(s.id)).map(s =>
+    `<button class="bitem" data-bpick="${s.id}" aria-pressed="${onCard.has(s.id)}">${onCard.has(s.id)?'<span class="chk" aria-hidden="true">✓</span>':''}<span class="mini">${pic(s)}</span>${esc(s.name)}</button>`).join('');
+  if(bTab==='mine' && !src.length) L += `<p class="note" style="grid-column:1/-1;margin:4px">Write your own strategy and it will show up here.</p>`;
+  $('#bList').innerHTML = L;
+  $('#bActions').innerHTML = `<button class="btn go big" data-act="playown" ${empty?'disabled':''}>▶ Play my card!</button>
+    ${empty?`<button class="btn" data-act="fillrest">🎲 Fill the rest for me</button>`:''}
+    <button class="btn" data-act="clearown">Clear</button>`;
+  if(!$('#bMsg').dataset.keep) $('#bMsg').innerHTML = empty ? `<span>Tap a strategy to put it on your card. Tap a square on your card to take it off. Can’t find one? Tap <b>My own</b> to write your own.</span>` : `<span>Your card is full! Press <b>Play my card</b>.</span>`;
+  delete $('#bMsg').dataset.keep;
+}
+const b_isCustom = id => store.custom.some(x=>x.id===id);
+function bMsg(html){ $('#bMsg').innerHTML = `<span>${html}</span>`; $('#bMsg').dataset.keep = 1; }
+function placeOnCard(id){
+  const mc = myCard();
+  const at = mc.ids.indexOf(id);
+  if(at>=0){ mc.ids[at] = null; bSel = at; save(); renderBuild(); return; }
+  let i = (bSel!==null && mc.ids[bSel]===null) ? bSel : mc.ids.indexOf(null);
+  if(i<0){ SFX.miss(); bMsg(`Your card is full! Tap a square on your card to take it off first.`); renderBuild(); return; }
+  mc.ids[i] = id; bSel = null; SFX.plop(); save(); renderBuild();
+}
+function openWriteOwn(){
+  const sheet = $('#sheet'); sheet.className = 'sheet'; delete sheet.dataset.deck;
+  newEmoji = '⭐';
+  sheet.innerHTML = `<form class="sheet-in" id="ownForm">
+    <h2 id="wTitle" style="font-size:2rem">Write your own strategy</h2>
+    <label class="label" for="wName">What is it called?</label>
+    <input id="wName" maxlength="40" autocomplete="off" placeholder="Example: Squeeze my stress ball">
+    <div class="label">Pick a picture</div>
+    <div class="emoji-pick" id="wEmoji">${EMOJIS.map(e=>`<button type="button" data-wemoji="${e}" aria-pressed="${e===newEmoji}">${e}</button>`).join('')}</div>
+    <div class="label">What kind is it?</div>
+    <div class="opt-row" id="wDeck"><button type="button" class="opt" data-wdeck="move" aria-pressed="false">🏃 Moving my body</button><button type="button" class="opt" data-wdeck="calm" aria-pressed="true">💭 Calming or thinking</button></div>
+    <div class="label">What does it do?</div>
+    <div class="opt-row" id="wTag"><button type="button" class="opt" data-wtag="calm" aria-pressed="true">🌙 Calm down</button><button type="button" class="opt" data-wtag="up" aria-pressed="false">⚡ Wake up</button><button type="button" class="opt" data-wtag="both" aria-pressed="false">⚡🌙 Both</button></div>
+    <label class="label" for="wSteps">How do you do it? (optional, one step per line)</label>
+    <textarea id="wSteps" rows="3"></textarea>
+    <div class="actions"><button class="btn go" type="submit">Add to my card</button><button class="btn" type="button" data-act="close">Cancel</button></div>
+  </form>`;
+  sheet.setAttribute('aria-labelledby','wTitle');
+  openOverlay($('#wName'));
+}
+function pressOne(group, btn){ document.querySelectorAll(group+' button').forEach(b => b.setAttribute('aria-pressed', b===btn)); }
 
 /* ============================================================
    EVENTS
@@ -1098,6 +1238,13 @@ document.addEventListener('click', e => {
   if(act==='dressup'){ if(cur()) openCloset('dress'); return; }
   if(act==='start'){ if(!cur()){ openStuForm(false); return; } deal(); show('game'); return; }
   if(act==='resume'){ show('game'); return; }
+  if(act==='build'){ if(!cur()){ openStuForm(false); return; } bSel = null; show('build'); return; }
+  if(act==='writeown'){ openWriteOwn(); return; }
+  if(act==='fillrest'){ const mc = myCard(), used = new Set(mc.ids); const pool = shuffle(STRATS.filter(x=>x.steps.length && !used.has(x.id)).map(x=>x.id)); mc.ids = mc.ids.map(x => x===null ? pool.shift() : x); bSel=null; save(); renderBuild(); return; }
+  if(act==='clearown'){ const mc = myCard(); mc.ids = mc.ids.map(x => x==='free' ? x : null); bSel=null; save(); renderBuild(); return; }
+  if(act==='playown'){ const st = cur(), mc = myCard(); if(mc.ids.includes(null)) return;
+    st.game = {deck:'custom', energy:null, size:mc.size, cells:mc.ids.map(id => id==='free' ? {id:'free', covered:true, free:true} : {id, covered:false}), lines:[], pending:0, token:{...store.setup.token}, blackout:false, roll:null, pick:null};
+    save(); show('game'); return; }
   if(act==='newcard'){ setMsg(`Start a new card? This one will be cleared. <button class="btn small go" data-act="newcard-yes">New card</button><button class="btn small" data-act="newcard-no">Keep this one</button>`); return; }
   if(act==='newcard-no'){ renderGame(); return; }
   if(act==='newcard-yes'){ closeOverlay(); const g = cur().game; if(g && g.pending){ openCloset('earn'); return; } show('home'); return; }
@@ -1118,16 +1265,34 @@ document.addEventListener('click', e => {
   if(b.dataset.color){ const su = store.setup; su.color = b.dataset.color; if(su.token.k==='shape') su.token.c = su.color; save(); renderHome(); return; }
   if(b.dataset.acc){ pickAcc(b.dataset.acc); return; }
   if(b.dataset.st){ stratTab = b.dataset.st; editing=null; renderStrats(); return; }
+  if(b.dataset.bs){ resizeMyCard(+b.dataset.bs); renderBuild(); return; }
+  if(b.dataset.bt){ bTab = b.dataset.bt; renderBuild(); return; }
+  if(b.dataset.bpick){ placeOnCard(b.dataset.bpick); return; }
+  if(b.dataset.bslot!==undefined){ const i = +b.dataset.bslot, mc = myCard(); if(mc.ids[i]){ mc.ids[i] = null; save(); } bSel = i; renderBuild(); return; }
+  if(b.dataset.wemoji){ newEmoji = b.dataset.wemoji; pressOne('#wEmoji', b); return; }
+  if(b.dataset.wdeck || b.dataset.wtag){ pressOne(b.dataset.wdeck ? '#wDeck' : '#wTag', b); return; }
+  if(b.dataset.delcustom){ const id = b.dataset.delcustom; store.custom = store.custom.filter(x=>x.id!==id); Object.values(store.students).forEach(st => { if(st.myCard) st.myCard.ids = st.myCard.ids.map(x => x===id ? null : x); }); save(); renderStrats(); return; }
   if(b.dataset.star){ const st = cur(); st.stars = st.stars||[]; const id=b.dataset.star; st.stars = st.stars.includes(id) ? st.stars.filter(x=>x!==id) : st.stars.concat(id); save(); renderStrats(); return; }
   if(b.dataset.edit){ editing = editing===b.dataset.edit ? null : b.dataset.edit; renderStrats(); const f=$('#eName'); f&&f.focus(); return; }
   if(b.hasAttribute('data-cancel')){ editing=null; renderStrats(); return; }
   if(b.dataset.reset){ delete store.edits[b.dataset.reset]; editing=null; save(); renderStrats(); return; }
 });
 document.addEventListener('submit', e => {
+  if(e.target.id==='ownForm'){
+    e.preventDefault();
+    const name = $('#wName').value.trim(); if(!name){ $('#wName').focus(); return; }
+    const st = cur(), item = {id:'u'+Date.now().toString(36), by:st.id, name, e:newEmoji,
+      deck:document.querySelector('#wDeck [aria-pressed="true"]').dataset.wdeck,
+      tag:document.querySelector('#wTag [aria-pressed="true"]').dataset.wtag,
+      steps:$('#wSteps').value.split('\n').map(x=>x.trim()).filter(Boolean)};
+    store.custom.push(item); save(); closeOverlay(); bTab = 'mine'; placeOnCard(item.id); return;
+  }
   const f = e.target.closest('[data-form]'); if(!f) return; e.preventDefault();
   const id = f.dataset.form, name = $('#eName').value.trim(), steps = $('#eSteps').value.split('\n').map(x=>x.trim()).filter(Boolean);
-  if(!name || !steps.length){ $('#eSteps').focus(); return; }
-  store.edits[id] = {name, steps, tag:$('#eTag').value}; editing=null; save(); renderStrats();
+  if(!name || (!steps.length && !store.custom.find(x=>x.id===id))){ $('#eSteps').focus(); return; }
+  const cu = store.custom.find(x=>x.id===id);
+  if(cu){ cu.name = name; cu.steps = steps; cu.tag = $('#eTag').value; } else store.edits[id] = {name, steps, tag:$('#eTag').value};
+  editing=null; save(); renderStrats();
 });
 document.addEventListener('keydown', e => {
   if(e.key==='Escape' && !$('#overlay').hidden){ const g = cur() && cur().game; if(closetMode==='earn' && g && g.pending && $('#sheet').querySelector('.acc')) return; closeOverlay(); if(screen==='game') renderGame(); }

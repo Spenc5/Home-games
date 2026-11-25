@@ -18,9 +18,21 @@ Open `index.html` in a web browser and share your screen. It's one file with not
    - If the square is already covered, the open squares in that row and column turn green and the student picks one. If both are full, pop again.
    - Before popping, tapping a covered square shows what was done there.
 4. **Show it.** The card has a picture, simple steps, a **Read aloud** button, and for many strategies a breathing guide, hold timer or counter. When the student has shown the strategy, they tap **I did it!**, then tap their square to place the token.
+   Covered squares fill in with the card's color, with a big token on a white circle.
 5. **Bingo!** Any row, column, diagonal or the four corners wins (four corners doesn't count on 3 × 3). The student picks **1 new accessory** per bingo and **3** for a blackout. Accessories stay with the student, and they can change what their buddy wears any time with **Dress up**.
 
 There are 26 accessories: hats, glasses, things for the neck, capes and wings, things to hold, and backgrounds.
+
+## Make my own card
+
+On the home screen, **✏️ Make my own card** lets the student build a card themselves:
+
+- Pick a size (3 × 3, 4 × 4, or 5 × 5 with a free space).
+- Tap strategies from **Move & Stretch** or **Calm & Think** to put them on the card. Tap a square on the card to take it off, or to choose which square the next one goes in.
+- Under **My own**, tap **Write my own** to add a new strategy: a name, a picture, whether it's moving or calming/thinking, whether it calms down or wakes up, and optional steps. With no steps, its card says "Show how you do it!"
+- **Fill the rest for me** fills any empty squares at random. **Play my card** starts the game with the squares where the student put them.
+
+The card is saved for that student, so they can come back and play it again. Strategies students write are listed under **Strategies → Made by students**, where you can edit or delete them.
 
 ## Strategies
 
